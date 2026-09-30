@@ -1,77 +1,68 @@
 document.addEventListener("DOMContentLoaded", function () {
 
+  /* =========================
+     GET ADMIN DATA
+  ========================= */
+
   const books =
     JSON.parse(localStorage.getItem("noveloraAdminBooks")) || [];
 
   const chapters =
     JSON.parse(localStorage.getItem("noveloraAdminChapters")) || [];
 
-
-  /* =========================
-     DASHBOARD COUNTS
-  ========================= */
-
-  const totalBooks =
-    document.getElementById("totalBooks");
-
-  const overviewBooks =
-    document.getElementById("overviewBooks");
-
-  const totalChapters =
-    document.getElementById("totalChapters");
-
-  const overviewChapters =
-    document.getElementById("overviewChapters");
-
-
-  if (totalBooks) {
-    totalBooks.textContent = books.length;
-  }
-
-  if (overviewBooks) {
-    overviewBooks.textContent = books.length;
-  }
-
-  if (totalChapters) {
-    totalChapters.textContent = chapters.length;
-  }
-
-  if (overviewChapters) {
-    overviewChapters.textContent = chapters.length;
-  }
+  const readers =
+    JSON.parse(localStorage.getItem("noveloraReaders")) || [];
 
 
   /* =========================
-     PLACEHOLDER READER COUNT
+     BOOKS
   ========================= */
 
-  const totalReaders =
-    document.getElementById("totalReaders");
+  document.getElementById("totalBooks").textContent =
+    books.length;
 
-  if (totalReaders) {
-    const readers =
-      JSON.parse(localStorage.getItem("noveloraReaders")) || [];
-
-    totalReaders.textContent = readers.length;
-  }
+  document.getElementById("overviewBooks").textContent =
+    books.length;
 
 
   /* =========================
-     PLACEHOLDER EARNINGS
+     CHAPTERS
   ========================= */
 
-  const totalEarnings =
-    document.getElementById("totalEarnings");
+  document.getElementById("totalChapters").textContent =
+    chapters.length;
 
-  if (totalEarnings) {
+  document.getElementById("overviewChapters").textContent =
+    chapters.length;
 
-    const earnings =
-      Number(
-        localStorage.getItem("noveloraTotalEarnings")
-      ) || 0;
 
-    totalEarnings.textContent =
-      "$" + earnings.toFixed(2);
-  }
+  /* =========================
+     READERS
+  ========================= */
+
+  document.getElementById("totalReaders").textContent =
+    readers.length;
+
+  document.getElementById("overviewReaders").textContent =
+    readers.length;
+
+
+  /* =========================
+     EARNINGS
+  ========================= */
+
+  const earnings =
+    Number(
+      localStorage.getItem("noveloraTotalEarnings")
+    ) || 0;
+
+  const formattedEarnings =
+    "$" + earnings.toFixed(2);
+
+  document.getElementById("totalEarnings").textContent =
+    formattedEarnings;
+
+  document.getElementById("overviewRevenue").textContent =
+    formattedEarnings;
 
 });
