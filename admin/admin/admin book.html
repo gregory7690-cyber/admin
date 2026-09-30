@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Books - Novelora Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f8fb;
+    color: #171717;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: #171717;
+    color: white;
+    padding: 25px 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff4f91;
+    margin-bottom: 35px;
+    padding-left: 10px;
+}
+
+.sidebar a {
+    display: block;
+    text-decoration: none;
+    color: #ddd;
+    padding: 13px 12px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #e91e63;
+    color: white;
+}
+
+/* MAIN */
+.main {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    padding: 30px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.admin-label {
+    background: #ffe0eb;
+    color: #d81b60;
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+/* ADD BOOK */
+.add-book-box {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    margin-bottom: 30px;
+}
+
+.add-book-box h2 {
+    margin-top: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+label {
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    font-size: 15px;
+    outline: none;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    border-color: #e91e63;
+}
+
+/* COVER */
+.cover-upload {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.cover-preview {
+    width: 100px;
+    height: 140px;
+    border-radius: 10px;
+    background: #ffe5ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #d81b60;
+    font-size: 13px;
+    text-align: center;
+}
+
+.cover-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.upload-btn {
+    display: inline-block;
+    padding: 11px 16px;
+    background: #ffe0eb;
+    color: #d81b60;
+    border-radius: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#coverInput {
+    display: none;
+}
+
+/* CHECKBOXES */
+.options {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.option input {
+    width: auto;
+}
+
+/* BUTTON */
+.save-btn {
+    margin-top: 22px;
+    border: none;
+    background: #e91e63;
+    color: white;
+    padding: 13px 22px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #d81b60;
+}
+
+/* BOOK LIST */
+.books-section {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.05);
+}
+
+.books-section h2 {
+    margin-top: 0;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.book-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.book-card {
+    border: 1px solid #eee;
+    border-radius: 14px;
+    overflow: hidden;
+    background: white;
+}
+
+.book-cover {
+    height: 230px;
+    background: #ffe5ef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d81b60;
+    font-weight: 700;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-info {
+    padding: 15px;
+}
+
+.book-info h3 {
+    margin: 0 0 7px;
+}
+
+.book-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.status {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+.status.published {
+    background: #e5f8e8;
+    color: #218838;
+}
+
+.status.draft {
+    background: #eee;
+    color: #666;
+}
+
+.card-buttons {
+    display: flex;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.card-buttons button {
+    flex: 1;
+    border: none;
+    padding: 9px;
+    border-radius: 7px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.edit-btn {
+    background: #eee;
+}
+
+.publish-btn {
+    background: #e91e63;
+    color: white;
+}
+
+.delete-btn {
+    background: #ffe1e1;
+    color: #c62828;
+}
+
+/* MOBILE */
+@media (max-width: 850px) {
+
+    .sidebar {
+        width: 190px;
+    }
+
+    .main {
+        margin-left: 190px;
+        width: calc(100% - 190px);
+    }
+
+    .book-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 650px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+
+    .book-list {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">Novelora</div>
+
+    <a href="index.html">📊 Dashboard</a>
+    <a href="books.html" class="active">📚 Books</a>
+    <a href="chapters.html">📖 Chapters</a>
+    <a href="readers.html">👥 Readers</a>
+    <a href="authors.html">✍️ Authors</a>
+    <a href="community.html">💬 Community</a>
+    <a href="notifications.html">🔔 Notifications</a>
+    <a href="money.html">💰 Money</a>
+    <a href="analytics.html">📈 Analytics</a>
+    <a href="rewards.html">🎁 Rewards</a>
+    <a href="promotions.html">🎟️ Promotions</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="security.html">🔐 Security</a>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="topbar">
+    <h1>📚 Books</h1>
+    <div class="admin-label">👑 Admin</div>
+</div>
+
+
+<!-- ADD BOOK -->
+<section class="add-book-box">
+
+<h2>➕ Add New Book</h2>
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label>Book Title</label>
+        <input type="text" id="bookTitle" placeholder="Enter book title">
+    </div>
+
+    <div class="form-group">
+        <label>Author</label>
+        <input type="text" id="bookAuthor" placeholder="Enter author name">
+    </div>
+
+    <div class="form-group full">
+        <label>Blurb</label>
+        <textarea id="bookBlurb" placeholder="Write a short description of the book"></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Genre</label>
+        <select id="bookGenre">
+            <option value="">Select genre</option>
+            <option>Romance</option>
+            <option>Werewolf</option>
+            <option>Billionaire</option>
+            <option>Fantasy</option>
+            <option>Vampire</option>
+            <option>Thriller</option>
+            <option>Mystery</option>
+            <option>Drama</option>
+            <option>Action</option>
+            <option>Other</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Status</label>
+        <select id="bookStatus">
+            <option>Ongoing</option>
+            <option>Completed</option>
+        </select>
+    </div>
+
+    <div class="form-group full">
+
+        <label>Book Cover</label>
+
+        <div class="cover-upload">
+
+            <div class="cover-preview" id="coverPreview">
+                Cover Preview
+            </div>
+
+            <div>
+                <label for="coverInput" class="upload-btn">
+                    🖼️ Upload Cover
+                </label>
+
+                <input
+                    type="file"
+                    id="coverInput"
+                    accept="image/*"
+                >
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="form-group full">
+
+        <label>Book Options</label>
+
+        <div class="options">
+
+            <label class="option">
+                <input type="checkbox" id="featured">
+                ⭐ Featured
+            </label>
+
+            <label class="option">
+                <input type="checkbox" id="freeBook">
+                🆓 Free Book
+            </label>
+
+            <label class="option">
+                <input type="checkbox" id="published">
+                🚀 Publish Immediately
+            </label>
+
+        </div>
+
+    </div>
+
+</div>
+
+<button class="save-btn" onclick="saveBook()">
+    💾 Save Book
+</button>
+
+</section>
+
+
+<!-- BOOK LIST -->
+<section class="books-section">
+
+<h2>📚 Your Books</h2>
+
+<div class="search-box">
+    <input
+        type="text"
+        id="searchBooks"
+        placeholder="🔎 Search your books..."
+        oninput="displayBooks()"
+    >
+</div>
+
+<div class="book-list" id="bookList"></div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script>
+
+let books = JSON.parse(localStorage.getItem("noveloraAdminBooks")) || [];
+
+let coverData = "";
+
+const coverInput = document.getElementById("coverInput");
+const coverPreview = document.getElementById("coverPreview");
+
+coverInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+
+        coverData = event.target.result;
+
+        coverPreview.innerHTML =
+            `<img src="${coverData}" alt="Book cover">`;
+
+    };
+
+    reader.readAsDataURL(file);
+});
+
+
+function saveBook() {
+
+    const title = document.getElementById("bookTitle").value.trim();
+    const author = document.getElementById("bookAuthor").value.trim();
+    const blurb = document.getElementById("bookBlurb").value.trim();
+    const genre = document.getElementById("bookGenre").value;
+    const status = document.getElementById("bookStatus").value;
+
+    const featured = document.getElementById("featured").checked;
+    const freeBook = document.getElementById("freeBook").checked;
+    const published = document.getElementById("published").checked;
+
+    if (!title || !author || !blurb || !genre) {
+        alert("Please fill in the title, author, blurb and genre.");
+        return;
+    }
+
+    const book = {
+
+        id: Date.now(),
+
+        title: title,
+
+        author: author,
+
+        blurb: blurb,
+
+        genre: genre,
+
+        status: status,
+
+        cover: coverData,
+
+        featured: featured,
+
+        freeBook: freeBook,
+
+        published: published,
+
+        createdAt: new Date().toISOString()
+
+    };
+
+    books.push(book);
+
+    localStorage.setItem(
+        "noveloraAdminBooks",
+        JSON.stringify(books)
+    );
+
+    alert("Book saved successfully! 📚");
+
+    clearForm();
+
+    displayBooks();
+}
+
+
+function clearForm() {
+
+    document.getElementById("bookTitle").value = "";
+    document.getElementById("bookAuthor").value = "";
+    document.getElementById("bookBlurb").value = "";
+    document.getElementById("bookGenre").value = "";
+    document.getElementById("bookStatus").value = "Ongoing";
+
+    document.getElementById("featured").checked = false;
+    document.getElementById("freeBook").checked = false;
+    document.getElementById("published").checked = false;
+
+    coverData = "";
+
+    coverPreview.innerHTML = "Cover Preview";
+}
+
+
+function displayBooks() {
+
+    const list = document.getElementById("bookList");
+
+    const search =
+        document.getElementById("searchBooks").value
+        .toLowerCase();
+
+    const filteredBooks = books.filter(book =>
+        book.title.toLowerCase().includes(search) ||
+        book.author.toLowerCase().includes(search) ||
+        book.genre.toLowerCase().includes(search)
+    );
+
+    if (filteredBooks.length === 0) {
+
+        list.innerHTML =
+            "<p>No books found.</p>";
+
+        return;
+    }
+
+    list.innerHTML = filteredBooks.map(book => `
+
+        <div class="book-card">
+
+            <div class="book-cover">
+
+                ${
+                    book.cover
+                    ? `<img src="${book.cover}" alt="${book.title}">`
+                    : "📖 No Cover"
+                }
+
+            </div>
+
+            <div class="book-info">
+
+                <h3>${book.title}</h3>
+
+                <p>✍️ ${book.author}</p>
+
+                <p>🎭 ${book.genre}</p>
+
+                <span class="status ${
+                    book.published
+                    ? "published"
+                    : "draft"
+                }">
+
+                    ${
+                        book.published
+                        ? "Published"
+                        : "Draft"
+                    }
+
+                </span>
+
+                <div class="card-buttons">
+
+                    <button
+                        class="publish-btn"
+                        onclick="togglePublish(${book.id})">
+
+                        ${
+                            book.published
+                            ? "Unpublish"
+                            : "Publish"
+                        }
+
+                    </button>
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteBook(${book.id})">
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `).join("");
+}
+
+
+function togglePublish(id) {
+
+    const book = books.find(book => book.id === id);
+
+    if (!book) return;
+
+    book.published = !book.published;
+
+    localStorage.setItem(
+        "noveloraAdminBooks",
+        JSON.stringify(books)
+    );
+
+    displayBooks();
+}
+
+
+function deleteBook(id) {
+
+    const confirmDelete =
+        confirm("Delete this book?");
+
+    if (!confirmDelete) return;
+
+    books = books.filter(
+        book => book.id !== id
+    );
+
+    localStorage.setItem(
+        "noveloraAdminBooks",
+        JSON.stringify(books)
+    );
+
+    displayBooks();
+}
+
+
+displayBooks();
+
+</script>
+
+</body>
+</html>
