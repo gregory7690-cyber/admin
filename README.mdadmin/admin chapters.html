@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapters - Novelora Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f8f8fb;
+    color: #171717;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background: #171717;
+    color: white;
+    padding: 25px 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: #ff4f91;
+    margin-bottom: 35px;
+    padding-left: 10px;
+}
+
+.sidebar a {
+    display: block;
+    text-decoration: none;
+    color: #ddd;
+    padding: 13px 12px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+    background: #e91e63;
+    color: white;
+}
+
+/* MAIN */
+.main {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    padding: 30px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.admin-label {
+    background: #ffe0eb;
+    color: #d81b60;
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+/* ADD CHAPTER */
+.chapter-box,
+.chapter-list-section {
+    background: white;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.05);
+    margin-bottom: 30px;
+}
+
+.chapter-box h2,
+.chapter-list-section h2 {
+    margin-top: 0;
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #e91e63;
+}
+
+textarea {
+    min-height: 350px;
+    resize: vertical;
+    line-height: 1.7;
+}
+
+/* OPTIONS */
+.chapter-options {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: 700;
+}
+
+.option input {
+    width: auto;
+}
+
+.coin-box {
+    display: none;
+    width: 180px;
+}
+
+.coin-box.show {
+    display: block;
+}
+
+.save-btn {
+    border: none;
+    background: #e91e63;
+    color: white;
+    padding: 13px 22px;
+    border-radius: 9px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background: #d81b60;
+}
+
+/* CHAPTER LIST */
+.search-box {
+    margin-bottom: 20px;
+}
+
+.chapter-card {
+    border: 1px solid #eee;
+    border-radius: 13px;
+    padding: 18px;
+    margin-bottom: 14px;
+}
+
+.chapter-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: center;
+}
+
+.chapter-header h3 {
+    margin: 0;
+}
+
+.chapter-meta {
+    color: #666;
+    font-size: 13px;
+    margin-top: 7px;
+}
+
+.chapter-badge {
+    padding: 5px 9px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.free {
+    background: #e5f8e8;
+    color: #218838;
+}
+
+.paid {
+    background: #fff0d5;
+    color: #b36b00;
+}
+
+.published {
+    background: #e5f8e8;
+    color: #218838;
+}
+
+.draft {
+    background: #eee;
+    color: #666;
+}
+
+.chapter-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.chapter-actions button {
+    border: none;
+    padding: 9px 13px;
+    border-radius: 7px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background: #eee;
+}
+
+.publish-btn {
+    background: #e91e63;
+    color: white;
+}
+
+.delete-btn {
+    background: #ffe1e1;
+    color: #c62828;
+}
+
+/* MOBILE */
+@media (max-width: 650px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .chapter-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    textarea {
+        min-height: 280px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">Novelora</div>
+
+    <a href="index.html">📊 Dashboard</a>
+    <a href="books.html">📚 Books</a>
+    <a href="chapters.html" class="active">📖 Chapters</a>
+    <a href="readers.html">👥 Readers</a>
+    <a href="authors.html">✍️ Authors</a>
+    <a href="community.html">💬 Community</a>
+    <a href="notifications.html">🔔 Notifications</a>
+    <a href="money.html">💰 Money</a>
+    <a href="analytics.html">📈 Analytics</a>
+    <a href="rewards.html">🎁 Rewards</a>
+    <a href="promotions.html">🎟️ Promotions</a>
+    <a href="settings.html">⚙️ Settings</a>
+    <a href="security.html">🔐 Security</a>
+
+</aside>
+
+
+<!-- MAIN -->
+<main class="main">
+
+<div class="topbar">
+    <h1>📖 Chapters</h1>
+    <div class="admin-label">👑 Admin</div>
+</div>
+
+
+<!-- ADD CHAPTER -->
+<section class="chapter-box">
+
+<h2>➕ Add New Chapter</h2>
+
+<div class="form-group">
+
+    <label>Book</label>
+
+    <select id="bookSelect">
+        <option value="">Select a book</option>
+    </select>
+
+</div>
+
+
+<div class="form-group">
+
+    <label>Chapter Number</label>
+
+    <input
+        type="number"
+        id="chapterNumber"
+        min="1"
+        placeholder="e.g. 1"
+    >
+
+</div>
+
+
+<div class="form-group">
+
+    <label>Chapter Title</label>
+
+    <input
+        type="text"
+        id="chapterTitle"
+        placeholder="Enter chapter title"
+    >
+
+</div>
+
+
+<div class="form-group">
+
+    <label>Chapter Content</label>
+
+    <textarea
+        id="chapterContent"
+        placeholder="Write or paste the chapter here..."
+    ></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+    <label>Chapter Access</label>
+
+    <div class="chapter-options">
+
+        <label class="option">
+            <input
+                type="radio"
+                name="access"
+                value="free"
+                checked
+                onchange="updateCoinBox()"
+            >
+            🆓 Free
+        </label>
+
+        <label class="option">
+            <input
+                type="radio"
+                name="access"
+                value="paid"
+                onchange="updateCoinBox()"
+            >
+            🔒 Paid
+        </label>
+
+        <div class="coin-box" id="coinBox">
+
+            <input
+                type="number"
+                id="coinPrice"
+                min="1"
+                placeholder="Coin price"
+                value="5"
+            >
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="form-group">
+
+    <label class="option">
+
+        <input
+            type="checkbox"
+            id="publishChapter"
+        >
+
+        🚀 Publish immediately
+
+    </label>
+
+</div>
+
+
+<button
+    class="save-btn"
+    onclick="saveChapter()"
+>
+    💾 Save Chapter
+</button>
+
+</section>
+
+
+<!-- CHAPTER LIST -->
+<section class="chapter-list-section">
+
+<h2>📚 Your Chapters</h2>
+
+<div class="search-box">
+
+    <input
+        type="text"
+        id="searchChapters"
+        placeholder="🔎 Search chapters..."
+        oninput="displayChapters()"
+    >
+
+</div>
+
+<div id="chapterList"></div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script>
+
+let books =
+    JSON.parse(
+        localStorage.getItem("noveloraAdminBooks")
+    ) || [];
+
+let chapters =
+    JSON.parse(
+        localStorage.getItem("noveloraAdminChapters")
+    ) || [];
+
+let editingChapterId = null;
+
+
+/* LOAD BOOKS */
+
+function loadBooks() {
+
+    const select =
+        document.getElementById("bookSelect");
+
+    select.innerHTML =
+        '<option value="">Select a book</option>';
+
+    books.forEach(book => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = book.id;
+
+        option.textContent =
+            book.title;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+/* PAID COINS */
+
+function updateCoinBox() {
+
+    const paid =
+        document.querySelector(
+            'input[name="access"]:checked'
+        ).value === "paid";
+
+    const coinBox =
+        document.getElementById("coinBox");
+
+    coinBox.classList.toggle(
+        "show",
+        paid
+    );
+}
+
+
+/* SAVE CHAPTER */
+
+function saveChapter() {
+
+    const bookId =
+        document.getElementById("bookSelect").value;
+
+    const number =
+        document.getElementById("chapterNumber").value;
+
+    const title =
+        document.getElementById("chapterTitle").value.trim();
+
+    const content =
+        document.getElementById("chapterContent").value.trim();
+
+    const access =
+        document.querySelector(
+            'input[name="access"]:checked'
+        ).value;
+
+    const coinPrice =
+        document.getElementById("coinPrice").value;
+
+    const published =
+        document.getElementById("publishChapter").checked;
+
+
+    if (!bookId || !number || !title || !content) {
+
+        alert(
+            "Please select a book and fill in all chapter details."
+        );
+
+        return;
+    }
+
+
+    const book =
+        books.find(
+            book => String(book.id) === String(bookId)
+        );
+
+
+    if (!book) {
+
+        alert("Book not found.");
+
+        return;
+    }
+
+
+    if (editingChapterId) {
+
+        const chapter =
+            chapters.find(
+                item => item.id === editingChapterId
+            );
+
+        if (chapter) {
+
+            chapter.bookId = bookId;
+            chapter.bookTitle = book.title;
+            chapter.number = Number(number);
+            chapter.title = title;
+            chapter.content = content;
+            chapter.access = access;
+            chapter.coinPrice =
+                access === "paid"
+                ? Number(coinPrice || 5)
+                : 0;
+            chapter.published = published;
+
+        }
+
+        editingChapterId = null;
+
+    } else {
+
+        const chapter = {
+
+            id: Date.now(),
+
+            bookId: bookId,
+
+            bookTitle: book.title,
+
+            number: Number(number),
+
+            title: title,
+
+            content: content,
+
+            access: access,
+
+            coinPrice:
+                access === "paid"
+                ? Number(coinPrice || 5)
+                : 0,
+
+            published: published,
+
+            createdAt:
+                new Date().toISOString()
+
+        };
+
+        chapters.push(chapter);
+    }
+
+
+    localStorage.setItem(
+        "noveloraAdminChapters",
+        JSON.stringify(chapters)
+    );
+
+
+    alert("Chapter saved successfully! 📖");
+
+    clearForm();
+
+    displayChapters();
+}
+
+
+/* CLEAR FORM */
+
+function clearForm() {
+
+    document.getElementById("bookSelect").value = "";
+
+    document.getElementById("chapterNumber").value = "";
+
+    document.getElementById("chapterTitle").value = "";
+
+    document.getElementById("chapterContent").value = "";
+
+    document.querySelector(
+        'input[value="free"]'
+    ).checked = true;
+
+    document.getElementById("coinPrice").value = 5;
+
+    document.getElementById("publishChapter").checked = false;
+
+    editingChapterId = null;
+
+    updateCoinBox();
+}
+
+
+/* DISPLAY CHAPTERS */
+
+function displayChapters() {
+
+    const list =
+        document.getElementById("chapterList");
+
+    const search =
+        document.getElementById("searchChapters")
+        .value
+        .toLowerCase();
+
+
+    const filtered =
+        chapters.filter(chapter =>
+
+            chapter.bookTitle
+                .toLowerCase()
+                .includes(search)
+
+            ||
+
+            chapter.title
+                .toLowerCase()
+                .includes(search)
+
+        );
+
+
+    if (filtered.length === 0) {
+
+        list.innerHTML =
+            "<p>No chapters found.</p>";
+
+        return;
+    }
+
+
+    list.innerHTML =
+        filtered
+        .sort(
+            (a, b) =>
+                a.bookTitle.localeCompare(
+                    b.bookTitle
+                )
+                ||
+                a.number - b.number
+        )
+        .map(chapter => `
+
+            <div class="chapter-card">
+
+                <div class="chapter-header">
+
+                    <div>
+
+                        <h3>
+                            Chapter ${chapter.number} —
+                            ${escapeHtml(chapter.title)}
+                        </h3>
+
+                        <div class="chapter-meta">
+
+                            📚 ${escapeHtml(chapter.bookTitle)}
+
+                            ·
+
+                            ${
+                                chapter.access === "paid"
+                                ? "🪙 " + chapter.coinPrice + " coins"
+                                : "🆓 Free"
+                            }
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <span class="chapter-badge ${
+                            chapter.access === "paid"
+                            ? "paid"
+                            : "free"
+                        }">
+
+                            ${
+                                chapter.access === "paid"
+                                ? "🔒 Paid"
+                                : "🆓 Free"
+                            }
+
+                        </span>
+
+
+                        <span class="chapter-badge ${
+                            chapter.published
+                            ? "published"
+                            : "draft"
+                        }">
+
+                            ${
+                                chapter.published
+                                ? "Published"
+                                : "Draft"
+                            }
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chapter-actions">
+
+                    <button
+                        class="edit-btn"
+                        onclick="editChapter(${chapter.id})"
+                    >
+                        ✏️ Edit
+                    </button>
+
+
+                    <button
+                        class="publish-btn"
+                        onclick="toggleChapterPublish(${chapter.id})"
+                    >
+
+                        ${
+                            chapter.published
+                            ? "Unpublish"
+                            : "Publish"
+                        }
+
+                    </button>
+
+
+                    <button
+                        class="delete-btn"
+                        onclick="deleteChapter(${chapter.id})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        `)
+        .join("");
+}
+
+
+/* EDIT */
+
+function editChapter(id) {
+
+    const chapter =
+        chapters.find(
+            item => item.id === id
+        );
+
+    if (!chapter) return;
+
+
+    document.getElementById("bookSelect").value =
+        chapter.bookId;
+
+    document.getElementById("chapterNumber").value =
+        chapter.number;
+
+    document.getElementById("chapterTitle").value =
+        chapter.title;
+
+    document.getElementById("chapterContent").value =
+        chapter.content;
+
+
+    document.querySelector(
+        `input[value="${chapter.access}"]`
+    ).checked = true;
+
+
+    document.getElementById("coinPrice").value =
+        chapter.coinPrice || 5;
+
+    document.getElementById("publishChapter").checked =
+        chapter.published;
+
+
+    editingChapterId = id;
+
+    updateCoinBox();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* PUBLISH */
+
+function toggleChapterPublish(id) {
+
+    const chapter =
+        chapters.find(
+            item => item.id === id
+        );
+
+    if (!chapter) return;
+
+    chapter.published =
+        !chapter.published;
+
+
+    localStorage.setItem(
+        "noveloraAdminChapters",
+        JSON.stringify(chapters)
+    );
+
+
+    displayChapters();
+}
+
+
+/* DELETE */
+
+function deleteChapter(id) {
+
+    const confirmed =
+        confirm(
+            "Delete this chapter?"
+        );
+
+    if (!confirmed) return;
+
+
+    chapters =
+        chapters.filter(
+            chapter =>
+                chapter.id !== id
+        );
+
+
+    localStorage.setItem(
+        "noveloraAdminChapters",
+        JSON.stringify(chapters)
+    );
+
+
+    displayChapters();
+}
+
+
+/* SECURITY FOR DISPLAYED TEXT */
+
+function escapeHtml(text) {
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* START */
+
+loadBooks();
+
+updateCoinBox();
+
+displayChapters();
+
+</script>
+
+</body>
+</html>
