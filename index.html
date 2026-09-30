@@ -1,325 +1,250 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novelora Admin</title>
-
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novelora Admin</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="admin-layout">
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-
-    <div class="brand">
-      <div class="brand-name">Novelora</div>
-      <div class="brand-subtitle">ADMIN PANEL</div>
-    </div>
-
-    <nav class="sidebar-nav">
-
-      <a href="index.html" class="nav-item active">
-        <span>📊</span>
-        <span>Dashboard</span>
-      </a>
-
-      <a href="books.html" class="nav-item">
-        <span>📚</span>
-        <span>Books</span>
-      </a>
-
-      <a href="chapters.html" class="nav-item">
-        <span>📖</span>
-        <span>Chapters</span>
-      </a>
-
-      <a href="readers.html" class="nav-item">
-        <span>👥</span>
-        <span>Readers</span>
-      </a>
-
-      <a href="authors.html" class="nav-item">
-        <span>✍️</span>
-        <span>Authors</span>
-      </a>
-
-      <a href="community.html" class="nav-item">
-        <span>💬</span>
-        <span>Community</span>
-      </a>
-
-      <a href="notifications.html" class="nav-item">
-        <span>🔔</span>
-        <span>Notifications</span>
-      </a>
-
-      <a href="money.html" class="nav-item">
-        <span>💰</span>
-        <span>Money</span>
-      </a>
-
-      <a href="analytics.html" class="nav-item">
-        <span>📈</span>
-        <span>Analytics</span>
-      </a>
-
-      <a href="rewards.html" class="nav-item">
-        <span>🎁</span>
-        <span>Rewards</span>
-      </a>
-
-      <a href="promotions.html" class="nav-item">
-        <span>🎟️</span>
-        <span>Promotions</span>
-      </a>
-
-      <a href="settings.html" class="nav-item">
-        <span>⚙️</span>
-        <span>Settings</span>
-      </a>
-
-      <a href="security.html" class="nav-item">
-        <span>🔐</span>
-        <span>Security</span>
-      </a>
-
-    </nav>
-
-    <div class="sidebar-footer">
-      <a href="https://gregory7690-cyber.github.io/Novelora/">
-        🌐 View Novelora
-      </a>
-    </div>
-
-  </aside>
-
-
-  <!-- MAIN -->
-  <main class="main-content">
-
-    <!-- TOP BAR -->
-    <header class="topbar">
-
-      <div>
-        <h1>Dashboard</h1>
-        <p>Welcome back, Administrator.</p>
-      </div>
-
-      <div class="admin-user">
-        <div class="avatar">A</div>
-
-        <div>
-          <strong>Administrator</strong>
-          <small>Admin</small>
-        </div>
-      </div>
-
-    </header>
-
-
-    <!-- CONTENT -->
-    <div class="dashboard-content">
-
-      <!-- STATISTICS -->
-      <section class="stats-grid">
-
-        <div class="stat-box">
-          <div class="stat-icon pink">📚</div>
-
-          <div>
-            <p>Total Books</p>
-            <h2 id="totalBooks">0</h2>
-          </div>
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-name">NOVELORA</div>
+            <div class="brand-subtitle">ADMIN PANEL</div>
         </div>
 
+        <nav class="sidebar-nav">
 
-        <div class="stat-box">
-          <div class="stat-icon purple">📖</div>
+            <a href="index.html" class="nav-item active">
+                <span>▣</span>
+                <span>Dashboard</span>
+            </a>
 
-          <div>
-            <p>Total Chapters</p>
-            <h2 id="totalChapters">0</h2>
-          </div>
+            <a href="books.html" class="nav-item">
+                <span>📚</span>
+                <span>Books</span>
+            </a>
+
+            <a href="chapters.html" class="nav-item">
+                <span>📖</span>
+                <span>Chapters</span>
+            </a>
+
+            <a href="readers.html" class="nav-item">
+                <span>👥</span>
+                <span>Readers</span>
+            </a>
+
+            <a href="authors.html" class="nav-item">
+                <span>✍️</span>
+                <span>Authors</span>
+            </a>
+
+            <a href="community.html" class="nav-item">
+                <span>💬</span>
+                <span>Community</span>
+            </a>
+
+            <a href="notifications.html" class="nav-item">
+                <span>🔔</span>
+                <span>Notifications</span>
+            </a>
+
+            <a href="money.html" class="nav-item">
+                <span>💰</span>
+                <span>Money</span>
+            </a>
+
+            <a href="analytics.html" class="nav-item">
+                <span>📊</span>
+                <span>Analytics</span>
+            </a>
+
+            <a href="rewards.html" class="nav-item">
+                <span>🎁</span>
+                <span>Rewards</span>
+            </a>
+
+            <a href="promotions.html" class="nav-item">
+                <span>📢</span>
+                <span>Promotions</span>
+            </a>
+
+            <a href="settings.html" class="nav-item">
+                <span>⚙️</span>
+                <span>Settings</span>
+            </a>
+
+            <a href="security.html" class="nav-item">
+                <span>🔐</span>
+                <span>Security</span>
+            </a>
+
+        </nav>
+
+        <div class="sidebar-bottom">
+            <a href="../Novelora/" class="view-site">← View Novelora</a>
         </div>
+    </aside>
 
 
-        <div class="stat-box">
-          <div class="stat-icon blue">👥</div>
+    <main class="main-content">
 
-          <div>
-            <p>Total Readers</p>
-            <h2 id="totalReaders">0</h2>
-          </div>
-        </div>
-
-
-        <div class="stat-box">
-          <div class="stat-icon green">💰</div>
-
-          <div>
-            <p>Total Earnings</p>
-            <h2 id="totalEarnings">$0.00</h2>
-          </div>
-        </div>
-
-      </section>
-
-
-      <!-- QUICK ACTIONS -->
-      <section class="dashboard-section">
-
-        <div class="section-title">
-          <div>
-            <h2>Quick Actions</h2>
-            <p>Manage your Novelora platform.</p>
-          </div>
-        </div>
-
-
-        <div class="quick-grid">
-
-          <a href="books.html" class="action-card">
-            <div class="action-icon">📚</div>
-            <h3>Add New Book</h3>
-            <p>Create and publish a novel.</p>
-          </a>
-
-
-          <a href="chapters.html" class="action-card">
-            <div class="action-icon">📖</div>
-            <h3>Add Chapter</h3>
-            <p>Add a chapter to an existing book.</p>
-          </a>
-
-
-          <a href="notifications.html" class="action-card">
-            <div class="action-icon">🔔</div>
-            <h3>Send Notification</h3>
-            <p>Notify your readers.</p>
-          </a>
-
-
-          <a href="promotions.html" class="action-card">
-            <div class="action-icon">🎟️</div>
-            <h3>Create Promotion</h3>
-            <p>Promote books and rewards.</p>
-          </a>
-
-        </div>
-
-      </section>
-
-
-      <!-- PLATFORM OVERVIEW -->
-      <section class="dashboard-section">
-
-        <div class="section-title">
-          <div>
-            <h2>Platform Overview</h2>
-            <p>Your Novelora activity.</p>
-          </div>
-        </div>
-
-
-        <div class="overview-grid">
-
-          <div class="overview-card">
-            <div class="overview-top">
-              <span>📚</span>
-              <h3>Books</h3>
+        <header class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back to Novelora Admin.</p>
             </div>
 
-            <strong id="overviewBooks">0</strong>
+            <div class="admin-user">
+                <div class="admin-avatar">N</div>
+                <div>
+                    <strong>Administrator</strong>
+                    <small>Admin</small>
+                </div>
+            </div>
+        </header>
 
-            <p>Total books currently in your admin system.</p>
 
-            <a href="books.html">Manage Books →</a>
-          </div>
+        <section class="dashboard-content">
 
+            <div class="stats-grid">
 
-          <div class="overview-card">
-            <div class="overview-top">
-              <span>📖</span>
-              <h3>Chapters</h3>
+                <div class="stat-box">
+                    <div class="stat-icon">📚</div>
+                    <div>
+                        <span>Total Books</span>
+                        <strong id="totalBooks">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">📖</div>
+                    <div>
+                        <span>Total Chapters</span>
+                        <strong id="totalChapters">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">👥</div>
+                    <div>
+                        <span>Total Readers</span>
+                        <strong id="totalReaders">0</strong>
+                    </div>
+                </div>
+
+                <div class="stat-box">
+                    <div class="stat-icon">💰</div>
+                    <div>
+                        <span>Total Earnings</span>
+                        <strong id="totalEarnings">$0.00</strong>
+                    </div>
+                </div>
+
             </div>
 
-            <strong id="overviewChapters">0</strong>
 
-            <p>Total chapters currently stored.</p>
+            <section class="section">
+                <div class="section-heading">
+                    <div>
+                        <h2>Quick Actions</h2>
+                        <p>Manage your Novelora platform.</p>
+                    </div>
+                </div>
 
-            <a href="chapters.html">Manage Chapters →</a>
-          </div>
+                <div class="action-grid">
 
+                    <a href="books.html" class="action-card">
+                        <div class="action-icon">📚</div>
+                        <h3>Add a Book</h3>
+                        <p>Create and publish a new novel.</p>
+                    </a>
 
-          <div class="overview-card">
-            <div class="overview-top">
-              <span>👥</span>
-              <h3>Readers</h3>
-            </div>
+                    <a href="chapters.html" class="action-card">
+                        <div class="action-icon">📖</div>
+                        <h3>Add a Chapter</h3>
+                        <p>Add chapters to your novels.</p>
+                    </a>
 
-            <strong id="overviewReaders">0</strong>
+                    <a href="notifications.html" class="action-card">
+                        <div class="action-icon">🔔</div>
+                        <h3>Send Notification</h3>
+                        <p>Notify your readers about updates.</p>
+                    </a>
 
-            <p>Registered readers will appear here.</p>
+                    <a href="promotions.html" class="action-card">
+                        <div class="action-icon">📢</div>
+                        <h3>Create Promotion</h3>
+                        <p>Promote books and special offers.</p>
+                    </a>
 
-            <a href="readers.html">Manage Readers →</a>
-          </div>
-
-
-          <div class="overview-card">
-            <div class="overview-top">
-              <span>💰</span>
-              <h3>Revenue</h3>
-            </div>
-
-            <strong id="overviewRevenue">$0.00</strong>
-
-            <p>Your current Novelora revenue.</p>
-
-            <a href="money.html">View Revenue →</a>
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- RECENT ACTIVITY -->
-      <section class="dashboard-section">
-
-        <div class="section-title">
-          <div>
-            <h2>Recent Activity</h2>
-            <p>Latest activity on your platform.</p>
-          </div>
-        </div>
+                </div>
+            </section>
 
 
-        <div class="activity-box" id="activityBox">
+            <section class="section">
 
-          <div class="empty-icon">📋</div>
+                <div class="section-heading">
+                    <div>
+                        <h2>Platform Overview</h2>
+                        <p>Quick view of your Novelora activity.</p>
+                    </div>
+                </div>
 
-          <h3>No recent activity</h3>
+                <div class="overview-grid">
 
-          <p>
-            Your latest books, chapters and other admin
-            activities will appear here.
-          </p>
+                    <div class="overview-card">
+                        <span>Published Books</span>
+                        <strong id="publishedBooks">0</strong>
+                    </div>
 
-        </div>
+                    <div class="overview-card">
+                        <span>Draft Books</span>
+                        <strong id="draftBooks">0</strong>
+                    </div>
 
-      </section>
+                    <div class="overview-card">
+                        <span>Published Chapters</span>
+                        <strong id="publishedChapters">0</strong>
+                    </div>
 
-    </div>
+                    <div class="overview-card">
+                        <span>Locked Chapters</span>
+                        <strong id="lockedChapters">0</strong>
+                    </div>
 
-  </main>
+                </div>
+
+            </section>
+
+
+            <section class="section">
+
+                <div class="section-heading">
+                    <div>
+                        <h2>Recent Activity</h2>
+                        <p>Your latest admin activity will appear here.</p>
+                    </div>
+                </div>
+
+                <div class="activity-box" id="recentActivity">
+                    <div class="empty-icon">✨</div>
+                    <h3>No recent activity</h3>
+                    <p>When you create books, chapters or other content, activity will appear here.</p>
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
 
 </div>
-
 
 <script src="script.js"></script>
 
