@@ -1,22 +1,20 @@
 /* =========================================
-   NOVELORA ADMIN — DASHBOARD ENGINE
+   NOVELORA ADMIN — MONEY ENGINE
 ========================================= */
 
-const STORAGE = {
-  books: "noveloraAdminBooks",
-  chapters: "noveloraAdminChapters",
-  readers: "noveloraReaders",
-  authors: "noveloraAuthors",
-  activities: "noveloraAdminActivities",
+const MONEY_STORAGE = {
   transactions: "noveloraTransactions",
-  unlocks: "noveloraChapterUnlocks"
+  unlocks: "noveloraChapterUnlocks",
+  books: "noveloraAdminBooks",
+  finance: "noveloraFinance"
 };
+
 
 /* =========================
    DATA HELPERS
 ========================= */
 
-function getData(key) {
+function moneyGetData(key) {
   try {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : [];
@@ -25,512 +23,891 @@ function getData(key) {
   }
 }
 
-function saveData(key, data) {
+function moneySaveData(key, data) {
   localStorage.setItem(key, JSON.stringify(data));
 }
 
-function getBooks() {
-  return getData(STORAGE.books);
+function formatMoney(amount) {
+  return `$${Number(amount || 0).toFixed(2)}`;
 }
 
-function getChapters() {
-  return getData(STORAGE.chapters);
-}
-
-function getReaders() {
-  return getData(STORAGE.readers);
-}
-
-function getAuthors() {
-  return getData(STORAGE.authors);
-}
-
-function getTransactions() {
-  return getData(STORAGE.transactions);
-}
-
-function getUnlocks() {
-  return getData(STORAGE.unlocks);
-}
 
 /* =========================
-   ACTIVITY
+   TRANSACTIONS
 ========================= */
 
-function addActivity(message, type = "system") {
-  const activities = getData(STORAGE.activities);
+function getMoneyTransactions() {
+  const data = moneyGetData(MONEY_STORAGE.transactions);
 
-  activities.unshift({
-    id: Date.now(),
-    message,
-    type,
-    date: new Date().toISOString()
-  });
-
-  saveData(
-    STORAGE.activities,
-    activities.slice(0, 50)
-  );
+  return Array.isArray(data) ? data : [];
 }
 
-function timeAgo(dateString) {
-  const date = new Date(dateString);
+
+/*
+   Supports common transaction formats such as:
+
+   {
+     amount: 5,
+     date: "...",
+     type: "purchase"
+   }
+
+   or
+
+   {
+     amount: 5,
+     createdAt: "...",
+     bookTitle: "..."
+   }
+*/
+
+function getTransactionAmount(transaction) {
+
+  const possibleAmounts = [
+    transaction.amount,
+    transaction.revenue,
+    transaction.total,
+    transaction.price
+  ];
+
+  for (const value of possibleAmounts) {
+
+    const number = Number(value);
+
+    if (Number.isFinite(number)) {
+      return number;
+    }
+
+  }
+
+  return 0;
+}
+
+
+function getTransactionDate(transaction) {
+
+  return (
+    transaction.date ||
+    transaction.createdAt ||
+    transaction.timestamp ||
+    transaction.created ||
+    null
+  );
+
+}
+
+
+/* =========================
+   EARNINGS CALCULATION
+========================= */
+
+function calculateMoney() {
+
+  const transactions = getMoneyTransactions();
+
+  let total = 0;
+  let monthly = 0;
+  let pending = 0;
+  let available = 0;
+
   const now = new Date();
 
-  const seconds = Math.floor(
-    (now - date) / 1000
-  );
+  transactions.forEach(transaction => {
 
-  if (seconds < 60) return "Just now";
+    const amount =
+      getTransactionAmount(transaction);
 
-  const minutes = Math.floor(seconds / 60);
+    if (amount <= 0) return;
 
-  if (minutes < 60) {
-    return `${minutes}m ago`;
-  }
+    total += amount;
 
-  const hours = Math.floor(minutes / 60);
+    const dateString =
+      getTransactionDate(transaction);
 
-  if (hours < 24) {
-    return `${hours}h ago`;
-  }
+    if (dateString) {
 
-  const days = Math.floor(hours / 24);
+      const date = new Date(dateString);
 
-  if (days < 30) {
-    return `${days}d ago`;
-  }
+      if (
+        !Number.isNaN(date.getTime()) &&
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      ) {
+        monthly += amount;
+      }
 
-  return date.toLocaleDateString();
-}
+    }
 
-/* =========================
-   DASHBOARD TOTALS
-========================= */
 
-function calculateStats() {
-  const books = getBooks();
-  const chapters = getChapters();
-  const readers = getReaders();
-  const unlocks = getUnlocks();
-  const transactions = getTransactions();
+    const status =
+      String(transaction.status || "completed")
+        .toLowerCase();
 
-  const coinsSpent = unlocks.reduce(
-    (total, unlock) =>
-      total + Number(unlock.coins || 0),
-    0
-  );
 
-  const revenue = transactions.reduce(
-    (total, transaction) =>
-      total + Number(transaction.amount || 0),
-    0
-  );
+    if (
+      status === "pending" ||
+      status === "processing"
+    ) {
+
+      pending += amount;
+
+    } else if (
+      status !== "refunded" &&
+      status !== "failed" &&
+      status !== "cancelled"
+    ) {
+
+      available += amount;
+
+    }
+
+  });
+
+
+  /*
+     Existing withdrawal requests are deducted
+     from the available balance.
+  */
+
+  const finance =
+    moneyGetData(MONEY_STORAGE.finance) || {};
+
+  const withdrawals =
+    Array.isArray(finance.withdrawals)
+      ? finance.withdrawals
+      : [];
+
+
+  withdrawals.forEach(withdrawal => {
+
+    const amount =
+      Number(withdrawal.amount || 0);
+
+    const status =
+      String(withdrawal.status || "")
+        .toLowerCase();
+
+    if (
+      status === "pending" ||
+      status === "processing" ||
+      status === "completed"
+    ) {
+
+      available -= amount;
+
+    }
+
+  });
+
+
+  available = Math.max(0, available);
+
 
   return {
-    books: books.length,
-    chapters: chapters.length,
-    readers: readers.length,
-    coinsSpent,
-    revenue
-  };
-}
-
-/* =========================
-   UPDATE STAT CARDS
-========================= */
-
-function updateStats() {
-  const stats = calculateStats();
-
-  const booksEl =
-    document.querySelector("#totalBooks");
-
-  const readersEl =
-    document.querySelector("#totalReaders");
-
-  const chaptersEl =
-    document.querySelector("#totalChapters");
-
-  const coinsEl =
-    document.querySelector("#totalCoinsSpent");
-
-  const revenueEl =
-    document.querySelector("#totalRevenue");
-
-  if (booksEl) {
-    booksEl.textContent = stats.books;
-  }
-
-  if (readersEl) {
-    readersEl.textContent = stats.readers;
-  }
-
-  if (chaptersEl) {
-    chaptersEl.textContent = stats.chapters;
-  }
-
-  if (coinsEl) {
-    coinsEl.textContent =
-      stats.coinsSpent.toLocaleString();
-  }
-
-  if (revenueEl) {
-    revenueEl.textContent =
-      `$${stats.revenue.toFixed(2)}`;
-  }
-
-  updateSnapshot();
-}
-
-/* =========================
-   PLATFORM SNAPSHOT
-========================= */
-
-function updateSnapshot() {
-  const books = getBooks();
-  const chapters = getChapters();
-  const authors = getAuthors();
-
-  const publishedBooks =
-    books.filter(book => book.published).length;
-
-  const publishedChapters =
-    chapters.filter(chapter => chapter.published).length;
-
-  const freeBooks =
-    books.filter(book => book.freeBook).length;
-
-  const featuredBooks =
-    books.filter(book => book.featured).length;
-
-  const activeAuthors =
-    authors.filter(author =>
-      author.status === "active" ||
-      author.status === "approved"
-    ).length;
-
-  setText(
-    "#publishedBooks",
-    publishedBooks
-  );
-
-  setText(
-    "#publishedChapters",
-    publishedChapters
-  );
-
-  setText(
-    "#freeBooks",
-    freeBooks
-  );
-
-  setText(
-    "#featuredBooks",
-    featuredBooks
-  );
-
-  setText(
-    "#activeAuthors",
-    activeAuthors
-  );
-}
-
-function setText(selector, value) {
-  const element =
-    document.querySelector(selector);
-
-  if (element) {
-    element.textContent = value;
-  }
-}
-
-/* =========================
-   RECENT BOOKS
-========================= */
-
-function renderRecentBooks() {
-  const container =
-    document.querySelector("#recentBooks");
-
-  if (!container) return;
-
-  const books = getBooks();
-
-  if (!books.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">📚</div>
-        <strong>No books yet</strong>
-        <p>
-          Add your first Novelora book and
-          it will appear here.
-        </p>
-      </div>
-    `;
-    return;
-  }
-
-  const recentBooks =
-    [...books].reverse().slice(0, 5);
-
-  container.innerHTML = `
-    <div class="book-list">
-      ${recentBooks.map(book => `
-        <div class="book-row">
-
-          <div class="book-cover">
-            ${
-              book.cover
-                ? `<img
-                    src="${book.cover}"
-                    alt=""
-                    style="
-                      width:100%;
-                      height:100%;
-                      object-fit:cover;
-                      border-radius:7px;
-                    "
-                  >`
-                : "📖"
-            }
-          </div>
-
-          <div class="book-info">
-            <strong>
-              ${escapeHTML(book.title || "Untitled")}
-            </strong>
-
-            <span>
-              ${escapeHTML(book.author || "Unknown author")}
-            </span>
-          </div>
-
-          <span class="book-status">
-            ${
-              book.published
-                ? "Published"
-                : "Draft"
-            }
-          </span>
-
-        </div>
-      `).join("")}
-    </div>
-  `;
-}
-
-/* =========================
-   RECENT ACTIVITY
-========================= */
-
-function renderRecentActivity() {
-  const container =
-    document.querySelector("#recentActivity");
-
-  if (!container) return;
-
-  const activities =
-    getData(STORAGE.activities);
-
-  if (!activities.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">✨</div>
-        <strong>No activity yet</strong>
-        <p>
-          Admin actions and reader activity
-          will appear here.
-        </p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = `
-    <div class="activity-list">
-
-      ${activities.slice(0, 7).map(activity => `
-        <div class="activity-item">
-
-          <div class="activity-dot"></div>
-
-          <div>
-            <strong>
-              ${escapeHTML(activity.message)}
-            </strong>
-
-            <p>
-              ${timeAgo(activity.date)}
-            </p>
-          </div>
-
-        </div>
-      `).join("")}
-
-    </div>
-  `;
-}
-
-/* =========================
-   REVENUE
-========================= */
-
-function updateRevenueOverview() {
-  const transactions = getTransactions();
-
-  const revenue =
-    transactions.reduce(
-      (total, transaction) =>
-        total + Number(transaction.amount || 0),
-      0
-    );
-
-  setText(
-    "#revenueOverview",
-    `$${revenue.toFixed(2)}`
-  );
-}
-
-/* =========================
-   COINS
-========================= */
-
-function updateCoinsDistributed() {
-  const unlocks = getUnlocks();
-
-  const coins =
-    unlocks.reduce(
-      (total, unlock) =>
-        total + Number(unlock.coins || 0),
-      0
-    );
-
-  setText(
-    "#coinsDistributed",
-    coins.toLocaleString()
-  );
-}
-
-/* =========================
-   MODERATION
-========================= */
-
-function updateModeration() {
-  const reports =
-    getData("noveloraAdminReports");
-
-  const pending =
-    reports.filter(report =>
-      report.status === "pending"
-    ).length;
-
-  setText(
-    "#moderationCount",
+    total,
+    monthly,
+    available,
     pending
-  );
+  };
+
 }
+
+
+/* =========================
+   UPDATE MONEY CARDS
+========================= */
+
+function updateMoneyDashboard() {
+
+  const earnings =
+    calculateMoney();
+
+
+  const totalEl =
+    document.querySelector("#totalEarnings");
+
+  const monthlyEl =
+    document.querySelector("#monthlyEarnings");
+
+  const availableEl =
+    document.querySelector("#availableBalance");
+
+  const pendingEl =
+    document.querySelector("#pendingBalance");
+
+  const withdrawEl =
+    document.querySelector("#withdrawBalance");
+
+  const chartEl =
+    document.querySelector("#chartTotal");
+
+
+  if (totalEl) {
+    totalEl.textContent =
+      formatMoney(earnings.total);
+  }
+
+  if (monthlyEl) {
+    monthlyEl.textContent =
+      formatMoney(earnings.monthly);
+  }
+
+  if (availableEl) {
+    availableEl.textContent =
+      formatMoney(earnings.available);
+  }
+
+  if (pendingEl) {
+    pendingEl.textContent =
+      formatMoney(earnings.pending);
+  }
+
+  if (withdrawEl) {
+    withdrawEl.textContent =
+      formatMoney(earnings.available);
+  }
+
+  if (chartEl) {
+    chartEl.textContent =
+      formatMoney(earnings.monthly);
+  }
+
+}
+
+
+/* =========================
+   EARNINGS BY BOOK
+========================= */
+
+function renderBookEarnings() {
+
+  const container =
+    document.querySelector("#bookEarnings");
+
+  if (!container) return;
+
+
+  const transactions =
+    getMoneyTransactions();
+
+
+  const books =
+    moneyGetData(MONEY_STORAGE.books);
+
+
+  const bookTotals = {};
+
+
+  transactions.forEach(transaction => {
+
+    const amount =
+      getTransactionAmount(transaction);
+
+    if (amount <= 0) return;
+
+
+    const bookId =
+      transaction.bookId ||
+      transaction.bookID ||
+      null;
+
+
+    const bookTitle =
+      transaction.bookTitle ||
+      transaction.title ||
+      transaction.book ||
+      null;
+
+
+    const book =
+      books.find(item =>
+        bookId &&
+        String(item.id) === String(bookId)
+      );
+
+
+    const title =
+      book?.title ||
+      bookTitle ||
+      "Unknown Book";
+
+
+    const author =
+      book?.author ||
+      transaction.author ||
+      "Novelora Author";
+
+
+    const key =
+      bookId
+        ? `id-${bookId}`
+        : `title-${title}`;
+
+
+    if (!bookTotals[key]) {
+
+      bookTotals[key] = {
+        title,
+        author,
+        earnings: 0
+      };
+
+    }
+
+
+    bookTotals[key].earnings += amount;
+
+  });
+
+
+  const results =
+    Object.values(bookTotals)
+      .sort((a, b) =>
+        b.earnings - a.earnings
+      );
+
+
+  if (!results.length) {
+
+    container.innerHTML = `
+      <div class="money-empty">
+
+        <div>♡</div>
+
+        <strong>No book earnings yet</strong>
+
+        <span>
+          Book revenue will appear here after readers unlock chapters.
+        </span>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    results.map(book => `
+
+      <div class="book-earning-row">
+
+        <div>
+
+          <div class="book-earning-title">
+            ${escapeMoneyHTML(book.title)}
+          </div>
+
+          <div class="book-earning-author">
+            ${escapeMoneyHTML(book.author)}
+          </div>
+
+        </div>
+
+        <div class="book-earning-value">
+          ${formatMoney(book.earnings)}
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+/* =========================
+   WITHDRAWAL HISTORY
+========================= */
+
+function renderWithdrawals() {
+
+  const container =
+    document.querySelector("#withdrawalHistory");
+
+  if (!container) return;
+
+
+  const finance =
+    moneyGetData(MONEY_STORAGE.finance) || {};
+
+  const withdrawals =
+    Array.isArray(finance.withdrawals)
+      ? finance.withdrawals
+      : [];
+
+
+  if (!withdrawals.length) {
+
+    container.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="table-empty">
+            No withdrawals yet.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    withdrawals.map(withdrawal => {
+
+      const date =
+        new Date(withdrawal.date);
+
+
+      const formattedDate =
+        Number.isNaN(date.getTime())
+          ? "—"
+          : date.toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+                year: "numeric"
+              }
+            );
+
+
+      return `
+        <tr>
+
+          <td>${formattedDate}</td>
+
+          <td>
+            <strong>
+              ${formatMoney(withdrawal.amount)}
+            </strong>
+          </td>
+
+          <td>
+            ${escapeMoneyHTML(withdrawal.method || "—")}
+          </td>
+
+          <td>
+            ${escapeMoneyHTML(withdrawal.bank || "—")}
+          </td>
+
+          <td>
+            <span class="status-pill">
+              ${escapeMoneyHTML(withdrawal.status || "Pending")}
+            </span>
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+}
+
+
+/* =========================
+   BANK METHOD
+========================= */
+
+function setupBankMethod() {
+
+  const inputs =
+    document.querySelectorAll(
+      'input[name="withdrawMethod"]'
+    );
+
+  const swiftField =
+    document.querySelector("#swiftField");
+
+  const achField =
+    document.querySelector("#achField");
+
+
+  function update() {
+
+    const selected =
+      document.querySelector(
+        'input[name="withdrawMethod"]:checked'
+      );
+
+
+    if (!selected) return;
+
+
+    if (selected.value === "SWIFT") {
+
+      swiftField?.classList.remove(
+        "hidden-field"
+      );
+
+      achField?.classList.add(
+        "hidden-field"
+      );
+
+    } else {
+
+      swiftField?.classList.add(
+        "hidden-field"
+      );
+
+      achField?.classList.remove(
+        "hidden-field"
+      );
+
+    }
+
+  }
+
+
+  inputs.forEach(input => {
+
+    input.addEventListener(
+      "change",
+      update
+    );
+
+  });
+
+
+  update();
+
+}
+
+
+/* =========================
+   SAVE PAYOUT ACCOUNT
+========================= */
+
+function setupBankForm() {
+
+  const form =
+    document.querySelector("#bankForm");
+
+  if (!form) return;
+
+
+  form.addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+
+      const accountName =
+        document.querySelector("#accountName")
+          ?.value.trim();
+
+      const bankName =
+        document.querySelector("#bankName")
+          ?.value.trim();
+
+      const accountNumber =
+        document.querySelector("#accountNumber")
+          ?.value.trim();
+
+      const swiftCode =
+        document.querySelector("#swiftCode")
+          ?.value.trim();
+
+      const routingNumber =
+        document.querySelector("#routingNumber")
+          ?.value.trim();
+
+      const bankCountry =
+        document.querySelector("#bankCountry")
+          ?.value.trim();
+
+
+      const method =
+        document.querySelector(
+          'input[name="withdrawMethod"]:checked'
+        )?.value || "SWIFT";
+
+
+      const message =
+        document.querySelector("#bankMessage");
+
+
+      if (
+        !accountName ||
+        !bankName ||
+        !accountNumber ||
+        !bankCountry
+      ) {
+
+        if (message) {
+
+          message.textContent =
+            "Please complete all required bank details.";
+
+          message.style.color =
+            "#ff6b9f";
+
+        }
+
+        return;
+
+      }
+
+
+      if (method === "SWIFT" && !swiftCode) {
+
+        if (message) {
+
+          message.textContent =
+            "Please enter your SWIFT / BIC code.";
+
+          message.style.color =
+            "#ff6b9f";
+
+        }
+
+        return;
+
+      }
+
+
+      if (
+        method === "ACH" &&
+        !routingNumber
+      ) {
+
+        if (message) {
+
+          message.textContent =
+            "Please enter your routing number.";
+
+          message.style.color =
+            "#ff6b9f";
+
+        }
+
+        return;
+
+      }
+
+
+      const finance =
+        moneyGetData(
+          MONEY_STORAGE.finance
+        ) || {};
+
+
+      finance.bank = {
+        accountName,
+        bankName,
+        accountNumber,
+        swiftCode,
+        routingNumber,
+        bankCountry,
+        method
+      };
+
+
+      moneySaveData(
+        MONEY_STORAGE.finance,
+        finance
+      );
+
+
+      if (message) {
+
+        message.textContent =
+          "Payout account saved successfully.";
+
+        message.style.color =
+          "#65d89a";
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================
+   WITHDRAW MONEY
+========================= */
+
+function setupWithdrawal() {
+
+  const form =
+    document.querySelector("#withdrawForm");
+
+  if (!form) return;
+
+
+  form.addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+
+      const amount =
+        Number(
+          document.querySelector("#withdrawAmount")
+            ?.value
+        );
+
+
+      const method =
+        document.querySelector(
+          'input[name="withdrawMethod"]:checked'
+        )?.value || "SWIFT";
+
+
+      const message =
+        document.querySelector(
+          "#withdrawMessage"
+        );
+
+
+      const finance =
+        moneyGetData(
+          MONEY_STORAGE.finance
+        ) || {};
+
+
+      const earnings =
+        calculateMoney();
+
+
+      if (!finance.bank) {
+
+        showWithdrawalMessage(
+          message,
+          "Please save a payout account before withdrawing.",
+          false
+        );
+
+        return;
+
+      }
+
+
+      if (!amount || amount < 10) {
+
+        showWithdrawalMessage(
+          message,
+          "The minimum withdrawal is $10.00.",
+          false
+        );
+
+        return;
+
+      }
+
+
+      if (amount > earnings.available) {
+
+        showWithdrawalMessage(
+          message,
+          "You do not have enough available earnings.",
+          false
+        );
+
+        return;
+
+      }
+
+
+      if (!Array.isArray(finance.withdrawals)) {
+        finance.withdrawals = [];
+      }
+
+
+      finance.withdrawals.unshift({
+
+        id:
+          "WD-" +
+          Date.now(),
+
+        date:
+          new Date().toISOString(),
+
+        amount,
+
+        method,
+
+        bank:
+          finance.bank.bankName,
+
+        status:
+          "Pending"
+
+      });
+
+
+      moneySaveData(
+        MONEY_STORAGE.finance,
+        finance
+      );
+
+
+      updateMoneyDashboard();
+
+      renderWithdrawals();
+
+
+      document.querySelector(
+        "#withdrawAmount"
+      ).value = "";
+
+
+      showWithdrawalMessage(
+        message,
+        `${formatMoney(amount)} withdrawal request submitted successfully.`,
+        true
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showWithdrawalMessage(
+  element,
+  message,
+  success
+) {
+
+  if (!element) return;
+
+  element.textContent = message;
+
+  element.style.color =
+    success
+      ? "#65d89a"
+      : "#ff6b9f";
+
+}
+
 
 /* =========================
    ESCAPE HTML
 ========================= */
 
-function escapeHTML(value) {
-  const div = document.createElement("div");
+function escapeMoneyHTML(value) {
 
-  div.textContent = value ?? "";
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    value ?? "";
 
   return div.innerHTML;
+
 }
 
-/* =========================
-   MOBILE SIDEBAR
-========================= */
-
-function setupMobileMenu() {
-  const button =
-    document.querySelector(
-      "#mobileMenuButton"
-    );
-
-  const sidebar =
-    document.querySelector(".sidebar");
-
-  if (!button || !sidebar) return;
-
-  button.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-  });
-
-  document
-    .querySelectorAll(".nav-link")
-    .forEach(link => {
-      link.addEventListener("click", () => {
-        sidebar.classList.remove("open");
-      });
-    });
-}
-
-/* =========================
-   QUICK ACTIONS
-========================= */
-
-function setupQuickActions() {
-  const addBook =
-    document.querySelector("#addBookButton");
-
-  const addChapter =
-    document.querySelector("#addChapterButton");
-
-  const notification =
-    document.querySelector(
-      "#notificationButton"
-    );
-
-  const promotion =
-    document.querySelector(
-      "#promotionButton"
-    );
-
-  if (addBook) {
-    addBook.addEventListener("click", () => {
-      window.location.href = "books.html";
-    });
-  }
-
-  if (addChapter) {
-    addChapter.addEventListener("click", () => {
-      window.location.href = "chapters.html";
-    });
-  }
-
-  if (notification) {
-    notification.addEventListener("click", () => {
-      window.location.href =
-        "notifications.html";
-    });
-  }
-
-  if (promotion) {
-    promotion.addEventListener("click", () => {
-      window.location.href =
-        "promotions.html";
-    });
-  }
-}
-
-/* =========================
-   DASHBOARD REFRESH
-========================= */
-
-function refreshDashboard() {
-  updateStats();
-  renderRecentBooks();
-  renderRecentActivity();
-  updateRevenueOverview();
-  updateCoinsDistributed();
-  updateModeration();
-}
 
 /* =========================
    INITIALIZE
@@ -539,25 +916,18 @@ function refreshDashboard() {
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-    setupMobileMenu();
-    setupQuickActions();
-    refreshDashboard();
+
+    updateMoneyDashboard();
+
+    renderBookEarnings();
+
+    renderWithdrawals();
+
+    setupBankMethod();
+
+    setupBankForm();
+
+    setupWithdrawal();
+
   }
 );
-
-/*
-   Allow other admin pages to refresh
-   the dashboard after changing data.
-*/
-
-window.NoveloraAdmin = {
-  refreshDashboard,
-  addActivity,
-  getBooks,
-  getChapters,
-  getReaders,
-  getAuthors,
-  getTransactions,
-  getUnlocks,
-  calculateStats
-};
