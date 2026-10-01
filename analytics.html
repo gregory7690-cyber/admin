@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics — Novelora Admin</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .analytics-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .analytics-card span {
+      display: block;
+      color: #aaa;
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .analytics-card strong {
+      display: block;
+      font-size: 30px;
+      color: #fff;
+    }
+
+    .analytics-card p {
+      color: #888;
+      margin: 8px 0 0;
+      font-size: 13px;
+    }
+
+    .analytics-layout {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .analytics-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .analytics-panel h2 {
+      margin: 0 0 5px;
+      color: #fff;
+    }
+
+    .analytics-panel > p {
+      color: #888;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .metric-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .metric-row:last-child {
+      border-bottom: none;
+    }
+
+    .metric-row span {
+      color: #bbb;
+    }
+
+    .metric-row strong {
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .empty-analytics {
+      text-align: center;
+      padding: 55px 20px;
+      color: #888;
+    }
+
+    .empty-analytics .symbol {
+      font-size: 42px;
+      color: #e88aaa;
+      margin-bottom: 12px;
+    }
+
+    .empty-analytics h3 {
+      color: #fff;
+      margin: 0 0 8px;
+    }
+
+    .book-analytics {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .book-analytics-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 20px;
+      align-items: center;
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .book-analytics-row strong {
+      color: #fff;
+    }
+
+    .book-analytics-row span {
+      color: #999;
+      font-size: 13px;
+    }
+
+    @media (max-width: 1000px) {
+      .analytics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .analytics-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .analytics-panel {
+        padding: 18px;
+      }
+
+      .book-analytics-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="admin-app">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+
+    <div class="admin-brand">
+      <div class="brand-name">NOVEL<span>ORA</span></div>
+      <div class="brand-label">ADMIN PANEL</div>
+    </div>
+
+    <nav class="admin-navigation">
+
+      <a href="index.html" class="nav-item">
+        <span>⌂</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="books.html" class="nav-item">
+        <span>▣</span>
+        <span>Books</span>
+      </a>
+
+      <a href="chapters.html" class="nav-item">
+        <span>▤</span>
+        <span>Chapters</span>
+      </a>
+
+      <a href="readers.html" class="nav-item">
+        <span>♙</span>
+        <span>Readers</span>
+      </a>
+
+      <a href="authors.html" class="nav-item">
+        <span>✎</span>
+        <span>Authors</span>
+      </a>
+
+      <a href="community.html" class="nav-item">
+        <span>♡</span>
+        <span>Community</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="notifications.html" class="nav-item">
+        <span>♢</span>
+        <span>Notifications</span>
+      </a>
+
+      <a href="money.html" class="nav-item">
+        <span>₵</span>
+        <span>Money</span>
+      </a>
+
+      <a href="analytics.html" class="nav-item active">
+        <span>↗</span>
+        <span>Analytics</span>
+      </a>
+
+      <a href="rewards.html" class="nav-item">
+        <span>✦</span>
+        <span>Rewards</span>
+      </a>
+
+      <a href="promotions.html" class="nav-item">
+        <span>♢</span>
+        <span>Promotions</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="settings.html" class="nav-item">
+        <span>⚙</span>
+        <span>Settings</span>
+      </a>
+
+      <a href="security.html" class="nav-item">
+        <span>♙</span>
+        <span>Security</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">N</div>
+
+      <div>
+        <strong>Novelora Admin</strong>
+        <small>Administrator</small>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+
+      <div>
+        <div class="page-kicker">NOVELORA INSIGHTS</div>
+
+        <h1>Analytics 📊</h1>
+
+        <p>
+          Understand how readers and books are performing across Novelora.
+        </p>
+      </div>
+
+      <div class="topbar-actions">
+
+        <button
+          class="icon-button"
+          title="Notifications"
+          onclick="location.href='notifications.html'"
+        >
+          ♢
+        </button>
+
+        <div class="admin-user">
+
+          <div class="admin-user-avatar">N</div>
+
+          <div>
+            <strong>Admin</strong>
+            <small>Administrator</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- MAIN STATISTICS -->
+    <section class="analytics-grid">
+
+      <div class="analytics-card">
+        <span>BOOKS</span>
+        <strong id="analyticsBooks">0</strong>
+        <p>Total books added</p>
+      </div>
+
+      <div class="analytics-card">
+        <span>CHAPTERS</span>
+        <strong id="analyticsChapters">0</strong>
+        <p>Total chapters created</p>
+      </div>
+
+      <div class="analytics-card">
+        <span>READERS</span>
+        <strong id="analyticsReaders">0</strong>
+        <p>Registered readers</p>
+      </div>
+
+      <div class="analytics-card">
+        <span>REVENUE</span>
+        <strong id="analyticsRevenue">$0.00</strong>
+        <p>Recorded platform revenue</p>
+      </div>
+
+    </section>
+
+
+    <!-- SECONDARY METRICS -->
+    <section class="analytics-layout">
+
+      <div class="analytics-panel">
+
+        <h2>Platform Overview</h2>
+
+        <p>
+          Current activity recorded by Novelora.
+        </p>
+
+        <div class="metric-list">
+
+          <div class="metric-row">
+            <span>Published Books</span>
+            <strong id="publishedBooks">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Published Chapters</span>
+            <strong id="publishedChapters">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Free Books</span>
+            <strong id="freeBooks">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Featured Books</span>
+            <strong id="featuredBooks">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Active Authors</span>
+            <strong id="activeAuthors">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Coins Spent</span>
+            <strong id="coinsSpent">0</strong>
+          </div>
+
+          <div class="metric-row">
+            <span>Chapter Unlocks</span>
+            <strong id="chapterUnlocks">0</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="analytics-panel">
+
+        <h2>Reader Activity</h2>
+
+        <p>
+          Reader activity will appear here as Novelora receives real usage data.
+        </p>
+
+        <div class="empty-analytics">
+
+          <div class="symbol">♡</div>
+
+          <h3 id="activityTitle">
+            No reader activity yet
+          </h3>
+
+          <p>
+            Reads, unlocks and engagement data will appear once real readers begin using Novelora.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- BOOK PERFORMANCE -->
+    <section class="analytics-panel">
+
+      <h2>Book Performance</h2>
+
+      <p>
+        Overview of books currently stored in the admin system.
+      </p>
+
+      <div id="bookAnalytics" class="book-analytics">
+
+        <div class="empty-analytics">
+
+          <div class="symbol">📚</div>
+
+          <h3>No books yet</h3>
+
+          <p>
+            Book performance data will appear here after books are added.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+
+const BOOKS_KEY = "noveloraAdminBooks";
+const CHAPTERS_KEY = "noveloraAdminChapters";
+const READERS_KEY = "noveloraReaders";
+const AUTHORS_KEY = "noveloraAuthors";
+const TRANSACTIONS_KEY = "noveloraTransactions";
+const UNLOCKS_KEY = "noveloraChapterUnlocks";
+
+
+function getData(key) {
+
+  try {
+
+    const data = localStorage.getItem(key);
+
+    return data ? JSON.parse(data) : [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function money(value) {
+
+  return `$${Number(value || 0).toFixed(2)}`;
+
+}
+
+
+function updateAnalytics() {
+
+  const books = getData(BOOKS_KEY);
+  const chapters = getData(CHAPTERS_KEY);
+  const readers = getData(READERS_KEY);
+  const authors = getData(AUTHORS_KEY);
+  const transactions = getData(TRANSACTIONS_KEY);
+  const unlocks = getData(UNLOCKS_KEY);
+
+
+  const revenue = transactions.reduce(
+    (total, transaction) =>
+      total + Number(
+        transaction.amount ||
+        transaction.revenue ||
+        transaction.total ||
+        transaction.price ||
+        0
+      ),
+    0
+  );
+
+
+  const coinsSpent = unlocks.reduce(
+    (total, unlock) =>
+      total + Number(unlock.coins || 0),
+    0
+  );
+
+
+  document.querySelector("#analyticsBooks").textContent =
+    books.length;
+
+
+  document.querySelector("#analyticsChapters").textContent =
+    chapters.length;
+
+
+  document.querySelector("#analyticsReaders").textContent =
+    readers.length;
+
+
+  document.querySelector("#analyticsRevenue").textContent =
+    money(revenue);
+
+
+  document.querySelector("#publishedBooks").textContent =
+    books.filter(book => book.published).length;
+
+
+  document.querySelector("#publishedChapters").textContent =
+    chapters.filter(chapter => chapter.published).length;
+
+
+  document.querySelector("#freeBooks").textContent =
+    books.filter(book => book.freeBook).length;
+
+
+  document.querySelector("#featuredBooks").textContent =
+    books.filter(book => book.featured).length;
+
+
+  document.querySelector("#activeAuthors").textContent =
+    authors.filter(author =>
+      author.status === "active" ||
+      author.status === "approved"
+    ).length;
+
+
+  document.querySelector("#coinsSpent").textContent =
+    coinsSpent.toLocaleString();
+
+
+  document.querySelector("#chapterUnlocks").textContent =
+    unlocks.length;
+
+
+  renderBooks(books, unlocks, transactions);
+
+}
+
+
+function renderBooks(books, unlocks, transactions) {
+
+  const container =
+    document.querySelector("#bookAnalytics");
+
+
+  if (!books.length) {
+
+    container.innerHTML = `
+      <div class="empty-analytics">
+
+        <div class="symbol">📚</div>
+
+        <h3>No books yet</h3>
+
+        <p>
+          Book performance data will appear here after books are added.
+        </p>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = books.map(book => {
+
+    const bookUnlocks = unlocks.filter(unlock =>
+      String(unlock.bookId || unlock.bookID || "") === String(book.id)
+    );
+
+
+    const bookTransactions = transactions.filter(transaction =>
+      String(
+        transaction.bookId ||
+        transaction.bookID ||
+        ""
+      ) === String(book.id)
+    );
+
+
+    const bookRevenue = bookTransactions.reduce(
+      (total, transaction) =>
+        total + Number(
+          transaction.amount ||
+          transaction.revenue ||
+          transaction.total ||
+          transaction.price ||
+          0
+        ),
+      0
+    );
+
+
+    return `
+
+      <div class="book-analytics-row">
+
+        <strong>
+          ${escapeHTML(book.title || "Untitled")}
+        </strong>
+
+        <span>
+          ${bookUnlocks.length} unlocks
+        </span>
+
+        <span>
+          ${money(bookRevenue)}
+        </span>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+}
+
+
+function escapeHTML(value) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent =
+    value ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateAnalytics
+);
+
+</script>
+
+</body>
+</html>
