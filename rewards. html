@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rewards — Novelora Admin</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .rewards-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .reward-stat {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .reward-stat span {
+      display: block;
+      color: #aaa;
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .reward-stat strong {
+      display: block;
+      color: #fff;
+      font-size: 28px;
+    }
+
+    .reward-stat p {
+      color: #888;
+      font-size: 13px;
+      margin: 7px 0 0;
+    }
+
+    .rewards-layout {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .reward-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .reward-panel h2 {
+      color: #fff;
+      margin: 0 0 6px;
+    }
+
+    .reward-panel > p {
+      color: #888;
+      font-size: 13px;
+      margin: 0 0 22px;
+    }
+
+    .reward-row {
+      display: grid;
+      grid-template-columns: 1fr 100px 80px;
+      gap: 15px;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .reward-row:last-child {
+      border-bottom: none;
+    }
+
+    .reward-info strong {
+      display: block;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .reward-info span {
+      color: #888;
+      font-size: 12px;
+    }
+
+    .reward-coins {
+      color: #f29ab7;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .reward-status {
+      color: #8fd8a7;
+      font-size: 12px;
+      text-align: right;
+    }
+
+    .settings-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #ccc;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+      color: #fff;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: rgba(242,154,183,0.7);
+    }
+
+    .save-button {
+      border: none;
+      border-radius: 11px;
+      padding: 13px 18px;
+      background: linear-gradient(135deg, #ed82a8, #b85c89);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .save-button:hover {
+      opacity: 0.9;
+    }
+
+    .checkin-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .checkin-day {
+      padding: 15px 8px;
+      text-align: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .checkin-day strong {
+      display: block;
+      color: #fff;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .checkin-day span {
+      color: #f29ab7;
+      font-weight: 700;
+    }
+
+    .reward-note {
+      padding: 15px;
+      border-radius: 12px;
+      background: rgba(242,154,183,0.07);
+      border: 1px solid rgba(242,154,183,0.12);
+      color: #aaa;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 18px;
+    }
+
+    .empty-rewards {
+      text-align: center;
+      padding: 45px 20px;
+      color: #888;
+    }
+
+    .empty-rewards .symbol {
+      font-size: 40px;
+      color: #e88aaa;
+      margin-bottom: 10px;
+    }
+
+    .empty-rewards h3 {
+      color: #fff;
+      margin: 0 0 8px;
+    }
+
+    @media (max-width: 1000px) {
+      .rewards-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .rewards-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .rewards-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .reward-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .reward-status {
+        display: none;
+      }
+
+      .checkin-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="admin-app">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+
+    <div class="admin-brand">
+      <div class="brand-name">NOVEL<span>ORA</span></div>
+      <div class="brand-label">ADMIN PANEL</div>
+    </div>
+
+    <nav class="admin-navigation">
+
+      <a href="index.html" class="nav-item">
+        <span>⌂</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="books.html" class="nav-item">
+        <span>▣</span>
+        <span>Books</span>
+      </a>
+
+      <a href="chapters.html" class="nav-item">
+        <span>▤</span>
+        <span>Chapters</span>
+      </a>
+
+      <a href="readers.html" class="nav-item">
+        <span>♙</span>
+        <span>Readers</span>
+      </a>
+
+      <a href="authors.html" class="nav-item">
+        <span>✎</span>
+        <span>Authors</span>
+      </a>
+
+      <a href="community.html" class="nav-item">
+        <span>♡</span>
+        <span>Community</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="notifications.html" class="nav-item">
+        <span>♢</span>
+        <span>Notifications</span>
+      </a>
+
+      <a href="money.html" class="nav-item">
+        <span>₵</span>
+        <span>Money</span>
+      </a>
+
+      <a href="analytics.html" class="nav-item">
+        <span>↗</span>
+        <span>Analytics</span>
+      </a>
+
+      <a href="rewards.html" class="nav-item active">
+        <span>✦</span>
+        <span>Rewards</span>
+      </a>
+
+      <a href="promotions.html" class="nav-item">
+        <span>♢</span>
+        <span>Promotions</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="settings.html" class="nav-item">
+        <span>⚙</span>
+        <span>Settings</span>
+      </a>
+
+      <a href="security.html" class="nav-item">
+        <span>♙</span>
+        <span>Security</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">N</div>
+
+      <div>
+        <strong>Novelora Admin</strong>
+        <small>Administrator</small>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+
+      <div>
+        <div class="page-kicker">NOVELORA REWARDS</div>
+
+        <h1>Rewards 🎁</h1>
+
+        <p>
+          Manage the free coins and reward programs available to readers.
+        </p>
+      </div>
+
+      <div class="topbar-actions">
+
+        <button
+          class="icon-button"
+          title="Notifications"
+          onclick="location.href='notifications.html'"
+        >
+          ♢
+        </button>
+
+        <div class="admin-user">
+
+          <div class="admin-user-avatar">N</div>
+
+          <div>
+            <strong>Admin</strong>
+            <small>Administrator</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- STATS -->
+    <section class="rewards-stats">
+
+      <div class="reward-stat">
+        <span>COINS DISTRIBUTED</span>
+        <strong id="coinsDistributed">0</strong>
+        <p>Total recorded reward coins</p>
+      </div>
+
+      <div class="reward-stat">
+        <span>REWARD CLAIMS</span>
+        <strong id="rewardClaims">0</strong>
+        <p>Recorded reward events</p>
+      </div>
+
+      <div class="reward-stat">
+        <span>DAILY LOGIN</span>
+        <strong id="dailyLoginReward">2</strong>
+        <p>Coins per daily login</p>
+      </div>
+
+      <div class="reward-stat">
+        <span>NEW USER BONUS</span>
+        <strong id="newUserBonus">20</strong>
+        <p>Coins for new readers</p>
+      </div>
+
+    </section>
+
+
+    <section class="rewards-layout">
+
+      <!-- REWARD PROGRAMS -->
+      <div class="reward-panel">
+
+        <h2>Reward Programs</h2>
+
+        <p>
+          Current Novelora reader reward structure.
+        </p>
+
+        <div class="reward-row">
+
+          <div class="reward-info">
+            <strong>Daily Login</strong>
+            <span>Reward readers for returning each day.</span>
+          </div>
+
+          <div class="reward-coins">2 coins</div>
+
+          <div class="reward-status">Active</div>
+
+        </div>
+
+        <div class="reward-row">
+
+          <div class="reward-info">
+            <strong>Rewarded Ad</strong>
+            <span>Coins after a completed rewarded advertisement.</span>
+          </div>
+
+          <div class="reward-coins">2 coins</div>
+
+          <div class="reward-status">Active</div>
+
+        </div>
+
+        <div class="reward-row">
+
+          <div class="reward-info">
+            <strong>Share to Earn</strong>
+            <span>Reward genuine sharing activity.</span>
+          </div>
+
+          <div class="reward-coins">2 coins</div>
+
+          <div class="reward-status">Active</div>
+
+        </div>
+
+        <div class="reward-row">
+
+          <div class="reward-info">
+            <strong>New Reader Bonus</strong>
+            <span>One-time welcome reward for a new reader.</span>
+          </div>
+
+          <div class="reward-coins">20 coins</div>
+
+          <div class="reward-status">Active</div>
+
+        </div>
+
+      </div>
+
+
+      <!-- SETTINGS -->
+      <div class="reward-panel">
+
+        <h2>Reward Settings</h2>
+
+        <p>
+          Adjust reward values before the real reward system goes live.
+        </p>
+
+        <form id="rewardSettingsForm" class="settings-form">
+
+          <div class="form-group">
+            <label for="dailyLogin">
+              Daily Login Coins
+            </label>
+
+            <input
+              id="dailyLogin"
+              type="number"
+              min="0"
+              value="2"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="adReward">
+              Rewarded Ad Coins
+            </label>
+
+            <input
+              id="adReward"
+              type="number"
+              min="0"
+              value="2"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="shareReward">
+              Share Reward Coins
+            </label>
+
+            <input
+              id="shareReward"
+              type="number"
+              min="0"
+              value="2"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="newUser">
+              New User Bonus
+            </label>
+
+            <input
+              id="newUser"
+              type="number"
+              min="0"
+              value="20"
+              required
+            >
+          </div>
+
+          <button
+            type="submit"
+            class="save-button"
+          >
+            Save Reward Settings
+          </button>
+
+        </form>
+
+        <div
+          id="settingsMessage"
+          class="reward-note"
+          style="display:none;"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- 7 DAY CHECK-IN -->
+    <section class="reward-panel" style="margin-bottom:24px;">
+
+      <h2>7-Day Check-In</h2>
+
+      <p>
+        Readers receive a reward for maintaining their daily check-in.
+      </p>
+
+      <div class="checkin-grid">
+
+        <div class="checkin-day">
+          <strong>Day 1</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 2</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 3</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 4</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 5</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 6</strong>
+          <span>2 🪙</span>
+        </div>
+
+        <div class="checkin-day">
+          <strong>Day 7</strong>
+          <span>5 🪙</span>
+        </div>
+
+      </div>
+
+      <div class="reward-note">
+        The check-in cycle resets after Day 7. The actual reader-side
+        claiming system will be connected when the reader reward system
+        is implemented.
+      </div>
+
+    </section>
+
+
+    <!-- REWARD HISTORY -->
+    <section class="reward-panel">
+
+      <h2>Reward History</h2>
+
+      <p>
+        Real reward activity will appear here once readers begin claiming rewards.
+      </p>
+
+      <div id="rewardHistory">
+
+        <div class="empty-rewards">
+
+          <div class="symbol">✦</div>
+
+          <h3>No reward activity yet</h3>
+
+          <p>
+            Reward claims and coin distributions will appear here.
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+
+const REWARD_SETTINGS_KEY =
+  "noveloraRewardSettings";
+
+const REWARD_HISTORY_KEY =
+  "noveloraRewardHistory";
+
+
+function getData(key) {
+
+  try {
+
+    const data =
+      localStorage.getItem(key);
+
+    return data
+      ? JSON.parse(data)
+      : [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function saveData(key, data) {
+
+  localStorage.setItem(
+    key,
+    JSON.stringify(data)
+  );
+
+}
+
+
+function getSettings() {
+
+  try {
+
+    const data =
+      localStorage.getItem(
+        REWARD_SETTINGS_KEY
+      );
+
+    return data
+      ? JSON.parse(data)
+      : {
+          dailyLogin: 2,
+          adReward: 2,
+          shareReward: 2,
+          newUser: 20
+        };
+
+  } catch {
+
+    return {
+      dailyLogin: 2,
+      adReward: 2,
+      shareReward: 2,
+      newUser: 20
+    };
+
+  }
+
+}
+
+
+function updateStats() {
+
+  const settings =
+    getSettings();
+
+  const history =
+    getData(REWARD_HISTORY_KEY);
+
+
+  const coins =
+    history.reduce(
+      (total, reward) =>
+        total +
+        Number(reward.coins || 0),
+      0
+    );
+
+
+  document.querySelector(
+    "#coinsDistributed"
+  ).textContent =
+    coins.toLocaleString();
+
+
+  document.querySelector(
+    "#rewardClaims"
+  ).textContent =
+    history.length;
+
+
+  document.querySelector(
+    "#dailyLoginReward"
+  ).textContent =
+    settings.dailyLogin;
+
+
+  document.querySelector(
+    "#newUserBonus"
+  ).textContent =
+    settings.newUser;
+
+
+  document.querySelector(
+    "#dailyLogin"
+  ).value =
+    settings.dailyLogin;
+
+
+  document.querySelector(
+    "#adReward"
+  ).value =
+    settings.adReward;
+
+
+  document.querySelector(
+    "#shareReward"
+  ).value =
+    settings.shareReward;
+
+
+  document.querySelector(
+    "#newUser"
+  ).value =
+    settings.newUser;
+
+
+  renderHistory(history);
+
+}
+
+
+function renderHistory(history) {
+
+  const container =
+    document.querySelector(
+      "#rewardHistory"
+    );
+
+
+  if (!history.length) {
+
+    container.innerHTML = `
+      <div class="empty-rewards">
+
+        <div class="symbol">✦</div>
+
+        <h3>No reward activity yet</h3>
+
+        <p>
+          Reward claims and coin distributions will appear here.
+        </p>
+
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML =
+    history
+      .slice(0, 20)
+      .map(reward => `
+
+        <div class="reward-row">
+
+          <div class="reward-info">
+
+            <strong>
+              ${escapeHTML(
+                reward.type ||
+                "Reward"
+              )}
+            </strong>
+
+            <span>
+              ${reward.date
+                ? new Date(
+                    reward.date
+                  ).toLocaleString()
+                : "Unknown date"}
+            </span>
+
+          </div>
+
+          <div class="reward-coins">
+            +${Number(
+              reward.coins || 0
+            )} coins
+          </div>
+
+          <div class="reward-status">
+            ${escapeHTML(
+              reward.status ||
+              "Completed"
+            )}
+          </div>
+
+        </div>
+
+      `)
+      .join("");
+
+}
+
+
+function escapeHTML(value) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.textContent =
+    value ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+document
+  .querySelector(
+    "#rewardSettingsForm"
+  )
+  .addEventListener(
+    "submit",
+    event => {
+
+      event.preventDefault();
+
+
+      const settings = {
+
+        dailyLogin:
+          Number(
+            document.querySelector(
+              "#dailyLogin"
+            ).value
+          ),
+
+        adReward:
+          Number(
+            document.querySelector(
+              "#adReward"
+            ).value
+          ),
+
+        shareReward:
+          Number(
+            document.querySelector(
+              "#shareReward"
+            ).value
+          ),
+
+        newUser:
+          Number(
+            document.querySelector(
+              "#newUser"
+            ).value
+          )
+
+      };
+
+
+      saveData(
+        REWARD_SETTINGS_KEY,
+        settings
+      );
+
+
+      const message =
+        document.querySelector(
+          "#settingsMessage"
+        );
+
+
+      message.textContent =
+        "Reward settings saved successfully.";
+
+
+      message.style.display =
+        "block";
+
+
+      updateStats();
+
+    }
+  );
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  updateStats
+);
+
+</script>
+
+</body>
+</html>
