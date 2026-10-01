@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapters — Novelora Admin</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#160b17;
+  color:#fff;
+  min-height:100vh;
+}
+
+button,input,textarea,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.admin-layout{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar{
+  width:250px;
+  background:#100811;
+  border-right:1px solid rgba(255,255,255,.08);
+  padding:24px 16px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  overflow-y:auto;
+  z-index:20;
+}
+
+.admin-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 10px 28px;
+}
+
+.admin-brand-mark{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#ff4fa3,#9f3dff);
+  font-weight:900;
+}
+
+.admin-brand h2{
+  font-size:21px;
+}
+
+.admin-brand span{
+  display:block;
+  color:#aaa;
+  font-size:11px;
+  margin-top:2px;
+}
+
+.admin-navigation{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.nav-item{
+  color:#aaa;
+  text-decoration:none;
+  padding:12px 13px;
+  border-radius:11px;
+  font-size:14px;
+  transition:.2s;
+}
+
+.nav-item:hover,
+.nav-item.active{
+  color:#fff;
+  background:rgba(255,79,163,.12);
+}
+
+.nav-item.active{
+  border:1px solid rgba(255,79,163,.2);
+}
+
+.nav-divider{
+  height:1px;
+  background:rgba(255,255,255,.07);
+  margin:12px 4px;
+}
+
+/* MAIN */
+.admin-main{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  padding:28px;
+}
+
+.admin-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  margin-bottom:28px;
+}
+
+.page-title h1{
+  font-size:30px;
+  margin-bottom:6px;
+}
+
+.page-title p{
+  color:#999;
+  font-size:14px;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:none;
+  border-radius:11px;
+  padding:11px 16px;
+  color:#fff;
+  background:#29202c;
+}
+
+.btn:hover{
+  background:#352739;
+}
+
+.btn-primary{
+  background:linear-gradient(135deg,#ff4fa3,#b43cff);
+}
+
+.btn-primary:hover{
+  opacity:.9;
+}
+
+.btn-danger{
+  background:rgba(255,70,90,.14);
+  color:#ff8295;
+}
+
+.btn-success{
+  background:rgba(60,220,145,.13);
+  color:#62e9a5;
+}
+
+/* STATS */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.stat-card{
+  background:#201321;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  padding:20px;
+}
+
+.stat-card small{
+  color:#999;
+  font-size:12px;
+}
+
+.stat-card strong{
+  display:block;
+  font-size:28px;
+  margin-top:10px;
+}
+
+/* PANEL */
+.panel{
+  background:#201321;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.panel-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.panel-header h2{
+  font-size:18px;
+}
+
+.panel-header p{
+  color:#888;
+  font-size:12px;
+  margin-top:5px;
+}
+
+/* FILTERS */
+.filters{
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr 1fr;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.input,
+.select,
+.textarea{
+  width:100%;
+  background:#130d15;
+  border:1px solid rgba(255,255,255,.09);
+  color:#fff;
+  border-radius:10px;
+  padding:12px 13px;
+  outline:none;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus{
+  border-color:#ff4fa3;
+}
+
+.textarea{
+  min-height:180px;
+  resize:vertical;
+}
+
+/* TABLE */
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:900px;
+}
+
+th{
+  text-align:left;
+  color:#888;
+  font-size:11px;
+  font-weight:600;
+  padding:13px;
+  border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+td{
+  padding:14px 13px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  font-size:13px;
+  color:#ddd;
+}
+
+tr:hover td{
+  background:rgba(255,255,255,.015);
+}
+
+.chapter-title{
+  font-weight:700;
+  color:#fff;
+}
+
+.chapter-sub{
+  color:#777;
+  font-size:11px;
+  margin-top:4px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:10px;
+}
+
+.badge-published{
+  background:rgba(55,220,140,.12);
+  color:#62e9a5;
+}
+
+.badge-draft{
+  background:rgba(255,196,75,.12);
+  color:#ffd166;
+}
+
+.badge-free{
+  background:rgba(90,160,255,.12);
+  color:#78b4ff;
+}
+
+.badge-paid{
+  background:rgba(255,79,163,.12);
+  color:#ff75b7;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.action-btn{
+  border:1px solid rgba(255,255,255,.08);
+  background:#2b202e;
+  color:#ddd;
+  border-radius:8px;
+  padding:7px 9px;
+  font-size:11px;
+}
+
+.action-btn:hover{
+  background:#392b3d;
+}
+
+.empty{
+  text-align:center;
+  padding:45px 20px;
+  color:#777;
+}
+
+.empty strong{
+  display:block;
+  color:#bbb;
+  margin-bottom:6px;
+}
+
+/* MODAL */
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:min(850px,100%);
+  max-height:92vh;
+  overflow-y:auto;
+  background:#1d121f;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:20px;
+  padding:24px;
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:22px;
+}
+
+.close-btn{
+  width:36px;
+  height:36px;
+  border:none;
+  border-radius:10px;
+  background:#2b202e;
+  color:#fff;
+  font-size:18px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.form-group{
+  margin-bottom:16px;
+}
+
+.form-group.full{
+  grid-column:1/-1;
+}
+
+.form-group label{
+  display:block;
+  color:#aaa;
+  font-size:12px;
+  margin-bottom:7px;
+}
+
+.checkbox-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:#130d15;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:10px;
+  padding:12px;
+}
+
+.checkbox-row input{
+  accent-color:#ff4fa3;
+}
+
+.form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:20px;
+}
+
+/* READER */
+.reader-box{
+  background:#130d15;
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:12px;
+  padding:18px;
+  white-space:pre-wrap;
+  line-height:1.8;
+  color:#ddd;
+  max-height:420px;
+  overflow:auto;
+}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .filters{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:800px){
+  .admin-sidebar{
+    width:220px;
+  }
+
+  .admin-main{
+    margin-left:220px;
+    width:calc(100% - 220px);
+    padding:20px;
+  }
+}
+
+@media(max-width:650px){
+  .admin-sidebar{
+    position:static;
+    width:100%;
+    height:auto;
+  }
+
+  .admin-layout{
+    display:block;
+  }
+
+  .admin-main{
+    margin-left:0;
+    width:100%;
+    padding:15px;
+  }
+
+  .stats-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .filters{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-group.full{
+    grid-column:auto;
+  }
+
+  .admin-topbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <aside class="admin-sidebar">
+
+    <div class="admin-brand">
+      <div class="admin-brand-mark">N</div>
+      <div>
+        <h2>Novelora</h2>
+        <span>Admin Panel</span>
+      </div>
+    </div>
+
+    <nav class="admin-navigation">
+
+      <a class="nav-item" href="index.html">Dashboard</a>
+      <a class="nav-item" href="books.html">Books</a>
+      <a class="nav-item active" href="chapters.html">Chapters</a>
+      <a class="nav-item" href="readers.html">Readers</a>
+      <a class="nav-item" href="authors.html">Authors</a>
+      <a class="nav-item" href="community.html">Community</a>
+
+      <div class="nav-divider"></div>
+
+      <a class="nav-item" href="notifications.html">Notifications</a>
+      <a class="nav-item" href="money.html">Money</a>
+      <a class="nav-item" href="analytics.html">Analytics</a>
+      <a class="nav-item" href="rewards.html">Rewards</a>
+      <a class="nav-item" href="promotions.html">Promotions</a>
+
+      <div class="nav-divider"></div>
+
+      <a class="nav-item" href="settings.html">Settings</a>
+      <a class="nav-item" href="security.html">Security</a>
+
+    </nav>
+  </aside>
+
+
+  <main class="admin-main">
+
+    <div class="admin-topbar">
+
+      <div class="page-title">
+        <h1>Chapters</h1>
+        <p>Create, publish and manage chapters across Novelora.</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn" onclick="refreshPage()">Refresh</button>
+        <button class="btn btn-primary" onclick="openChapterModal()">＋ Add Chapter</button>
+      </div>
+
+    </div>
+
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <small>Total Chapters</small>
+        <strong id="totalChapters">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <small>Published</small>
+        <strong id="publishedChapters">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <small>Drafts</small>
+        <strong id="draftChapters">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <small>Paid Chapters</small>
+        <strong id="paidChapters">0</strong>
+      </div>
+
+    </section>
+
+
+    <section class="panel">
+
+      <div class="panel-header">
+        <div>
+          <h2>Chapter Library</h2>
+          <p>Manage chapters belonging to your published and draft books.</p>
+        </div>
+      </div>
+
+      <div class="filters">
+
+        <input
+          id="searchInput"
+          class="input"
+          type="text"
+          placeholder="Search chapter title or book..."
+          oninput="renderChapters()"
+        >
+
+        <select id="bookFilter" class="select" onchange="renderChapters()">
+          <option value="">All Books</option>
+        </select>
+
+        <select id="statusFilter" class="select" onchange="renderChapters()">
+          <option value="">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+        </select>
+
+        <select id="accessFilter" class="select" onchange="renderChapters()">
+          <option value="">All Access</option>
+          <option value="free">Free</option>
+          <option value="paid">Paid</option>
+        </select>
+
+      </div>
+
+
+      <div class="table-wrap">
+        <table>
+
+          <thead>
+            <tr>
+              <th>Chapter</th>
+              <th>Book</th>
+              <th>Status</th>
+              <th>Access</th>
+              <th>Price</th>
+              <th>Words</th>
+              <th>Updated</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="chapterTable"></tbody>
+
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal" id="chapterModal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <div>
+        <h2 id="modalTitle">Add New Chapter</h2>
+        <p style="color:#888;font-size:12px;margin-top:5px;">
+          Create or edit a chapter for one of your books.
+        </p>
+      </div>
+
+      <button class="close-btn" onclick="closeChapterModal()">×</button>
+    </div>
+
+
+    <form id="chapterForm">
+
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Book *</label>
+
+          <select id="chapterBook" class="select" required>
+            <option value="">Select a book</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label>Chapter Number *</label>
+
+          <input
+            id="chapterNumber"
+            class="input"
+            type="number"
+            min="1"
+            placeholder="e.g. 1"
+            required
+          >
+        </div>
+
+
+        <div class="form-group">
+          <label>Chapter Title *</label>
+
+          <input
+            id="chapterTitle"
+            class="input"
+            type="text"
+            placeholder="e.g. The Beginning"
+            required
+          >
+        </div>
+
+
+        <div class="form-group">
+          <label>Status</label>
+
+          <select id="chapterStatus" class="select">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label>Access</label>
+
+          <select id="chapterAccess" class="select" onchange="togglePriceField()">
+            <option value="paid">Paid</option>
+            <option value="free">Free</option>
+          </select>
+        </div>
+
+
+        <div class="form-group">
+          <label>Coin Price</label>
+
+          <input
+            id="chapterPrice"
+            class="input"
+            type="number"
+            min="0"
+            value="5"
+          >
+        </div>
+
+
+        <div class="form-group">
+          <label>Publication Date</label>
+
+          <input
+            id="publicationDate"
+            class="input"
+            type="datetime-local"
+          >
+        </div>
+
+
+        <div class="form-group full">
+
+          <label>Chapter Content *</label>
+
+          <textarea
+            id="chapterContent"
+            class="textarea"
+            placeholder="Write or paste the complete chapter here..."
+            required
+          ></textarea>
+
+        </div>
+
+
+        <div class="form-group full">
+
+          <label class="checkbox-row">
+            <input type="checkbox" id="allowComments" checked>
+            <span>Allow readers to comment on this chapter</span>
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn"
+          onclick="closeChapterModal()"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+        >
+          Save Chapter
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- VIEW CHAPTER MODAL -->
+<div class="modal" id="viewModal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <div>
+        <h2 id="viewTitle">Chapter</h2>
+        <p id="viewBook" style="color:#888;font-size:12px;margin-top:5px;"></p>
+      </div>
+
+      <button class="close-btn" onclick="closeViewModal()">×</button>
+
+    </div>
+
+    <div id="viewContent" class="reader-box"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const CHAPTER_KEY = "noveloraAdminChapters";
+const BOOK_KEY = "noveloraAdminBooks";
+const ACTIVITY_KEY = "noveloraAdminActivities";
+
+let chapters = [];
+let books = [];
+let editingId = null;
+
+
+/* -------------------------
+   DATA
+------------------------- */
+
+function loadData(){
+
+  try{
+    chapters = JSON.parse(localStorage.getItem(CHAPTER_KEY)) || [];
+  }catch{
+    chapters = [];
+  }
+
+  try{
+    books = JSON.parse(localStorage.getItem(BOOK_KEY)) || [];
+  }catch{
+    books = [];
+  }
+
+}
+
+
+/* -------------------------
+   HELPERS
+------------------------- */
+
+function saveChapters(){
+
+  localStorage.setItem(
+    CHAPTER_KEY,
+    JSON.stringify(chapters)
+  );
+
+}
+
+
+function getId(item){
+
+  return item.id ||
+         item.chapterId ||
+         item.chapterID ||
+         item.bookId ||
+         "";
+
+}
+
+
+function bookId(chapter){
+
+  return chapter.bookId ||
+         chapter.bookID ||
+         chapter.book ||
+         chapter.novelId ||
+         "";
+
+}
+
+
+function getBook(bookID){
+
+  return books.find(book =>
+    String(book.id || book.bookId || "") === String(bookID)
+  );
+
+}
+
+
+function getBookTitle(bookID){
+
+  const book = getBook(bookID);
+
+  if(book){
+    return book.title || book.name || "Untitled Book";
+  }
+
+  return "Unknown Book";
+}
+
+
+function getStatus(chapter){
+
+  return String(
+    chapter.status ||
+    chapter.publicationStatus ||
+    "draft"
+  ).toLowerCase();
+
+}
+
+
+function getAccess(chapter){
+
+  if(
+    chapter.isFree === true ||
+    chapter.free === true ||
+    String(chapter.accessType || "").toLowerCase() === "free"
+  ){
+    return "free";
+  }
+
+  return "paid";
+
+}
+
+
+function getPrice(chapter){
+
+  const value =
+    chapter.price ??
+    chapter.coinPrice ??
+    chapter.chapterPrice ??
+    5;
+
+  return Number(value) || 0;
+
+}
+
+
+function getContent(chapter){
+
+  return chapter.content ||
+         chapter.body ||
+         chapter.text ||
+         chapter.chapterContent ||
+         "";
+
+}
+
+
+function getChapterNumber(chapter){
+
+  return Number(
+    chapter.chapterNumber ??
+    chapter.number ??
+    chapter.chapter ??
+    0
+  ) || 0;
+
+}
+
+
+function getChapterTitle(chapter){
+
+  return chapter.title ||
+         chapter.chapterTitle ||
+         `Chapter ${getChapterNumber(chapter)}`;
+
+}
+
+
+function getDate(chapter){
+
+  return chapter.updatedAt ||
+         chapter.updated ||
+         chapter.createdAt ||
+         chapter.date ||
+         "";
+
+}
+
+
+function formatDate(value){
+
+  if(!value) return "—";
+
+  const date = new Date(value);
+
+  if(isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function countWords(text){
+
+  if(!text) return 0;
+
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .length;
+
+}
+
+
+/* -------------------------
+   ACTIVITY
+------------------------- */
+
+function logActivity(action, details){
+
+  let activities = [];
+
+  try{
+    activities =
+      JSON.parse(
+        localStorage.getItem(ACTIVITY_KEY)
+      ) || [];
+  }catch{}
+
+  activities.unshift({
+
+    id:"activity_" + Date.now(),
+
+    type:"chapter",
+
+    action,
+
+    details,
+
+    createdAt:new Date().toISOString()
+
+  });
+
+  localStorage.setItem(
+    ACTIVITY_KEY,
+    JSON.stringify(activities)
+  );
+
+}
+
+
+/* -------------------------
+   STATS
+------------------------- */
+
+function updateStats(){
+
+  const total =
+    chapters.length;
+
+  const published =
+    chapters.filter(
+      c => getStatus(c) === "published"
+    ).length;
+
+  const drafts =
+    chapters.filter(
+      c => getStatus(c) === "draft"
+    ).length;
+
+  const paid =
+    chapters.filter(
+      c => getAccess(c) === "paid"
+    ).length;
+
+
+  document.getElementById("totalChapters").textContent =
+    total;
+
+  document.getElementById("publishedChapters").textContent =
+    published;
+
+  document.getElementById("draftChapters").textContent =
+    drafts;
+
+  document.getElementById("paidChapters").textContent =
+    paid;
+
+}
+
+
+/* -------------------------
+   BOOK SELECTS
+------------------------- */
+
+function populateBookSelects(){
+
+  const bookFilter =
+    document.getElementById("bookFilter");
+
+  const chapterBook =
+    document.getElementById("chapterBook");
+
+
+  bookFilter.innerHTML =
+    `<option value="">All Books</option>`;
+
+  chapterBook.innerHTML =
+    `<option value="">Select a book</option>`;
+
+
+  books
+    .slice()
+    .sort((a,b) =>
+      String(a.title || "")
+      .localeCompare(
+        String(b.title || "")
+      )
+    )
+    .forEach(book => {
+
+      const id =
+        book.id ||
+        book.bookId;
+
+      const title =
+        book.title ||
+        book.name ||
+        "Untitled Book";
+
+
+      if(!id) return;
+
+
+      const option1 =
+        document.createElement("option");
+
+      option1.value = id;
+      option1.textContent = title;
+
+      bookFilter.appendChild(option1);
+
+
+      const option2 =
+        document.createElement("option");
+
+      option2.value = id;
+      option2.textContent = title;
+
+      chapterBook.appendChild(option2);
+
+    });
+
+}
+
+
+/* -------------------------
+   RENDER
+------------------------- */
+
+function renderChapters(){
+
+  const tbody =
+    document.getElementById("chapterTable");
+
+
+  const search =
+    document.getElementById("searchInput")
+    .value
+    .trim()
+    .toLowerCase();
+
+
+  const bookFilter =
+    document.getElementById("bookFilter")
+    .value;
+
+
+  const statusFilter =
+    document.getElementById("statusFilter")
+    .value;
+
+
+  const accessFilter =
+    document.getElementById("accessFilter")
+    .value;
+
+
+  let filtered =
+    chapters.filter(chapter => {
+
+      const title =
+        getChapterTitle(chapter)
+        .toLowerCase();
+
+      const bookTitle =
+        getBookTitle(
+          bookId(chapter)
+        ).toLowerCase();
+
+
+      if(
+        search &&
+        !title.includes(search) &&
+        !bookTitle.includes(search)
+      ){
+        return false;
+      }
+
+
+      if(
+        bookFilter &&
+        String(bookId(chapter)) !==
+        String(bookFilter)
+      ){
+        return false;
+      }
+
+
+      if(
+        statusFilter &&
+        getStatus(chapter) !== statusFilter
+      ){
+        return false;
+      }
+
+
+      if(
+        accessFilter &&
+        getAccess(chapter) !== accessFilter
+      ){
+        return false;
+      }
+
+
+      return true;
+
+    });
+
+
+  filtered.sort((a,b) => {
+
+    const bookA =
+      getBookTitle(bookId(a));
+
+    const bookB =
+      getBookTitle(bookId(b));
+
+
+    if(
+      bookA.toLowerCase() ===
+      bookB.toLowerCase()
+    ){
+
+      return (
+        getChapterNumber(a) -
+        getChapterNumber(b)
+      );
+
+    }
+
+
+    return bookA.localeCompare(bookB);
+
+  });
+
+
+  if(!filtered.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8">
+          <div class="empty">
+            <strong>No chapters found</strong>
+            Create a chapter or change your filters.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    filtered.map(chapter => {
+
+      const id =
+        getId(chapter);
+
+      const status =
+        getStatus(chapter);
+
+      const access =
+        getAccess(chapter);
+
+      const price =
+        getPrice(chapter);
+
+      const words =
+        countWords(
+          getContent(chapter)
+        );
+
+
+      return `
+
+        <tr>
+
+          <td>
+
+            <div class="chapter-title">
+              Chapter ${getChapterNumber(chapter)}
+            </div>
+
+            <div class="chapter-sub">
+              ${escapeHTML(
+                getChapterTitle(chapter)
+              )}
+            </div>
+
+          </td>
+
+
+          <td>
+            ${escapeHTML(
+              getBookTitle(bookId(chapter))
+            )}
+          </td>
+
+
+          <td>
+
+            <span class="badge ${
+              status === "published"
+              ? "badge-published"
+              : "badge-draft"
+            }">
+
+              ${
+                status === "published"
+                ? "Published"
+                : "Draft"
+              }
+
+            </span>
+
+          </td>
+
+
+          <td>
+
+            <span class="badge ${
+              access === "free"
+              ? "badge-free"
+              : "badge-paid"
+            }">
+
+              ${
+                access === "free"
+                ? "Free"
+                : "Paid"
+              }
+
+            </span>
+
+          </td>
+
+
+          <td>
+            ${
+              access === "free"
+              ? "Free"
+              : price + " coins"
+            }
+          </td>
+
+
+          <td>
+            ${words.toLocaleString()}
+          </td>
+
+
+          <td>
+            ${formatDate(getDate(chapter))}
+          </td>
+
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="action-btn"
+                onclick="viewChapter('${escapeAttr(id)}')"
+              >
+                View
+              </button>
+
+              <button
+                class="action-btn"
+                onclick="editChapter('${escapeAttr(id)}')"
+              >
+                Edit
+              </button>
+
+              <button
+                class="action-btn"
+                onclick="togglePublished('${escapeAttr(id)}')"
+              >
+                ${
+                  status === "published"
+                  ? "Unpublish"
+                  : "Publish"
+                }
+              </button>
+
+              <button
+                class="action-btn"
+                onclick="deleteChapter('${escapeAttr(id)}')"
+              >
+                Delete
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join("");
+
+}
+
+
+/* -------------------------
+   ADD / EDIT
+------------------------- */
+
+function openChapterModal(id = null){
+
+  editingId = id;
+
+  document.getElementById(
+    "chapterModal"
+  ).classList.add("show");
+
+
+  document.getElementById(
+    "modalTitle"
+  ).textContent =
+    id
+    ? "Edit Chapter"
+    : "Add New Chapter";
+
+
+  if(id){
+
+    const chapter =
+      chapters.find(
+        c => String(getId(c)) === String(id)
+      );
+
+    if(!chapter) return;
+
+
+    document.getElementById(
+      "chapterBook"
+    ).value =
+      bookId(chapter);
+
+
+    document.getElementById(
+      "chapterNumber"
+    ).value =
+      getChapterNumber(chapter);
+
+
+    document.getElementById(
+      "chapterTitle"
+    ).value =
+      getChapterTitle(chapter);
+
+
+    document.getElementById(
+      "chapterStatus"
+    ).value =
+      getStatus(chapter);
+
+
+    document.getElementById(
+      "chapterAccess"
+    ).value =
+      getAccess(chapter);
+
+
+    document.getElementById(
+      "chapterPrice"
+    ).value =
+      getPrice(chapter);
+
+
+    document.getElementById(
+      "chapterContent"
+    ).value =
+      getContent(chapter);
+
+
+    document.getElementById(
+      "allowComments"
+    ).checked =
+      chapter.allowComments !== false;
+
+
+    if(chapter.publicationDate){
+
+      document.getElementById(
+        "publicationDate"
+      ).value =
+        toDateTimeLocal(
+          chapter.publicationDate
+        );
+
+    }
+
+  }else{
+
+    document.getElementById(
+      "chapterForm"
+    ).reset();
+
+
+    document.getElementById(
+      "chapterAccess"
+    ).value =
+      "paid";
+
+
+    document.getElementById(
+      "chapterPrice"
+    ).value =
+      "5";
+
+
+    document.getElementById(
+      "chapterStatus"
+    ).value =
+      "draft";
+
+
+    document.getElementById(
+      "allowComments"
+    ).checked =
+      true;
+
+  }
+
+
+  togglePriceField();
+
+}
+
+
+function closeChapterModal(){
+
+  document.getElementById(
+    "chapterModal"
+  ).classList.remove("show");
+
+  editingId = null;
+
+}
+
+
+function togglePriceField(){
+
+  const access =
+    document.getElementById(
+      "chapterAccess"
+    ).value;
+
+  const price =
+    document.getElementById(
+      "chapterPrice"
+    );
+
+
+  price.disabled =
+    access === "free";
+
+  if(access === "free"){
+    price.value = 0;
+  }else if(!price.value){
+    price.value = 5;
+  }
+
+}
+
+
+/* -------------------------
+   SAVE
+------------------------- */
+
+document.getElementById(
+  "chapterForm"
+).addEventListener(
+  "submit",
+  function(event){
+
+    event.preventDefault();
+
+
+    const book =
+      document.getElementById(
+        "chapterBook"
+      ).value;
+
+
+    const number =
+      Number(
+        document.getElementById(
+          "chapterNumber"
+        ).value
+      );
+
+
+    const title =
+      document.getElementById(
+        "chapterTitle"
+      ).value.trim();
+
+
+    const content =
+      document.getElementById(
+        "chapterContent"
+      ).value.trim();
+
+
+    if(!book){
+
+      alert("Please select a book.");
+
+      return;
+
+    }
+
+
+    if(!number || number < 1){
+
+      alert("Please enter a valid chapter number.");
+
+      return;
+
+    }
+
+
+    if(!title){
+
+      alert("Please enter a chapter title.");
+
+      return;
+
+    }
+
+
+    if(!content){
+
+      alert("Please enter the chapter content.");
+
+      return;
+
+    }
+
+
+    const access =
+      document.getElementById(
+        "chapterAccess"
+      ).value;
+
+
+    const price =
+      access === "free"
+      ? 0
+      : Number(
+          document.getElementById(
+            "chapterPrice"
+          ).value
+        )
