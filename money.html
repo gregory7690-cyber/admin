@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Money • Novelora Admin</title>
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="money.css">
+</head>
+
+<body>
+
+<div class="admin-app">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+
+    <div class="admin-brand">
+      <div class="brand-name">
+        NOVEL<span>ORA</span>
+      </div>
+
+      <div class="brand-label">
+        ADMIN PANEL
+      </div>
+    </div>
+
+    <nav class="admin-navigation">
+
+      <a href="index.html" class="nav-item">
+        <span>⌂</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="books.html" class="nav-item">
+        <span>▣</span>
+        <span>Books</span>
+      </a>
+
+      <a href="chapters.html" class="nav-item">
+        <span>▤</span>
+        <span>Chapters</span>
+      </a>
+
+      <a href="readers.html" class="nav-item">
+        <span>♙</span>
+        <span>Readers</span>
+      </a>
+
+      <a href="authors.html" class="nav-item">
+        <span>✎</span>
+        <span>Authors</span>
+      </a>
+
+      <a href="community.html" class="nav-item">
+        <span>♡</span>
+        <span>Community</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="notifications.html" class="nav-item">
+        <span>♢</span>
+        <span>Notifications</span>
+      </a>
+
+      <a href="money.html" class="nav-item active">
+        <span>$</span>
+        <span>Money</span>
+      </a>
+
+      <a href="analytics.html" class="nav-item">
+        <span>↗</span>
+        <span>Analytics</span>
+      </a>
+
+      <a href="rewards.html" class="nav-item">
+        <span>✦</span>
+        <span>Rewards</span>
+      </a>
+
+      <a href="promotions.html" class="nav-item">
+        <span>♢</span>
+        <span>Promotions</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="settings.html" class="nav-item">
+        <span>⚙</span>
+        <span>Settings</span>
+      </a>
+
+      <a href="security.html" class="nav-item">
+        <span>♙</span>
+        <span>Security</span>
+      </a>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-avatar">N</div>
+
+      <div>
+        <strong>Novelora Admin</strong>
+        <small>Administrator</small>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+
+      <div>
+        <div class="page-kicker">
+          NOVELORA FINANCE
+        </div>
+
+        <h1>Money</h1>
+
+        <p>
+          Track your Novelora earnings, withdrawals and revenue.
+        </p>
+      </div>
+
+      <div class="topbar-actions">
+
+        <button class="icon-button">
+          ♢
+        </button>
+
+        <div class="admin-user">
+          <div class="admin-user-avatar">N</div>
+
+          <div>
+            <strong>Admin</strong>
+            <small>Administrator</small>
+          </div>
+        </div>
+
+      </div>
+
+    </header>
+
+
+    <!-- BALANCE CARDS -->
+    <section class="money-stats">
+
+      <div class="money-stat-card featured-money">
+
+        <div class="money-stat-label">
+          TOTAL EARNINGS
+        </div>
+
+        <div class="money-stat-value" id="totalEarnings">
+          $0.00
+        </div>
+
+        <div class="money-stat-note">
+          All-time platform earnings
+        </div>
+
+      </div>
+
+
+      <div class="money-stat-card">
+
+        <div class="money-stat-label">
+          THIS MONTH
+        </div>
+
+        <div class="money-stat-value" id="monthlyEarnings">
+          $0.00
+        </div>
+
+        <div class="money-stat-note">
+          Earnings this month
+        </div>
+
+      </div>
+
+
+      <div class="money-stat-card">
+
+        <div class="money-stat-label">
+          AVAILABLE
+        </div>
+
+        <div class="money-stat-value" id="availableBalance">
+          $0.00
+        </div>
+
+        <div class="money-stat-note">
+          Available to withdraw
+        </div>
+
+      </div>
+
+
+      <div class="money-stat-card">
+
+        <div class="money-stat-label">
+          PENDING
+        </div>
+
+        <div class="money-stat-value" id="pendingBalance">
+          $0.00
+        </div>
+
+        <div class="money-stat-note">
+          Pending earnings
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- MAIN MONEY GRID -->
+    <section class="money-layout">
+
+
+      <!-- EARNINGS -->
+      <div class="money-panel earnings-panel">
+
+        <div class="money-panel-heading">
+
+          <div>
+            <span class="panel-kicker">
+              PERFORMANCE
+            </span>
+
+            <h2>Earnings Overview</h2>
+
+            <p>
+              Track how much Novelora is earning over time.
+            </p>
+          </div>
+
+          <select id="earningsPeriod">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
+
+        </div>
+
+
+        <div class="earnings-chart">
+
+          <div class="chart-placeholder">
+
+            <div class="chart-icon">
+              $
+            </div>
+
+            <strong id="chartTotal">
+              $0.00
+            </strong>
+
+            <span>
+              Earnings during selected period
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- WITHDRAW -->
+      <div class="money-panel withdraw-panel">
+
+        <div class="money-panel-heading">
+
+          <div>
+            <span class="panel-kicker">
+              PAYOUT
+            </span>
+
+            <h2>Withdraw Money</h2>
+
+            <p>
+              Transfer available earnings to your bank.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="withdraw-balance">
+
+          <span>Available balance</span>
+
+          <strong id="withdrawBalance">
+            $0.00
+          </strong>
+
+        </div>
+
+
+        <form id="withdrawForm">
+
+          <label>
+            Withdrawal amount
+          </label>
+
+          <div class="money-input">
+
+            <span>$</span>
+
+            <input
+              type="number"
+              id="withdrawAmount"
+              min="10"
+              step="0.01"
+              placeholder="0.00"
+              required
+            >
+
+          </div>
+
+          <small class="form-hint">
+            Minimum withdrawal: $10.00
+          </small>
+
+
+          <label>
+            Withdrawal method
+          </label>
+
+          <div class="method-options">
+
+            <label class="method-option">
+
+              <input
+                type="radio"
+                name="withdrawMethod"
+                value="SWIFT"
+                checked
+              >
+
+              <div>
+                <strong>SWIFT</strong>
+                <small>International bank transfer</small>
+              </div>
+
+            </label>
+
+
+            <label class="method-option">
+
+              <input
+                type="radio"
+                name="withdrawMethod"
+                value="ACH"
+              >
+
+              <div>
+                <strong>ACH</strong>
+                <small>US bank transfer</small>
+              </div>
+
+            </label>
+
+          </div>
+
+
+          <button
+            type="submit"
+            class="withdraw-button"
+          >
+            Withdraw Money
+          </button>
+
+          <p id="withdrawMessage" class="withdraw-message"></p>
+
+        </form>
+
+      </div>
+
+
+      <!-- EARNINGS BY BOOK -->
+      <div class="money-panel">
+
+        <div class="money-panel-heading">
+
+          <div>
+            <span class="panel-kicker">
+              BOOK PERFORMANCE
+            </span>
+
+            <h2>Earnings by Book</h2>
+
+            <p>
+              See which books are generating revenue.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div id="bookEarnings" class="book-earnings">
+
+          <div class="money-empty">
+            <div>♡</div>
+
+            <strong>No book earnings yet</strong>
+
+            <span>
+              Book revenue will appear here after readers unlock chapters.
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- BANK DETAILS -->
+      <div class="money-panel">
+
+        <div class="money-panel-heading">
+
+          <div>
+            <span class="panel-kicker">
+              BANKING
+            </span>
+
+            <h2>Payout Account</h2>
+
+            <p>
+              Save the bank account used for withdrawals.
+            </p>
+          </div>
+
+        </div>
+
+
+        <form id="bankForm" class="bank-form">
+
+          <label>
+            Account holder name
+          </label>
+
+          <input
+            type="text"
+            id="accountName"
+            placeholder="Account holder name"
+            required
+          >
+
+
+          <label>
+            Bank name
+          </label>
+
+          <input
+            type="text"
+            id="bankName"
+            placeholder="Bank name"
+            required
+          >
+
+
+          <label>
+            Account number
+          </label>
+
+          <input
+            type="text"
+            id="accountNumber"
+            placeholder="Account number"
+            required
+          >
+
+
+          <div class="bank-method-fields">
+
+            <div id="swiftField">
+
+              <label>
+                SWIFT / BIC
+              </label>
+
+              <input
+                type="text"
+                id="swiftCode"
+                placeholder="SWIFT / BIC"
+              >
+
+            </div>
+
+
+            <div id="achField" class="hidden-field">
+
+              <label>
+                Routing number
+              </label>
+
+              <input
+                type="text"
+                id="routingNumber"
+                placeholder="Routing number"
+              >
+
+            </div>
+
+          </div>
+
+
+          <label>
+            Bank country
+          </label>
+
+          <input
+            type="text"
+            id="bankCountry"
+            placeholder="Country"
+            required
+          >
+
+
+          <button
+            type="submit"
+            class="save-bank-button"
+          >
+            Save Payout Account
+          </button>
+
+          <p id="bankMessage" class="bank-message"></p>
+
+        </form>
+
+      </div>
+
+
+    </section>
+
+
+    <!-- WITHDRAWAL HISTORY -->
+    <section class="money-panel history-panel">
+
+      <div class="money-panel-heading">
+
+        <div>
+          <span class="panel-kicker">
+            HISTORY
+          </span>
+
+          <h2>Withdrawal History</h2>
+
+          <p>
+            Track every withdrawal request made from Novelora.
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="withdrawal-table-wrap">
+
+        <table class="withdrawal-table">
+
+          <thead>
+
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Method</th>
+              <th>Bank</th>
+              <th>Status</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="withdrawalHistory">
+
+            <tr>
+              <td colspan="5">
+
+                <div class="table-empty">
+                  No withdrawals yet.
+                </div>
+
+              </td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+</div>
+
+
+<script src="money.js"></script>
+
+</body>
+</html>
