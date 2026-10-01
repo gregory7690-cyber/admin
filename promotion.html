@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promotions — Novelora Admin</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .promotion-form {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .promotion-form h2,
+    .promotion-section h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+    }
+
+    .promotion-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .promotion-field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .promotion-field.full {
+      grid-column: 1 / -1;
+    }
+
+    .promotion-field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .promotion-field input,
+    .promotion-field select,
+    .promotion-field textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.2);
+      color: white;
+      border-radius: 12px;
+      padding: 12px 14px;
+      outline: none;
+      font: inherit;
+    }
+
+    .promotion-field textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .promotion-field input:focus,
+    .promotion-field select:focus,
+    .promotion-field textarea:focus {
+      border-color: rgba(255,105,180,0.6);
+    }
+
+    .promotion-field select option {
+      background: #21131f;
+      color: white;
+    }
+
+    .promotion-actions {
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .promotion-button {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #ff5ca8, #d93682);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255,70,150,0.2);
+    }
+
+    .promotion-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .promotion-message {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #ff9dca;
+    }
+
+    .promotion-list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .promotion-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 20px;
+    }
+
+    .promotion-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .promotion-card h3 {
+      margin: 0 0 6px;
+    }
+
+    .promotion-book {
+      color: rgba(255,255,255,0.65);
+      font-size: 13px;
+    }
+
+    .promotion-status {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,92,168,0.12);
+      color: #ff8fc3;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .promotion-details {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .promotion-detail {
+      background: rgba(0,0,0,0.15);
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .promotion-detail span {
+      display: block;
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 4px;
+    }
+
+    .promotion-detail strong {
+      font-size: 13px;
+    }
+
+    .promotion-description {
+      margin-top: 16px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .promotion-card-actions {
+      margin-top: 16px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .delete-promotion {
+      border: 1px solid rgba(255,80,100,0.25);
+      background: rgba(255,80,100,0.08);
+      color: #ff8c9a;
+      border-radius: 10px;
+      padding: 8px 13px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .empty-promotions {
+      text-align: center;
+      padding: 40px 20px;
+      color: rgba(255,255,255,0.5);
+      border: 1px dashed rgba(255,255,255,0.1);
+      border-radius: 18px;
+    }
+
+    @media (max-width: 700px) {
+      .promotion-grid,
+      .promotion-details {
+        grid-template-columns: 1fr;
+      }
+
+      .promotion-field.full {
+        grid-column: auto;
+      }
+
+      .promotion-card-top {
+        flex-direction: column;
+      }
+
+      .promotion-actions {
+        justify-content: stretch;
+      }
+
+      .promotion-button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <aside class="admin-sidebar">
+
+    <div class="admin-brand">
+      <div class="brand-logo">N</div>
+      <div>
+        <strong>Novelora</strong>
+        <small>Admin Panel</small>
+      </div>
+    </div>
+
+    <nav class="admin-navigation">
+
+      <a href="index.html" class="nav-item">
+        <span>⌂</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a href="books.html" class="nav-item">
+        <span>▣</span>
+        <span>Books</span>
+      </a>
+
+      <a href="chapters.html" class="nav-item">
+        <span>▤</span>
+        <span>Chapters</span>
+      </a>
+
+      <a href="readers.html" class="nav-item">
+        <span>♙</span>
+        <span>Readers</span>
+      </a>
+
+      <a href="authors.html" class="nav-item">
+        <span>✎</span>
+        <span>Authors</span>
+      </a>
+
+      <a href="community.html" class="nav-item">
+        <span>♡</span>
+        <span>Community</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="notifications.html" class="nav-item">
+        <span>♧</span>
+        <span>Notifications</span>
+      </a>
+
+      <a href="money.html" class="nav-item">
+        <span>$</span>
+        <span>Money</span>
+      </a>
+
+      <a href="analytics.html" class="nav-item">
+        <span>◈</span>
+        <span>Analytics</span>
+      </a>
+
+      <a href="rewards.html" class="nav-item">
+        <span>✦</span>
+        <span>Rewards</span>
+      </a>
+
+      <a href="promotions.html" class="nav-item active">
+        <span>♢</span>
+        <span>Promotions</span>
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a href="settings.html" class="nav-item">
+        <span>⚙</span>
+        <span>Settings</span>
+      </a>
+
+      <a href="security.html" class="nav-item">
+        <span>⌾</span>
+        <span>Security</span>
+      </a>
+
+    </nav>
+  </aside>
+
+
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+      <div>
+        <h1>Promotions</h1>
+        <p>Create and manage special offers for Novelora readers.</p>
+      </div>
+    </header>
+
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <span>Active Promotions</span>
+        <strong id="activePromotions">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Total Promotions</span>
+        <strong id="totalPromotions">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Featured Promotions</span>
+        <strong id="featuredPromotions">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Discount Promotions</span>
+        <strong id="discountPromotions">0</strong>
+      </div>
+
+    </section>
+
+
+    <!-- CREATE PROMOTION -->
+
+    <section class="promotion-form">
+
+      <h2>Create Promotion</h2>
+
+      <div class="promotion-grid">
+
+        <div class="promotion-field">
+          <label for="promotionTitle">Promotion Title</label>
+          <input
+            type="text"
+            id="promotionTitle"
+            placeholder="e.g. Weekend Romance Sale"
+          >
+        </div>
+
+
+        <div class="promotion-field">
+          <label for="promotionBook">Book</label>
+          <select id="promotionBook">
+            <option value="">Select a book</option>
+          </select>
+        </div>
+
+
+        <div class="promotion-field">
+          <label for="promotionType">Promotion Type</label>
+
+          <select id="promotionType">
+            <option value="discount">Chapter Coin Discount</option>
+            <option value="featured">Featured Book</option>
+            <option value="free">Free Reading Promotion</option>
+          </select>
+        </div>
+
+
+        <div class="promotion-field">
+          <label for="discountCoins">Discounted Chapter Price</label>
+
+          <input
+            type="number"
+            id="discountCoins"
+            min="0"
+            value="3"
+            placeholder="e.g. 3"
+          >
+        </div>
+
+
+        <div class="promotion-field">
+          <label for="startDate">Start Date</label>
+          <input type="date" id="startDate">
+        </div>
+
+
+        <div class="promotion-field">
+          <label for="endDate">End Date</label>
+          <input type="date" id="endDate">
+        </div>
+
+
+        <div class="promotion-field full">
+          <label for="promotionDescription">Description</label>
+
+          <textarea
+            id="promotionDescription"
+            placeholder="Describe this promotion..."
+          ></textarea>
+        </div>
+
+      </div>
+
+
+      <div class="promotion-actions">
+        <button class="promotion-button" id="createPromotion">
+          Create Promotion
+        </button>
+      </div>
+
+      <div class="promotion-message" id="promotionMessage"></div>
+
+    </section>
+
+
+    <!-- PROMOTIONS -->
+
+    <section class="promotion-section">
+
+      <h2>Current Promotions</h2>
+
+      <div class="promotion-list" id="promotionList"></div>
+
+    </section>
+
+  </main>
+
+
+  <script>
+
+    const PROMOTION_KEY = "noveloraPromotions";
+    const BOOK_KEY = "noveloraAdminBooks";
+
+
+    function getPromotions() {
+      try {
+        return JSON.parse(localStorage.getItem(PROMOTION_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+
+    function savePromotions(promotions) {
+      localStorage.setItem(
+        PROMOTION_KEY,
+        JSON.stringify(promotions)
+      );
+    }
+
+
+    function getBooks() {
+      try {
+        return JSON.parse(localStorage.getItem(BOOK_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+
+    function escapeHTML(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    function loadBooks() {
+
+      const select = document.getElementById("promotionBook");
+
+      const books = getBooks();
+
+      select.innerHTML =
+        '<option value="">Select a book</option>';
+
+      books.forEach(book => {
+
+        const option = document.createElement("option");
+
+        option.value =
+          book.id ||
+          book.bookId ||
+          book.bookID ||
+          "";
+
+        option.textContent =
+          book.title ||
+          book.bookTitle ||
+          "Untitled Book";
+
+        select.appendChild(option);
+
+      });
+    }
+
+
+    function getStatus(startDate, endDate) {
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (
+        startDate &&
+        endDate &&
+        today >= start &&
+        today <= end
+      ) {
+        return "Active";
+      }
+
+      if (
+        startDate &&
+        today < start
+      ) {
+        return "Scheduled";
+      }
+
+      return "Ended";
+    }
+
+
+    function formatDate(date) {
+
+      if (!date) return "—";
+
+      const value = new Date(date);
+
+      if (Number.isNaN(value.getTime())) {
+        return date;
+      }
+
+      return value.toLocaleDateString();
+    }
+
+
+    function renderPromotions() {
+
+      const promotions = getPromotions();
+
+      const list =
+        document.getElementById("promotionList");
+
+      const today = new Date();
+      today.setHours(0,0,0,0);
+
+      let active = 0;
+      let featured = 0;
+      let discounts = 0;
+
+      promotions.forEach(promotion => {
+
+        const status =
+          getStatus(
+            promotion.startDate,
+            promotion.endDate
+          );
+
+        if (status === "Active") {
+          active++;
+        }
+
+        if (promotion.type === "featured") {
+          featured++;
+        }
+
+        if (promotion.type === "discount") {
+          discounts++;
+        }
+
+      });
+
+
+      document.getElementById("activePromotions").textContent =
+        active;
+
+      document.getElementById("totalPromotions").textContent =
+        promotions.length;
+
+      document.getElementById("featuredPromotions").textContent =
+        featured;
+
+      document.getElementById("discountPromotions").textContent =
+        discounts;
+
+
+      if (!promotions.length) {
+
+        list.innerHTML = `
+          <div class="empty-promotions">
+            No promotions have been created yet.
+          </div>
+        `;
+
+        return;
+      }
+
+
+      list.innerHTML = promotions
+        .slice()
+        .reverse()
+        .map(promotion => {
+
+          const status =
+            getStatus(
+              promotion.startDate,
+              promotion.endDate
+            );
+
+
+          let typeLabel = "Promotion";
+
+          if (promotion.type === "discount") {
+            typeLabel = "Chapter Coin Discount";
+          }
+
+          if (promotion.type === "featured") {
+            typeLabel = "Featured Book";
+          }
+
+          if (promotion.type === "free") {
+            typeLabel = "Free Reading";
+          }
+
+
+          let discountText = "—";
+
+          if (
+            promotion.type === "discount" &&
+            promotion.discountCoins !== undefined
+          ) {
+            discountText =
+              `${promotion.discountCoins} coins`;
+          }
+
+
+          return `
+
+            <div class="promotion-card">
+
+              <div class="promotion-card-top">
+
+                <div>
+
+                  <h3>
+                    ${escapeHTML(promotion.title)}
+                  </h3>
+
+                  <div class="promotion-book">
+                    ${escapeHTML(
+                      promotion.bookTitle ||
+                      "All Books"
+                    )}
+                  </div>
+
+                </div>
+
+                <span class="promotion-status">
+                  ${status}
+                </span>
+
+              </div>
+
+
+              <div class="promotion-details">
+
+                <div class="promotion-detail">
+                  <span>Type</span>
+                  <strong>
+                    ${typeLabel}
+                  </strong>
+                </div>
+
+                <div class="promotion-detail">
+                  <span>Starts</span>
+                  <strong>
+                    ${formatDate(
+                      promotion.startDate
+                    )}
+                  </strong>
+                </div>
+
+                <div class="promotion-detail">
+                  <span>Ends</span>
+                  <strong>
+                    ${formatDate(
+                      promotion.endDate
+                    )}
+                  </strong>
+                </div>
+
+                <div class="promotion-detail">
+                  <span>Chapter Price</span>
+                  <strong>
+                    ${discountText}
+                  </strong>
+                </div>
+
+              </div>
+
+
+              ${
+                promotion.description
+                  ? `
+                    <div class="promotion-description">
+                      ${escapeHTML(
+                        promotion.description
+                      )}
+                    </div>
+                  `
+                  : ""
+              }
+
+
+              <div class="promotion-card-actions">
+
+                <button
+                  class="delete-promotion"
+                  onclick="deletePromotion('${promotion.id}')"
+                >
+                  Delete Promotion
+                </button>
+
+              </div>
+
+            </div>
+
+          `;
+
+        })
+        .join("");
+    }
+
+
+    function deletePromotion(id) {
+
+      const confirmed =
+        confirm(
+          "Delete this promotion?"
+        );
+
+      if (!confirmed) return;
+
+      const promotions =
+        getPromotions()
+          .filter(
+            promotion =>
+              promotion.id !== id
+          );
+
+      savePromotions(promotions);
+
+      renderPromotions();
+    }
+
+
+    document
+      .getElementById("createPromotion")
+      .addEventListener("click", () => {
+
+        const title =
+          document
+            .getElementById("promotionTitle")
+            .value
+            .trim();
+
+        const bookSelect =
+          document.getElementById(
+            "promotionBook"
+          );
+
+        const bookId =
+          bookSelect.value;
+
+        const bookTitle =
+          bookSelect.options[
+            bookSelect.selectedIndex
+          ]?.textContent || "";
+
+
+        const type =
+          document.getElementById(
+            "promotionType"
+          ).value;
+
+        const discountCoins =
+          Number(
+            document.getElementById(
+              "discountCoins"
+            ).value
+          );
+
+        const startDate =
+          document.getElementById(
+            "startDate"
+          ).value;
+
+        const endDate =
+          document.getElementById(
+            "endDate"
+          ).value;
+
+        const description =
+          document.getElementById(
+            "promotionDescription"
+          ).value
+          .trim();
+
+        const message =
+          document.getElementById(
+            "promotionMessage"
+          );
+
+
+        if (!title) {
+          message.textContent =
+            "Please enter a promotion title.";
+          return;
+        }
+
+
+        if (!startDate || !endDate) {
+          message.textContent =
+            "Please select the start and end dates.";
+          return;
+        }
+
+
+        if (
+          new Date(endDate) <
+          new Date(startDate)
+        ) {
+          message.textContent =
+            "The end date cannot be before the start date.";
+          return;
+        }
+
+
+        if (
+          type === "discount" &&
+          (
+            !Number.isFinite(discountCoins) ||
+            discountCoins < 0
+          )
+        ) {
+          message.textContent =
+            "Please enter a valid chapter price.";
+          return;
+        }
+
+
+        const promotions =
+          getPromotions();
+
+
+        promotions.push({
+
+          id:
+            "promo_" +
+            Date.now(),
+
+          title,
+
+          bookId,
+
+          bookTitle:
+            bookId
+              ? bookTitle
+              : "All Books",
+
+          type,
+
+          discountCoins:
+
+            type === "discount"
+              ? discountCoins
+              : null,
+
+          startDate,
+
+          endDate,
+
+          description,
+
+          createdAt:
+            new Date().toISOString()
+
+        });
+
+
+        savePromotions(promotions);
+
+
+        document
+          .getElementById(
+            "promotionTitle"
+          ).value = "";
+
+        document
+          .getElementById(
+            "promotionBook"
+          ).value = "";
+
+        document
+          .getElementById(
+            "promotionDescription"
+          ).value = "";
+
+
+        message.textContent =
+          "Promotion created successfully.";
+
+        renderPromotions();
+
+      });
+
+
+    loadBooks();
+    renderPromotions();
+
+  </script>
+
+</body>
+</html>
