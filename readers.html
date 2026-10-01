@@ -1,0 +1,2085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novelora Admin — Readers</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#120a15;
+  color:#fff;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+a{
+  text-decoration:none;
+  color:inherit;
+}
+
+.admin-layout{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.admin-sidebar{
+  width:245px;
+  min-height:100vh;
+  background:#1b0d20;
+  border-right:1px solid #38203b;
+  padding:25px 15px;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  overflow-y:auto;
+}
+
+.admin-logo{
+  font-size:25px;
+  font-weight:800;
+  color:#ff72b6;
+  margin:5px 12px 30px;
+}
+
+.admin-navigation{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.nav-item{
+  display:block;
+  padding:12px 14px;
+  color:#c8b7c8;
+  border-radius:11px;
+  transition:.2s;
+}
+
+.nav-item:hover,
+.nav-item.active{
+  background:#332039;
+  color:#fff;
+}
+
+.nav-divider{
+  height:1px;
+  background:#38203b;
+  margin:12px 5px;
+}
+
+/* MAIN */
+
+.admin-main{
+  margin-left:245px;
+  width:calc(100% - 245px);
+  padding:28px;
+  max-width:1550px;
+}
+
+.admin-topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
+  margin-bottom:28px;
+}
+
+.page-title h1{
+  margin:0;
+  font-size:30px;
+}
+
+.page-title p{
+  margin:8px 0 0;
+  color:#a999a9;
+}
+
+.top-actions{
+  display:flex;
+  gap:10px;
+}
+
+.back-btn,
+.refresh-btn{
+  border:1px solid #4a2b4c;
+  background:#29152e;
+  color:#fff;
+  padding:10px 15px;
+  border-radius:11px;
+}
+
+/* STATS */
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.stat-card{
+  background:linear-gradient(145deg,#211126,#180e1c);
+  border:1px solid #3b203d;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.18);
+}
+
+.stat-card span{
+  color:#a998a8;
+  font-size:13px;
+}
+
+.stat-card strong{
+  display:block;
+  color:#ff7abb;
+  font-size:30px;
+  margin-top:9px;
+}
+
+/* CARD */
+
+.admin-card{
+  background:linear-gradient(145deg,#211126,#180e1c);
+  border:1px solid #3b203d;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.card-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.card-heading h2{
+  margin:0;
+  font-size:19px;
+}
+
+.card-heading p{
+  margin:5px 0 0;
+  color:#a998a8;
+  font-size:13px;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.search-box{
+  flex:1;
+  min-width:220px;
+}
+
+input,
+select{
+  background:#120a15;
+  color:#fff;
+  border:1px solid #472747;
+  border-radius:10px;
+  padding:11px 12px;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  border-color:#ed64a7;
+}
+
+.btn{
+  border:none;
+  background:#ff5fae;
+  color:#fff;
+  font-weight:700;
+  padding:10px 14px;
+  border-radius:10px;
+}
+
+.btn.secondary{
+  background:#34203a;
+  border:1px solid #503050;
+}
+
+.btn.danger{
+  background:#8d3156;
+}
+
+.btn.success{
+  background:#37785c;
+}
+
+/* TABLE */
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+}
+
+.reader-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:850px;
+}
+
+.reader-table th{
+  text-align:left;
+  padding:13px 12px;
+  color:#9f8d9e;
+  font-size:12px;
+  border-bottom:1px solid #3b203d;
+}
+
+.reader-table td{
+  padding:14px 12px;
+  border-bottom:1px solid #2f1c32;
+  vertical-align:middle;
+}
+
+.reader-table tr:hover td{
+  background:#211326;
+}
+
+.reader-info{
+  display:flex;
+  align-items:center;
+  gap:11px;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ff62ad,#8b3b72);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight:800;
+  flex-shrink:0;
+}
+
+.reader-name{
+  font-weight:700;
+}
+
+.reader-email{
+  color:#9f8d9e;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#332039;
+  color:#e9aace;
+  font-size:11px;
+}
+
+.badge.active{
+  background:#183d30;
+  color:#8ce0b7;
+}
+
+.badge.suspended{
+  background:#4b1e2e;
+  color:#ff9bbb;
+}
+
+/* EMPTY */
+
+.empty-state{
+  text-align:center;
+  padding:45px 20px;
+  color:#9e8c9e;
+}
+
+.empty-state strong{
+  display:block;
+  color:#d7c7d6;
+  font-size:16px;
+  margin-bottom:7px;
+}
+
+/* DETAIL PANEL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:min(900px,100%);
+  max-height:90vh;
+  overflow-y:auto;
+  background:#1b0d20;
+  border:1px solid #4a294c;
+  border-radius:20px;
+  padding:24px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  align-items:flex-start;
+  margin-bottom:22px;
+}
+
+.modal-header h2{
+  margin:0;
+}
+
+.close-btn{
+  background:#34203a;
+  color:#fff;
+  border:1px solid #503050;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+}
+
+.profile-header{
+  display:flex;
+  gap:15px;
+  align-items:center;
+  padding:18px;
+  background:#24142a;
+  border-radius:15px;
+  margin-bottom:18px;
+}
+
+.large-avatar{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ff62ad,#8b3b72);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:25px;
+  font-weight:800;
+}
+
+.profile-name{
+  font-size:21px;
+  font-weight:800;
+}
+
+.profile-email{
+  color:#a998a8;
+  margin-top:5px;
+}
+
+.detail-stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.detail-stat{
+  background:#24142a;
+  border:1px solid #39203b;
+  border-radius:13px;
+  padding:14px;
+}
+
+.detail-stat span{
+  display:block;
+  color:#a998a8;
+  font-size:11px;
+}
+
+.detail-stat strong{
+  display:block;
+  margin-top:6px;
+  color:#ff7abb;
+  font-size:20px;
+}
+
+.detail-section{
+  background:#24142a;
+  border-radius:14px;
+  padding:17px;
+  margin-bottom:14px;
+}
+
+.detail-section h3{
+  margin:0 0 13px;
+  font-size:15px;
+}
+
+.detail-row{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  padding:9px 0;
+  border-bottom:1px solid #352037;
+  font-size:13px;
+}
+
+.detail-row:last-child{
+  border-bottom:none;
+}
+
+.detail-row span:first-child{
+  color:#a998a8;
+}
+
+.action-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:18px;
+}
+
+/* MOBILE */
+
+@media(max-width:1000px){
+
+  .stats-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .detail-stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:750px){
+
+  .admin-sidebar{
+    width:210px;
+  }
+
+  .admin-main{
+    margin-left:210px;
+    width:calc(100% - 210px);
+    padding:20px;
+  }
+}
+
+@media(max-width:600px){
+
+  .admin-layout{
+    display:block;
+  }
+
+  .admin-sidebar{
+    position:static;
+    width:100%;
+    min-height:auto;
+  }
+
+  .admin-main{
+    margin-left:0;
+    width:100%;
+    padding:15px;
+  }
+
+  .admin-navigation{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .stats-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .admin-topbar{
+    align-items:flex-start;
+  }
+
+  .detail-stats{
+    grid-template-columns:1fr 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+
+    <div class="admin-logo">Novelora</div>
+
+    <nav class="admin-navigation">
+
+      <a class="nav-item" href="index.html">Dashboard</a>
+      <a class="nav-item" href="books.html">Books</a>
+      <a class="nav-item" href="chapters.html">Chapters</a>
+      <a class="nav-item active" href="readers.html">Readers</a>
+      <a class="nav-item" href="authors.html">Authors</a>
+      <a class="nav-item" href="community.html">Community</a>
+
+      <div class="nav-divider"></div>
+
+      <a class="nav-item" href="notifications.html">Notifications</a>
+      <a class="nav-item" href="money.html">Money</a>
+      <a class="nav-item" href="analytics.html">Analytics</a>
+      <a class="nav-item" href="rewards.html">Rewards</a>
+      <a class="nav-item" href="promotions.html">Promotions</a>
+
+      <div class="nav-divider"></div>
+
+      <a class="nav-item" href="settings.html">Settings</a>
+      <a class="nav-item" href="security.html">Security</a>
+
+    </nav>
+
+  </aside>
+
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <header class="admin-topbar">
+
+      <div class="page-title">
+        <h1>Readers</h1>
+        <p>Manage Novelora readers, accounts, activity and reading data.</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="refresh-btn" onclick="loadReaders()">
+          ↻ Refresh
+        </button>
+
+        <button class="back-btn" onclick="location.href='index.html'">
+          ← Dashboard
+        </button>
+      </div>
+
+    </header>
+
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+      <div class="stat-card">
+        <span>Total Readers</span>
+        <strong id="totalReaders">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Active Readers</span>
+        <strong id="activeReaders">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>New Readers</span>
+        <strong id="newReaders">0</strong>
+      </div>
+
+      <div class="stat-card">
+        <span>Suspended</span>
+        <strong id="suspendedReaders">0</strong>
+      </div>
+
+    </section>
+
+
+    <!-- READER MANAGEMENT -->
+
+    <section class="admin-card">
+
+      <div class="card-heading">
+
+        <div>
+          <h2>Reader Accounts</h2>
+          <p>Search, filter and manage registered Novelora readers.</p>
+        </div>
+
+        <button class="btn secondary" onclick="exportReaders()">
+          Export Readers
+        </button>
+
+      </div>
+
+
+      <div class="toolbar">
+
+        <input
+          id="readerSearch"
+          class="search-box"
+          type="search"
+          placeholder="Search username or email..."
+        >
+
+        <select id="statusFilter">
+          <option value="all">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="suspended">Suspended</option>
+          <option value="blocked">Blocked</option>
+        </select>
+
+        <select id="sortReaders">
+
+          <option value="newest">
+            Newest First
+          </option>
+
+          <option value="oldest">
+            Oldest First
+          </option>
+
+          <option value="name">
+            Name A–Z
+          </option>
+
+          <option value="coins">
+            Most Coins
+          </option>
+
+          <option value="chapters">
+            Most Chapters
+          </option>
+
+        </select>
+
+      </div>
+
+
+      <div class="table-wrap">
+
+        <table class="reader-table">
+
+          <thead>
+
+            <tr>
+
+              <th>Reader</th>
+              <th>Status</th>
+              <th>Coins</th>
+              <th>Books Read</th>
+              <th>Unlocks</th>
+              <th>Spent</th>
+              <th>Last Active</th>
+              <th>Action</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody id="readersTableBody"></tbody>
+
+        </table>
+
+      </div>
+
+    </section>
+
+
+    <!-- READING ACTIVITY -->
+
+    <section class="admin-card">
+
+      <div class="card-heading">
+
+        <div>
+          <h2>Reader Activity Overview</h2>
+          <p>Calculated from actual Novelora reader and unlock data.</p>
+        </div>
+
+      </div>
+
+      <div id="activityOverview"></div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<!-- READER DETAIL MODAL -->
+
+<div class="modal" id="readerModal">
+
+  <div class="modal-box">
+
+    <div class="modal-header">
+
+      <div>
+        <h2>Reader Details</h2>
+      </div>
+
+      <button class="close-btn" onclick="closeReaderModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div id="readerDetails"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const READERS_KEY = "noveloraReaders";
+const TRANSACTIONS_KEY = "noveloraTransactions";
+const UNLOCKS_KEY = "noveloraChapterUnlocks";
+const BOOKS_KEY = "noveloraAdminBooks";
+
+
+let readers = [];
+let transactions = [];
+let unlocks = [];
+let books = [];
+
+
+/* =========================
+   DATA
+========================= */
+
+function readStorage(key){
+
+  try{
+
+    const value = JSON.parse(
+      localStorage.getItem(key)
+    );
+
+    return Array.isArray(value) ? value : [];
+
+  }catch(error){
+
+    return [];
+
+  }
+
+}
+
+
+function loadReaders(){
+
+  readers = readStorage(READERS_KEY);
+  transactions = readStorage(TRANSACTIONS_KEY);
+  unlocks = readStorage(UNLOCKS_KEY);
+  books = readStorage(BOOKS_KEY);
+
+  renderStats();
+  renderReaders();
+  renderActivity();
+
+}
+
+
+/* =========================
+   NORMALIZE READER
+========================= */
+
+function readerId(reader){
+
+  return String(
+    reader.id ||
+    reader.readerId ||
+    reader.userId ||
+    reader.uid ||
+    ""
+  );
+
+}
+
+
+function readerName(reader){
+
+  return (
+    reader.username ||
+    reader.userName ||
+    reader.name ||
+    reader.displayName ||
+    "Reader"
+  );
+
+}
+
+
+function readerEmail(reader){
+
+  return (
+    reader.email ||
+    reader.emailAddress ||
+    "No email"
+  );
+
+}
+
+
+function readerStatus(reader){
+
+  return String(
+    reader.status ||
+    "active"
+  ).toLowerCase();
+
+}
+
+
+function readerCoins(reader){
+
+  const value =
+    reader.coins ??
+    reader.balance ??
+    reader.coinBalance ??
+    0;
+
+  const number = Number(value);
+
+  return Number.isFinite(number)
+    ? number
+    : 0;
+
+}
+
+
+function joinedDate(reader){
+
+  return (
+    reader.joinedAt ||
+    reader.createdAt ||
+    reader.dateJoined ||
+    reader.date ||
+    null
+  );
+
+}
+
+
+function lastActive(reader){
+
+  return (
+    reader.lastActive ||
+    reader.lastActiveAt ||
+    reader.updatedAt ||
+    reader.lastLogin ||
+    joinedDate(reader) ||
+    null
+  );
+
+}
+
+
+/* =========================
+   READER ACTIVITY
+========================= */
+
+function getReaderUnlocks(id){
+
+  return unlocks.filter(unlock => {
+
+    const unlockReader =
+      unlock.readerId ||
+      unlock.userId ||
+      unlock.reader ||
+      unlock.user ||
+      unlock.uid;
+
+    return String(unlockReader) === String(id);
+
+  });
+
+}
+
+
+function getReaderTransactions(id){
+
+  return transactions.filter(transaction => {
+
+    const transactionReader =
+      transaction.readerId ||
+      transaction.userId ||
+      transaction.reader ||
+      transaction.user ||
+      transaction.uid;
+
+    return String(transactionReader) === String(id);
+
+  });
+
+}
+
+
+function getReaderBooks(id){
+
+  const readerUnlocks =
+    getReaderUnlocks(id);
+
+  const ids = new Set();
+
+  readerUnlocks.forEach(unlock => {
+
+    const bookId =
+      unlock.bookId ||
+      unlock.bookID ||
+      unlock.book ||
+      unlock.bookTitle;
+
+    if(bookId){
+      ids.add(String(bookId));
+    }
+
+  });
+
+  return ids;
+
+}
+
+
+function readerUnlockCount(id){
+
+  return getReaderUnlocks(id).length;
+
+}
+
+
+function readerBookCount(id){
+
+  return getReaderBooks(id).size;
+
+}
+
+
+function readerSpent(id){
+
+  const readerTransactions =
+    getReaderTransactions(id);
+
+  return readerTransactions.reduce(
+    (sum, transaction) => {
+
+      const status =
+        String(transaction.status || "")
+          .toLowerCase();
+
+      if(
+        status === "refunded" ||
+        status === "failed" ||
+        status === "cancelled"
+      ){
+
+        return sum;
+
+      }
+
+      const amount = Number(
+        transaction.amount ??
+        transaction.revenue ??
+        transaction.total ??
+        transaction.price ??
+        0
+      );
+
+      return sum +
+        (Number.isFinite(amount) ? amount : 0);
+
+    },
+    0
+  );
+
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+function renderStats(){
+
+  const total =
+    readers.length;
+
+  const active =
+    readers.filter(reader =>
+      readerStatus(reader) === "active"
+    ).length;
+
+  const suspended =
+    readers.filter(reader =>
+      readerStatus(reader) === "suspended" ||
+      readerStatus(reader) === "blocked"
+    ).length;
+
+
+  const now = new Date();
+
+  const newCount =
+    readers.filter(reader => {
+
+      const date = joinedDate(reader);
+
+      if(!date){
+        return false;
+      }
+
+      const joined =
+        new Date(date);
+
+      if(isNaN(joined.getTime())){
+        return false;
+      }
+
+      const difference =
+        now.getTime() - joined.getTime();
+
+      return difference <=
+        30 * 24 * 60 * 60 * 1000;
+
+    }).length;
+
+
+  document.getElementById(
+    "totalReaders"
+  ).textContent = total;
+
+
+  document.getElementById(
+    "activeReaders"
+  ).textContent = active;
+
+
+  document.getElementById(
+    "newReaders"
+  ).textContent = newCount;
+
+
+  document.getElementById(
+    "suspendedReaders"
+  ).textContent = suspended;
+
+}
+
+
+/* =========================
+   RENDER TABLE
+========================= */
+
+function renderReaders(){
+
+  const tbody =
+    document.getElementById(
+      "readersTableBody"
+    );
+
+
+  const search =
+    document.getElementById(
+      "readerSearch"
+    ).value
+      .toLowerCase()
+      .trim();
+
+
+  const status =
+    document.getElementById(
+      "statusFilter"
+    ).value;
+
+
+  const sort =
+    document.getElementById(
+      "sortReaders"
+    ).value;
+
+
+  let filtered =
+    readers.filter(reader => {
+
+      const name =
+        readerName(reader).toLowerCase();
+
+      const email =
+        readerEmail(reader).toLowerCase();
+
+      if(
+        search &&
+        !name.includes(search) &&
+        !email.includes(search)
+      ){
+
+        return false;
+
+      }
+
+
+      if(
+        status !== "all" &&
+        readerStatus(reader) !== status
+      ){
+
+        return false;
+
+      }
+
+
+      return true;
+
+    });
+
+
+  filtered.sort((a,b) => {
+
+    if(sort === "name"){
+
+      return readerName(a)
+        .localeCompare(readerName(b));
+
+    }
+
+
+    if(sort === "coins"){
+
+      return readerCoins(b) -
+        readerCoins(a);
+
+    }
+
+
+    if(sort === "chapters"){
+
+      return readerUnlockCount(
+        readerId(b)
+      ) -
+      readerUnlockCount(
+        readerId(a)
+      );
+
+    }
+
+
+    const dateA =
+      new Date(
+        joinedDate(a) || 0
+      ).getTime();
+
+    const dateB =
+      new Date(
+        joinedDate(b) || 0
+      ).getTime();
+
+
+    if(sort === "oldest"){
+      return dateA - dateB;
+    }
+
+    return dateB - dateA;
+
+  });
+
+
+  if(!filtered.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="8">
+          <div class="empty-state">
+            <strong>No readers found</strong>
+            ${
+              readers.length
+              ? "Try changing your search or filter."
+              : "Registered readers will appear here when real accounts exist."
+            }
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    filtered.map(reader => {
+
+      const id =
+        readerId(reader);
+
+      const name =
+        readerName(reader);
+
+      const email =
+        readerEmail(reader);
+
+      const status =
+        readerStatus(reader);
+
+      const coins =
+        readerCoins(reader);
+
+      const bookCount =
+        readerBookCount(id);
+
+      const unlockCount =
+        readerUnlockCount(id);
+
+      const spent =
+        readerSpent(id);
+
+      const active =
+        lastActive(reader);
+
+
+      const initial =
+        name.charAt(0)
+          .toUpperCase();
+
+
+      const statusClass =
+        status === "active"
+        ? "active"
+        : "suspended";
+
+
+      return `
+        <tr>
+
+          <td>
+
+            <div class="reader-info">
+
+              <div class="avatar">
+                ${escapeHTML(initial)}
+              </div>
+
+              <div>
+
+                <div class="reader-name">
+                  ${escapeHTML(name)}
+                </div>
+
+                <div class="reader-email">
+                  ${escapeHTML(email)}
+                </div>
+
+              </div>
+
+            </div>
+
+          </td>
+
+
+          <td>
+            <span class="badge ${statusClass}">
+              ${escapeHTML(capitalize(status))}
+            </span>
+          </td>
+
+
+          <td>
+            ${formatNumber(coins)}
+          </td>
+
+
+          <td>
+            ${bookCount}
+          </td>
+
+
+          <td>
+            ${unlockCount}
+          </td>
+
+
+          <td>
+            $${spent.toFixed(2)}
+          </td>
+
+
+          <td>
+            ${active
+              ? escapeHTML(formatDate(active))
+              : "—"
+            }
+          </td>
+
+
+          <td>
+
+            <button
+              class="btn"
+              onclick="openReader('${escapeAttribute(id)}')"
+            >
+              View
+            </button>
+
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+
+}
+
+
+/* =========================
+   DETAIL
+========================= */
+
+function openReader(id){
+
+  const reader =
+    readers.find(
+      item =>
+        String(readerId(item)) === String(id)
+    );
+
+
+  if(!reader){
+    return;
+  }
+
+
+  const name =
+    readerName(reader);
+
+  const email =
+    readerEmail(reader);
+
+  const status =
+    readerStatus(reader);
+
+  const coins =
+    readerCoins(reader);
+
+  const unlockCount =
+    readerUnlockCount(id);
+
+  const bookCount =
+    readerBookCount(id);
+
+  const spent =
+    readerSpent(id);
+
+  const joined =
+    joinedDate(reader);
+
+  const active =
+    lastActive(reader);
+
+
+  const readerUnlocks =
+    getReaderUnlocks(id);
+
+  const readerTransactions =
+    getReaderTransactions(id);
+
+
+  const initial =
+    name.charAt(0).toUpperCase();
+
+
+  document.getElementById(
+    "readerDetails"
+  ).innerHTML = `
+
+    <div class="profile-header">
+
+      <div class="large-avatar">
+        ${escapeHTML(initial)}
+      </div>
+
+      <div>
+
+        <div class="profile-name">
+          ${escapeHTML(name)}
+        </div>
+
+        <div class="profile-email">
+          ${escapeHTML(email)}
+        </div>
+
+        <div style="margin-top:8px;">
+          <span class="badge ${
+            status === "active"
+            ? "active"
+            : "suspended"
+          }">
+            ${escapeHTML(capitalize(status))}
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="detail-stats">
+
+      <div class="detail-stat">
+        <span>Coins</span>
+        <strong>${formatNumber(coins)}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Books Read</span>
+        <strong>${bookCount}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Chapters Unlocked</span>
+        <strong>${unlockCount}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Total Spent</span>
+        <strong>$${spent.toFixed(2)}</strong>
+      </div>
+
+    </div>
+
+
+    <div class="detail-section">
+
+      <h3>Account Information</h3>
+
+      <div class="detail-row">
+        <span>Reader ID</span>
+        <span>${escapeHTML(id || "Not assigned")}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Username</span>
+        <span>${escapeHTML(name)}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Email</span>
+        <span>${escapeHTML(email)}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Status</span>
+        <span>${escapeHTML(capitalize(status))}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Joined</span>
+        <span>${joined ? escapeHTML(formatDate(joined)) : "—"}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Last Active</span>
+        <span>${active ? escapeHTML(formatDate(active)) : "—"}</span>
+      </div>
+
+    </div>
+
+
+    <div class="detail-section">
+
+      <h3>Reading Activity</h3>
+
+      <div class="detail-row">
+        <span>Books Read</span>
+        <span>${bookCount}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Chapters Unlocked</span>
+        <span>${unlockCount}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Unlock Records</span>
+        <span>${readerUnlocks.length}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Transactions</span>
+        <span>${readerTransactions.length}</span>
+      </div>
+
+    </div>
+
+
+    <div class="detail-section">
+
+      <h3>Financial Activity</h3>
+
+      <div class="detail-row">
+        <span>Current Coins</span>
+        <span>${formatNumber(coins)}</span>
+      </div>
+
+      <div class="detail-row">
+        <span>Total Recorded Spending</span>
+        <span>$${spent.toFixed(2)}</span>
+      </div>
+
+    </div>
+
+
+    <div class="action-row">
+
+      ${
+        status === "suspended" ||
+        status === "blocked"
+
+        ? `
+          <button
+            class="btn success"
+            onclick="changeReaderStatus('${escapeAttribute(id)}','active')"
+          >
+            Restore Reader
+          </button>
+        `
+
+        : `
+          <button
+            class="btn secondary"
+            onclick="changeReaderStatus('${escapeAttribute(id)}','suspended')"
+          >
+            Suspend Reader
+          </button>
+        `
+      }
+
+
+      <button
+        class="btn secondary"
+        onclick="exportSingleReader('${escapeAttribute(id)}')"
+      >
+        Export Reader
+      </button>
+
+
+      <button
+        class="btn danger"
+        onclick="deleteReader('${escapeAttribute(id)}')"
+      >
+        Delete Reader
+      </button>
+
+    </div>
+
+  `;
+
+
+  document
+    .getElementById("readerModal")
+    .classList.add("show");
+
+}
+
+
+/* =========================
+   CLOSE MODAL
+========================= */
+
+function closeReaderModal(){
+
+  document
+    .getElementById("readerModal")
+    .classList.remove("show");
+
+}
+
+
+/* =========================
+   STATUS
+========================= */
+
+function changeReaderStatus(id,status){
+
+  const index =
+    readers.findIndex(
+      reader =>
+        String(readerId(reader)) === String(id)
+    );
+
+
+  if(index === -1){
+    return;
+  }
+
+
+  readers[index].status =
+    status;
+
+
+  readers[index].updatedAt =
+    new Date().toISOString();
+
+
+  localStorage.setItem(
+    READERS_KEY,
+    JSON.stringify(readers)
+  );
+
+
+  loadReaders();
+
+  openReader(id);
+
+}
+
+
+/* =========================
+   DELETE
+========================= */
+
+function deleteReader(id){
+
+  const reader =
+    readers.find(
+      item =>
+        String(readerId(item)) === String(id)
+    );
+
+
+  if(!reader){
+    return;
+  }
+
+
+  const name =
+    readerName(reader);
+
+
+  const confirmed =
+    confirm(
+      "Delete reader \"" +
+      name +
+      "\"? This removes the reader account from the local admin database."
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  readers =
+    readers.filter(
+      item =>
+        String(readerId(item)) !== String(id)
+    );
+
+
+  localStorage.setItem(
+    READERS_KEY,
+    JSON.stringify(readers)
+  );
+
+
+  closeReaderModal();
+
+  loadReaders();
+
+}
+
+
+/* =========================
+   ACTIVITY OVERVIEW
+========================= */
+
+function renderActivity(){
+
+  const container =
+    document.getElementById(
+      "activityOverview"
+    );
+
+
+  if(!readers.length){
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>No reader activity yet</strong>
+        Once real readers register and unlock chapters, their activity will be calculated here.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let totalCoins = 0;
+  let totalUnlocks = 0;
+  let totalSpending = 0;
+
+
+  readers.forEach(reader => {
+
+    const id =
+      readerId(reader);
+
+    totalCoins +=
+      readerCoins(reader);
+
+    totalUnlocks +=
+      readerUnlockCount(id);
+
+    totalSpending +=
+      readerSpent(id);
+
+  });
+
+
+  const averageCoins =
+    readers.length
+    ? totalCoins / readers.length
+    : 0;
+
+
+  const averageUnlocks =
+    readers.length
+    ? totalUnlocks / readers.length
+    : 0;
+
+
+  container.innerHTML = `
+
+    <div class="detail-stats">
+
+      <div class="detail-stat">
+        <span>Coins Held by Readers</span>
+        <strong>${formatNumber(totalCoins)}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Total Unlocks</span>
+        <strong>${formatNumber(totalUnlocks)}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Recorded Spending</span>
+        <strong>$${totalSpending.toFixed(2)}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <span>Avg. Unlocks / Reader</span>
+        <strong>${averageUnlocks.toFixed(1)}</strong>
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================
+   EXPORT ALL
+========================= */
+
+function exportReaders(){
+
+  if(!readers.length){
+
+    alert("There are no readers to export yet.");
+
+    return;
+
+  }
+
+
+  const exportData =
+    readers.map(reader => {
+
+      const id =
+        readerId(reader);
+
+      return {
+
+        id:id,
+
+        username:readerName(reader),
+
+        email:readerEmail(reader),
+
+        status:readerStatus(reader),
+
+        coins:readerCoins(reader),
+
+        booksRead:readerBookCount(id),
+
+        chaptersUnlocked:readerUnlockCount(id),
+
+        totalSpent:readerSpent(id),
+
+        joinedAt:joinedDate(reader),
+
+        lastActive:lastActive(reader)
+
+      };
+
+    });
+
+
+  downloadJSON(
+    "novelora-readers.json",
+    exportData
+  );
+
+}
+
+
+/* =========================
+   EXPORT SINGLE
+========================= */
+
+function exportSingleReader(id){
+
+  const reader =
+    readers.find(
+      item =>
+        String(readerId(item)) === String(id)
+    );
+
+
+  if(!reader){
+    return;
+  }
+
+
+  const data = {
+
+    account:reader,
+
+    statistics:{
+
+      coins:readerCoins(reader),
+
+      booksRead:readerBookCount(id),
+
+      chaptersUnlocked:readerUnlockCount(id),
+
+      totalSpent:readerSpent(id)
+
+    },
+
+    unlocks:getReaderUnlocks(id),
+
+    transactions:getReaderTransactions(id)
+
+  };
+
+
+  downloadJSON(
+    "novelora-reader-" + id + ".json",
+    data
+  );
+
+}
+
+
+/* =========================
+   DOWNLOAD
+========================= */
+
+function downloadJSON(filename,data){
+
+  const blob =
+    new Blob(
+      [
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      ],
+      {
+        type:"application/json"
+      }
+    );
+
+
+  const url =
+    URL.createObjectURL(blob);
+
+
+  const link =
+    document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+
+  document.body.appendChild(link);
+
+  link.click();
+
+  link.remove();
+
+  URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function formatNumber(value){
+
+  return Number(
+    value || 0
+  ).toLocaleString();
+
+}
+
+
+function formatDate(value){
+
+  const date =
+    new Date(value);
+
+  if(
+    isNaN(
+      date.getTime()
+    )
+  ){
+
+    return String(value);
+
+  }
+
+
+  return date.toLocaleDateString(
+    undefined,
+    {
+      day:"numeric",
+      month:"short",
+      year:"numeric"
+    }
+  );
+
+}
+
+
+function capitalize(value){
+
+  const text =
+    String(value || "");
+
+  return text.charAt(0).toUpperCase() +
+    text.slice(1);
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttribute(value){
+
+  return String(value ?? "")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/"/g,"&quot;");
+
+}
+
+
+/* =========================
+   EVENTS
+========================= */
+
+document
+  .getElementById("readerSearch")
+  .addEventListener(
+    "input",
+    renderReaders
+  );
+
+
+document
+  .getElementById("statusFilter")
+  .addEventListener(
+    "change",
+    renderReaders
+  );
+
+
+document
+  .getElementById("sortReaders")
+  .addEventListener(
+    "change",
+    renderReaders
+  );
+
+
+document
+  .getElementById("readerModal")
+  .addEventListener(
+    "click",
+    function(event){
+
+      if(
+        event.target === this
+      ){
+
+        closeReaderModal();
+
+      }
+
+    }
+  );
+
+
+/* =========================
+   START
+========================= */
+
+loadReaders();
+
+</script>
+
+</body>
+</html>
