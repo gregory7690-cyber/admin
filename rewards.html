@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Rewards — Novelora Admin</title>
 
   <link rel="stylesheet" href="style.css">
@@ -69,7 +70,7 @@
 
     .reward-row {
       display: grid;
-      grid-template-columns: 1fr 100px 80px;
+      grid-template-columns: 1fr 100px 90px;
       gap: 15px;
       align-items: center;
       padding: 15px 0;
@@ -116,8 +117,7 @@
       margin-bottom: 7px;
     }
 
-    .form-group input,
-    .form-group select {
+    .form-group input {
       width: 100%;
       box-sizing: border-box;
       padding: 12px 14px;
@@ -128,8 +128,7 @@
       outline: none;
     }
 
-    .form-group input:focus,
-    .form-group select:focus {
+    .form-group input:focus {
       border-color: rgba(242,154,183,0.7);
     }
 
@@ -145,6 +144,17 @@
 
     .save-button:hover {
       opacity: 0.9;
+    }
+
+    .reward-message {
+      display: none;
+      padding: 13px 15px;
+      border-radius: 11px;
+      background: rgba(143,216,167,0.08);
+      border: 1px solid rgba(143,216,167,0.18);
+      color: #9de0b2;
+      font-size: 13px;
+      margin-top: 15px;
     }
 
     .checkin-grid {
@@ -200,6 +210,12 @@
     .empty-rewards h3 {
       color: #fff;
       margin: 0 0 8px;
+    }
+
+    .empty-rewards p {
+      margin: 0;
+      color: #888;
+      font-size: 13px;
     }
 
     @media (max-width: 1000px) {
@@ -293,6 +309,7 @@
         <span>Analytics</span>
       </a>
 
+      <!-- REWARDS CONNECTION -->
       <a href="rewards.html" class="nav-item active">
         <span>✦</span>
         <span>Rewards</span>
@@ -400,6 +417,7 @@
     </section>
 
 
+    <!-- PROGRAMS + SETTINGS -->
     <section class="rewards-layout">
 
       <!-- REWARD PROGRAMS -->
@@ -411,55 +429,83 @@
           Current Novelora reader reward structure.
         </p>
 
+
         <div class="reward-row">
 
           <div class="reward-info">
             <strong>Daily Login</strong>
-            <span>Reward readers for returning each day.</span>
+            <span>
+              Reward readers for returning each day.
+            </span>
           </div>
 
-          <div class="reward-coins">2 coins</div>
+          <div class="reward-coins">
+            <span id="programDailyLogin">2</span> coins
+          </div>
 
-          <div class="reward-status">Active</div>
+          <div class="reward-status">
+            Configured
+          </div>
 
         </div>
+
 
         <div class="reward-row">
 
           <div class="reward-info">
             <strong>Rewarded Ad</strong>
-            <span>Coins after a completed rewarded advertisement.</span>
+            <span>
+              Coins after a completed rewarded advertisement.
+            </span>
           </div>
 
-          <div class="reward-coins">2 coins</div>
+          <div class="reward-coins">
+            <span id="programAdReward">2</span> coins
+          </div>
 
-          <div class="reward-status">Active</div>
+          <div class="reward-status">
+            Configured
+          </div>
 
         </div>
+
 
         <div class="reward-row">
 
           <div class="reward-info">
             <strong>Share to Earn</strong>
-            <span>Reward genuine sharing activity.</span>
+            <span>
+              Reward genuine sharing activity.
+            </span>
           </div>
 
-          <div class="reward-coins">2 coins</div>
+          <div class="reward-coins">
+            <span id="programShareReward">2</span> coins
+          </div>
 
-          <div class="reward-status">Active</div>
+          <div class="reward-status">
+            Configured
+          </div>
 
         </div>
+
 
         <div class="reward-row">
 
           <div class="reward-info">
             <strong>New Reader Bonus</strong>
-            <span>One-time welcome reward for a new reader.</span>
+            <span>
+              One-time welcome reward for a new reader.
+            </span>
           </div>
 
-          <div class="reward-coins">20 coins</div>
+          <div class="reward-coins">
+            <span id="programNewUser">20</span> coins
+          </div>
 
-          <div class="reward-status">Active</div>
+          <div class="reward-status">
+            Configured
+          </div>
 
         </div>
 
@@ -472,12 +518,16 @@
         <h2>Reward Settings</h2>
 
         <p>
-          Adjust reward values before the real reward system goes live.
+          Change the amount of coins attached to each reward.
         </p>
 
-        <form id="rewardSettingsForm" class="settings-form">
+        <form
+          id="rewardSettingsForm"
+          class="settings-form"
+        >
 
           <div class="form-group">
+
             <label for="dailyLogin">
               Daily Login Coins
             </label>
@@ -486,12 +536,16 @@
               id="dailyLogin"
               type="number"
               min="0"
+              step="1"
               value="2"
               required
             >
+
           </div>
 
+
           <div class="form-group">
+
             <label for="adReward">
               Rewarded Ad Coins
             </label>
@@ -500,12 +554,16 @@
               id="adReward"
               type="number"
               min="0"
+              step="1"
               value="2"
               required
             >
+
           </div>
 
+
           <div class="form-group">
+
             <label for="shareReward">
               Share Reward Coins
             </label>
@@ -514,12 +572,16 @@
               id="shareReward"
               type="number"
               min="0"
+              step="1"
               value="2"
               required
             >
+
           </div>
 
+
           <div class="form-group">
+
             <label for="newUser">
               New User Bonus
             </label>
@@ -528,10 +590,13 @@
               id="newUser"
               type="number"
               min="0"
+              step="1"
               value="20"
               required
             >
+
           </div>
+
 
           <button
             type="submit"
@@ -542,10 +607,10 @@
 
         </form>
 
+
         <div
           id="settingsMessage"
-          class="reward-note"
-          style="display:none;"
+          class="reward-message"
         ></div>
 
       </div>
@@ -554,12 +619,15 @@
 
 
     <!-- 7 DAY CHECK-IN -->
-    <section class="reward-panel" style="margin-bottom:24px;">
+    <section
+      class="reward-panel"
+      style="margin-bottom:24px;"
+    >
 
       <h2>7-Day Check-In</h2>
 
       <p>
-        Readers receive a reward for maintaining their daily check-in.
+        Readers receive coins for maintaining their daily check-in.
       </p>
 
       <div class="checkin-grid">
@@ -602,9 +670,9 @@
       </div>
 
       <div class="reward-note">
-        The check-in cycle resets after Day 7. The actual reader-side
-        claiming system will be connected when the reader reward system
-        is implemented.
+        The check-in cycle resets after Day 7.
+        The reader-side claiming system will use these
+        reward settings when it is connected.
       </div>
 
     </section>
@@ -616,7 +684,7 @@
       <h2>Reward History</h2>
 
       <p>
-        Real reward activity will appear here once readers begin claiming rewards.
+        Reader reward claims and coin distributions will appear here.
       </p>
 
       <div id="rewardHistory">
@@ -628,7 +696,8 @@
           <h3>No reward activity yet</h3>
 
           <p>
-            Reward claims and coin distributions will appear here.
+            Reward claims and coin distributions will appear here
+            once reward activity is recorded.
           </p>
 
         </div>
@@ -644,311 +713,498 @@
 
 <script>
 
-const REWARD_SETTINGS_KEY =
-  "noveloraRewardSettings";
+  /* =========================================
+     NOVELORA REWARDS SYSTEM
+     ========================================= */
 
-const REWARD_HISTORY_KEY =
-  "noveloraRewardHistory";
+  const REWARD_SETTINGS_KEY =
+    "noveloraRewardSettings";
 
+  const REWARD_HISTORY_KEY =
+    "noveloraRewardHistory";
 
-function getData(key) {
 
-  try {
+  /* DEFAULT SETTINGS */
 
-    const data =
-      localStorage.getItem(key);
+  const DEFAULT_SETTINGS = {
+    dailyLogin: 2,
+    adReward: 2,
+    shareReward: 2,
+    newUser: 20
+  };
 
-    return data
-      ? JSON.parse(data)
-      : [];
 
-  } catch {
+  /* =========================================
+     GET SAVED SETTINGS
+     ========================================= */
 
-    return [];
+  function getSettings() {
 
-  }
+    try {
 
-}
-
-
-function saveData(key, data) {
-
-  localStorage.setItem(
-    key,
-    JSON.stringify(data)
-  );
-
-}
-
-
-function getSettings() {
-
-  try {
-
-    const data =
-      localStorage.getItem(
-        REWARD_SETTINGS_KEY
-      );
-
-    return data
-      ? JSON.parse(data)
-      : {
-          dailyLogin: 2,
-          adReward: 2,
-          shareReward: 2,
-          newUser: 20
-        };
-
-  } catch {
-
-    return {
-      dailyLogin: 2,
-      adReward: 2,
-      shareReward: 2,
-      newUser: 20
-    };
-
-  }
-
-}
-
-
-function updateStats() {
-
-  const settings =
-    getSettings();
-
-  const history =
-    getData(REWARD_HISTORY_KEY);
-
-
-  const coins =
-    history.reduce(
-      (total, reward) =>
-        total +
-        Number(reward.coins || 0),
-      0
-    );
-
-
-  document.querySelector(
-    "#coinsDistributed"
-  ).textContent =
-    coins.toLocaleString();
-
-
-  document.querySelector(
-    "#rewardClaims"
-  ).textContent =
-    history.length;
-
-
-  document.querySelector(
-    "#dailyLoginReward"
-  ).textContent =
-    settings.dailyLogin;
-
-
-  document.querySelector(
-    "#newUserBonus"
-  ).textContent =
-    settings.newUser;
-
-
-  document.querySelector(
-    "#dailyLogin"
-  ).value =
-    settings.dailyLogin;
-
-
-  document.querySelector(
-    "#adReward"
-  ).value =
-    settings.adReward;
-
-
-  document.querySelector(
-    "#shareReward"
-  ).value =
-    settings.shareReward;
-
-
-  document.querySelector(
-    "#newUser"
-  ).value =
-    settings.newUser;
-
-
-  renderHistory(history);
-
-}
-
-
-function renderHistory(history) {
-
-  const container =
-    document.querySelector(
-      "#rewardHistory"
-    );
-
-
-  if (!history.length) {
-
-    container.innerHTML = `
-      <div class="empty-rewards">
-
-        <div class="symbol">✦</div>
-
-        <h3>No reward activity yet</h3>
-
-        <p>
-          Reward claims and coin distributions will appear here.
-        </p>
-
-      </div>
-    `;
-
-    return;
-
-  }
-
-
-  container.innerHTML =
-    history
-      .slice(0, 20)
-      .map(reward => `
-
-        <div class="reward-row">
-
-          <div class="reward-info">
-
-            <strong>
-              ${escapeHTML(
-                reward.type ||
-                "Reward"
-              )}
-            </strong>
-
-            <span>
-              ${reward.date
-                ? new Date(
-                    reward.date
-                  ).toLocaleString()
-                : "Unknown date"}
-            </span>
-
-          </div>
-
-          <div class="reward-coins">
-            +${Number(
-              reward.coins || 0
-            )} coins
-          </div>
-
-          <div class="reward-status">
-            ${escapeHTML(
-              reward.status ||
-              "Completed"
-            )}
-          </div>
-
-        </div>
-
-      `)
-      .join("");
-
-}
-
-
-function escapeHTML(value) {
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-  div.textContent =
-    value ?? "";
-
-  return div.innerHTML;
-
-}
-
-
-document
-  .querySelector(
-    "#rewardSettingsForm"
-  )
-  .addEventListener(
-    "submit",
-    event => {
-
-      event.preventDefault();
-
-
-      const settings = {
-
-        dailyLogin:
-          Number(
-            document.querySelector(
-              "#dailyLogin"
-            ).value
-          ),
-
-        adReward:
-          Number(
-            document.querySelector(
-              "#adReward"
-            ).value
-          ),
-
-        shareReward:
-          Number(
-            document.querySelector(
-              "#shareReward"
-            ).value
-          ),
-
-        newUser:
-          Number(
-            document.querySelector(
-              "#newUser"
-            ).value
-          )
-
-      };
-
-
-      saveData(
-        REWARD_SETTINGS_KEY,
-        settings
-      );
-
-
-      const message =
-        document.querySelector(
-          "#settingsMessage"
+      const saved =
+        localStorage.getItem(
+          REWARD_SETTINGS_KEY
         );
 
+      if (!saved) {
+        return { ...DEFAULT_SETTINGS };
+      }
 
-      message.textContent =
-        "Reward settings saved successfully.";
+      const parsed =
+        JSON.parse(saved);
 
+      return {
+        dailyLogin:
+          Number.isFinite(
+            Number(parsed.dailyLogin)
+          )
+            ? Number(parsed.dailyLogin)
+            : DEFAULT_SETTINGS.dailyLogin,
 
-      message.style.display =
-        "block";
+        adReward:
+          Number.isFinite(
+            Number(parsed.adReward)
+          )
+            ? Number(parsed.adReward)
+            : DEFAULT_SETTINGS.adReward,
 
+        shareReward:
+          Number.isFinite(
+            Number(parsed.shareReward)
+          )
+            ? Number(parsed.shareReward)
+            : DEFAULT_SETTINGS.shareReward,
 
-      updateStats();
+        newUser:
+          Number.isFinite(
+            Number(parsed.newUser)
+          )
+            ? Number(parsed.newUser)
+            : DEFAULT_SETTINGS.newUser
+      };
+
+    } catch (error) {
+
+      return { ...DEFAULT_SETTINGS };
 
     }
-  );
+
+  }
 
 
-document.addEventListener(
-  "DOMContentLoaded",
-  updateStats
-);
+  /* =========================================
+     SAVE SETTINGS
+     ========================================= */
+
+  function saveSettings(settings) {
+
+    localStorage.setItem(
+      REWARD_SETTINGS_KEY,
+      JSON.stringify(settings)
+    );
+
+  }
+
+
+  /* =========================================
+     GET REWARD HISTORY
+     ========================================= */
+
+  function getRewardHistory() {
+
+    try {
+
+      const saved =
+        localStorage.getItem(
+          REWARD_HISTORY_KEY
+        );
+
+      if (!saved) {
+        return [];
+      }
+
+      const parsed =
+        JSON.parse(saved);
+
+      return Array.isArray(parsed)
+        ? parsed
+        : [];
+
+    } catch (error) {
+
+      return [];
+
+    }
+
+  }
+
+
+  /* =========================================
+     UPDATE ALL REWARD VALUES ON PAGE
+     ========================================= */
+
+  function updateRewardDisplay() {
+
+    const settings =
+      getSettings();
+
+
+    /* Top statistics */
+
+    document.getElementById(
+      "dailyLoginReward"
+    ).textContent =
+      settings.dailyLogin;
+
+
+    document.getElementById(
+      "newUserBonus"
+    ).textContent =
+      settings.newUser;
+
+
+    /* Reward program values */
+
+    document.getElementById(
+      "programDailyLogin"
+    ).textContent =
+      settings.dailyLogin;
+
+
+    document.getElementById(
+      "programAdReward"
+    ).textContent =
+      settings.adReward;
+
+
+    document.getElementById(
+      "programShareReward"
+    ).textContent =
+      settings.shareReward;
+
+
+    document.getElementById(
+      "programNewUser"
+    ).textContent =
+      settings.newUser;
+
+
+    /* Settings inputs */
+
+    document.getElementById(
+      "dailyLogin"
+    ).value =
+      settings.dailyLogin;
+
+
+    document.getElementById(
+      "adReward"
+    ).value =
+      settings.adReward;
+
+
+    document.getElementById(
+      "shareReward"
+    ).value =
+      settings.shareReward;
+
+
+    document.getElementById(
+      "newUser"
+    ).value =
+      settings.newUser;
+
+  }
+
+
+  /* =========================================
+     UPDATE REWARD STATISTICS
+     ========================================= */
+
+  function updateRewardStats() {
+
+    const history =
+      getRewardHistory();
+
+
+    const coinsDistributed =
+      history.reduce(
+        function(total, reward) {
+
+          return total +
+            Number(
+              reward.coins || 0
+            );
+
+        },
+        0
+      );
+
+
+    document.getElementById(
+      "coinsDistributed"
+    ).textContent =
+      coinsDistributed.toLocaleString();
+
+
+    document.getElementById(
+      "rewardClaims"
+    ).textContent =
+      history.length.toLocaleString();
+
+  }
+
+
+  /* =========================================
+     ESCAPE HTML
+     ========================================= */
+
+  function escapeHTML(value) {
+
+    const element =
+      document.createElement("div");
+
+    element.textContent =
+      value == null
+        ? ""
+        : String(value);
+
+    return element.innerHTML;
+
+  }
+
+
+  /* =========================================
+     RENDER REWARD HISTORY
+     ========================================= */
+
+  function renderRewardHistory() {
+
+    const container =
+      document.getElementById(
+        "rewardHistory"
+      );
+
+
+    const history =
+      getRewardHistory();
+
+
+    if (!history.length) {
+
+      container.innerHTML = `
+        <div class="empty-rewards">
+
+          <div class="symbol">✦</div>
+
+          <h3>No reward activity yet</h3>
+
+          <p>
+            Reward claims and coin distributions
+            will appear here once they are recorded.
+          </p>
+
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    container.innerHTML =
+      history
+        .slice()
+        .reverse()
+        .slice(0, 20)
+        .map(function(reward) {
+
+          const type =
+            escapeHTML(
+              reward.type || "Reward"
+            );
+
+
+          const status =
+            escapeHTML(
+              reward.status || "Completed"
+            );
+
+
+          let dateText =
+            "Unknown date";
+
+
+          if (reward.date) {
+
+            const date =
+              new Date(reward.date);
+
+            if (!isNaN(date.getTime())) {
+
+              dateText =
+                date.toLocaleString();
+
+            }
+
+          }
+
+
+          const coins =
+            Number(
+              reward.coins || 0
+            );
+
+
+          return `
+            <div class="reward-row">
+
+              <div class="reward-info">
+
+                <strong>
+                  ${type}
+                </strong>
+
+                <span>
+                  ${escapeHTML(dateText)}
+                </span>
+
+              </div>
+
+              <div class="reward-coins">
+                +${coins} coins
+              </div>
+
+              <div class="reward-status">
+                ${status}
+              </div>
+
+            </div>
+          `;
+
+        })
+        .join("");
+
+  }
+
+
+  /* =========================================
+     LOAD EVERYTHING
+     ========================================= */
+
+  function loadRewardsPage() {
+
+    updateRewardDisplay();
+
+    updateRewardStats();
+
+    renderRewardHistory();
+
+  }
+
+
+  /* =========================================
+     SAVE REWARD SETTINGS
+     ========================================= */
+
+  document
+    .getElementById(
+      "rewardSettingsForm"
+    )
+    .addEventListener(
+      "submit",
+      function(event) {
+
+        event.preventDefault();
+
+
+        const settings = {
+
+          dailyLogin:
+            Math.max(
+              0,
+              Number(
+                document.getElementById(
+                  "dailyLogin"
+                ).value
+              )
+            ),
+
+          adReward:
+            Math.max(
+              0,
+              Number(
+                document.getElementById(
+                  "adReward"
+                ).value
+              )
+            ),
+
+          shareReward:
+            Math.max(
+              0,
+              Number(
+                document.getElementById(
+                  "shareReward"
+                ).value
+              )
+            ),
+
+          newUser:
+            Math.max(
+              0,
+              Number(
+                document.getElementById(
+                  "newUser"
+                ).value
+              )
+            )
+
+        };
+
+
+        saveSettings(settings);
+
+
+        /* Immediately update the page */
+
+        updateRewardDisplay();
+
+
+        const message =
+          document.getElementById(
+            "settingsMessage"
+          );
+
+
+        message.textContent =
+          "Reward settings saved successfully.";
+
+
+        message.style.display =
+          "block";
+
+
+        setTimeout(
+          function() {
+
+            message.style.display =
+              "none";
+
+          },
+          3000
+        );
+
+      }
+    );
+
+
+  /* =========================================
+     START PAGE
+     ========================================= */
+
+  loadRewardsPage();
 
 </script>
 
