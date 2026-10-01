@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications - Novelora Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top right, rgba(255, 70, 150, .12), transparent 30%),
+        #0d0a10;
+    color: #fff;
+    min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: rgba(20, 15, 24, .97);
+    border-right: 1px solid rgba(255,255,255,.08);
+    padding: 25px 16px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.admin-logo {
+    font-size: 27px;
+    font-weight: 800;
+    margin: 0 10px 5px;
+    background: linear-gradient(90deg,#ff4f9a,#ff8fc2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.admin-subtitle {
+    color: #8f8795;
+    font-size: 12px;
+    margin: 0 10px 25px;
+}
+
+.admin-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #aaa1ad;
+    padding: 12px 14px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: .2s;
+    font-size: 14px;
+}
+
+.nav-item:hover {
+    background: rgba(255,79,154,.09);
+    color: white;
+}
+
+.nav-item.active {
+    background: linear-gradient(90deg,rgba(255,79,154,.18),rgba(255,79,154,.06));
+    color: #ff70aa;
+    border: 1px solid rgba(255,79,154,.16);
+}
+
+.nav-divider {
+    height: 1px;
+    background: rgba(255,255,255,.07);
+    margin: 10px 5px;
+}
+
+/* MAIN */
+.admin-main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 28px;
+}
+
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 28px;
+}
+
+.page-title {
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.page-description {
+    color: #938a98;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.topbar-badge {
+    background: rgba(255,79,154,.1);
+    border: 1px solid rgba(255,79,154,.18);
+    color: #ff76ae;
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    background: rgba(24,18,29,.9);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.stat-label {
+    color: #928996;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.stat-small {
+    color: #77707d;
+    font-size: 11px;
+    margin-top: 6px;
+}
+
+/* CONTENT */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.panel {
+    background: rgba(24,18,29,.92);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 20px;
+    padding: 22px;
+}
+
+.panel.full {
+    grid-column: 1 / -1;
+}
+
+.panel-title {
+    font-size: 18px;
+    font-weight: 750;
+    margin-bottom: 5px;
+}
+
+.panel-description {
+    color: #817987;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 12px;
+    color: #aaa1ad;
+    margin-bottom: 7px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 13px 14px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,.08);
+    background: #120e15;
+    color: white;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: rgba(255,79,154,.55);
+    box-shadow: 0 0 0 3px rgba(255,79,154,.07);
+}
+
+textarea.form-control {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.send-button {
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#ff4f9a,#ff77b3);
+    color: white;
+    font-weight: 800;
+    box-shadow: 0 8px 25px rgba(255,79,154,.18);
+}
+
+.send-button:hover {
+    transform: translateY(-1px);
+}
+
+/* QUICK TYPES */
+.type-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 10px;
+}
+
+.type-button {
+    text-align: left;
+    background: #130f16;
+    color: #bcb3c0;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 13px;
+    padding: 14px;
+}
+
+.type-button strong {
+    display: block;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.type-button span {
+    font-size: 11px;
+    color: #77707d;
+}
+
+.type-button:hover,
+.type-button.selected {
+    border-color: rgba(255,79,154,.45);
+    background: rgba(255,79,154,.08);
+}
+
+/* NOTIFICATION LIST */
+.notification-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-item {
+    background: #130f16;
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 14px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.notification-main {
+    min-width: 0;
+}
+
+.notification-title {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.notification-message {
+    color: #918995;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.notification-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 9px;
+}
+
+.tag {
+    background: rgba(255,255,255,.06);
+    color: #aaa1ad;
+    padding: 5px 8px;
+    border-radius: 7px;
+    font-size: 10px;
+}
+
+.tag.pink {
+    color: #ff78b0;
+    background: rgba(255,79,154,.1);
+}
+
+.delete-btn {
+    height: 34px;
+    padding: 0 11px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,80,100,.18);
+    background: rgba(255,70,90,.07);
+    color: #ff8395;
+    font-size: 11px;
+}
+
+/* EMPTY */
+.empty-state {
+    text-align: center;
+    padding: 45px 15px;
+    color: #706975;
+}
+
+.empty-icon {
+    font-size: 35px;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    font-size: 12px;
+}
+
+/* MESSAGE */
+.form-message {
+    display: none;
+    margin-top: 12px;
+    padding: 11px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.form-message.success {
+    display: block;
+    background: rgba(55,210,130,.08);
+    border: 1px solid rgba(55,210,130,.18);
+    color: #75e3a8;
+}
+
+.form-message.error {
+    display: block;
+    background: rgba(255,70,90,.08);
+    border: 1px solid rgba(255,70,90,.18);
+    color: #ff8c9a;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+    .stats-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .panel.full {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 750px) {
+    .admin-sidebar {
+        width: 210px;
+    }
+
+    .admin-main {
+        margin-left: 210px;
+        width: calc(100% - 210px);
+        padding: 18px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+    }
+
+    .admin-layout {
+        display: block;
+    }
+
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .type-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+
+        <div class="admin-logo">Novelora</div>
+        <div class="admin-subtitle">Admin Control Center</div>
+
+        <nav class="admin-navigation">
+
+            <a href="index.html" class="nav-item">🏠 Dashboard</a>
+            <a href="books.html" class="nav-item">📚 Books</a>
+            <a href="chapters.html" class="nav-item">📖 Chapters</a>
+            <a href="readers.html" class="nav-item">👥 Readers</a>
+            <a href="authors.html" class="nav-item">✍️ Authors</a>
+            <a href="community.html" class="nav-item">💬 Community</a>
+
+            <div class="nav-divider"></div>
+
+            <a href="notifications.html" class="nav-item active">🔔 Notifications</a>
+            <a href="money.html" class="nav-item">💰 Money</a>
+            <a href="analytics.html" class="nav-item">📊 Analytics</a>
+            <a href="rewards.html" class="nav-item">🎁 Rewards</a>
+            <a href="promotions.html" class="nav-item">📣 Promotions</a>
+
+            <div class="nav-divider"></div>
+
+            <a href="settings.html" class="nav-item">⚙️ Settings</a>
+            <a href="security.html" class="nav-item">🔐 Security</a>
+
+        </nav>
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+            <div>
+                <div class="page-title">Notifications</div>
+                <div class="page-description">
+                    Send updates, rewards, promotions and reader announcements.
+                </div>
+            </div>
+
+            <div class="topbar-badge">🔔 Notification Center</div>
+        </div>
+
+
+        <!-- STATS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-label">Total Notifications</div>
+                <div class="stat-value" id="totalNotifications">0</div>
+                <div class="stat-small">All notifications created</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Today</div>
+                <div class="stat-value" id="todayNotifications">0</div>
+                <div class="stat-small">Created today</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Reader Notifications</div>
+                <div class="stat-value" id="readerNotifications">0</div>
+                <div class="stat-small">Sent to readers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Promotion Notices</div>
+                <div class="stat-value" id="promotionNotifications">0</div>
+                <div class="stat-small">Promotion-related messages</div>
+            </div>
+
+        </section>
+
+
+        <div class="content-grid">
+
+            <!-- CREATE -->
+            <section class="panel">
+
+                <div class="panel-title">Create Notification</div>
+                <div class="panel-description">
+                    Create an announcement that can later be displayed to readers.
+                </div>
+
+                <form id="notificationForm">
+
+                    <div class="form-group">
+                        <label>Notification Title</label>
+                        <input
+                            id="notificationTitle"
+                            class="form-control"
+                            type="text"
+                            placeholder="e.g. New chapters are waiting for you"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label>Notification Type</label>
+
+                            <select id="notificationType" class="form-control">
+                                <option value="General">General</option>
+                                <option value="New Chapter">New Chapter</option>
+                                <option value="Reward">Reward</option>
+                                <option value="Promotion">Promotion</option>
+                                <option value="System">System</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Audience</label>
+
+                            <select id="notificationAudience" class="form-control">
+                                <option value="All Readers">All Readers</option>
+                                <option value="New Readers">New Readers</option>
+                                <option value="Active Readers">Active Readers</option>
+                                <option value="Authors">Authors</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Related Book</label>
+
+                        <select id="notificationBook" class="form-control">
+                            <option value="">No specific book</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+
+                        <textarea
+                            id="notificationMessage"
+                            class="form-control"
+                            placeholder="Write your notification message..."
+                            required
+                        ></textarea>
+                    </div>
+
+                    <button type="submit" class="send-button">
+                        Create Notification
+                    </button>
+
+                    <div id="formMessage" class="form-message"></div>
+
+                </form>
+
+            </section>
+
+
+            <!-- QUICK TYPES -->
+            <section class="panel">
+
+                <div class="panel-title">Quick Notification Types</div>
+                <div class="panel-description">
+                    Select a template to quickly prepare a notification.
+                </div>
+
+                <div class="type-grid">
+
+                    <button class="type-button" data-type="New Chapter">
+                        <strong>📖 New Chapter</strong>
+                        <span>Tell readers about a new chapter.</span>
+                    </button>
+
+                    <button class="type-button" data-type="Reward">
+                        <strong>🎁 Reward</strong>
+                        <span>Announce coins or reward events.</span>
+                    </button>
+
+                    <button class="type-button" data-type="Promotion">
+                        <strong>📣 Promotion</strong>
+                        <span>Notify readers about promotions.</span>
+                    </button>
+
+                    <button class="type-button" data-type="System">
+                        <strong>⚙️ System</strong>
+                        <span>Important platform announcements.</span>
+                    </button>
+
+                </div>
+
+                <div style="margin-top:25px; padding:17px; border-radius:14px; background:rgba(255,79,154,.06); border:1px solid rgba(255,79,154,.1);">
+                    <div style="font-size:13px;font-weight:700;margin-bottom:7px;">
+                        💡 Notification flow
+                    </div>
+
+                    <div style="font-size:11px;color:#887f8d;line-height:1.6;">
+                        Admin creates a notification → it is saved to the notification
+                        center → the reader side can later read the notification.
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- HISTORY -->
+            <section class="panel full">
+
+                <div class="panel-title">Notification History</div>
+                <div class="panel-description">
+                    Notifications created from this admin panel.
+                </div>
+
+                <div id="notificationList" class="notification-list"></div>
+
+            </section>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script>
+const NOTIFICATION_KEY = "noveloraNotifications";
+const BOOK_KEY = "noveloraAdminBooks";
+
+
+function getNotifications() {
+    try {
+        return JSON.parse(localStorage.getItem(NOTIFICATION_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+
+function saveNotifications(notifications) {
+    localStorage.setItem(
+        NOTIFICATION_KEY,
+        JSON.stringify(notifications)
+    );
+}
+
+
+function getBooks() {
+    try {
+        return JSON.parse(localStorage.getItem(BOOK_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+
+function loadBooks() {
+
+    const select = document.getElementById("notificationBook");
+
+    const books = getBooks();
+
+    books.forEach(book => {
+
+        const option = document.createElement("option");
+
+        option.value =
+            book.id ||
+            book.bookId ||
+            book.bookID ||
+            "";
+
+        option.textContent =
+            book.title ||
+            book.name ||
+            "Untitled Book";
+
+        select.appendChild(option);
+    });
+}
+
+
+function getTodayString() {
+
+    const now = new Date();
+
+    return now.toISOString().slice(0,10);
+}
+
+
+function updateStats() {
+
+    const notifications = getNotifications();
+
+    const today = getTodayString();
+
+    const todayCount = notifications.filter(item => {
+
+        return String(item.createdAt || "").slice(0,10) === today;
+
+    }).length;
+
+    const readerCount = notifications.filter(item => {
+
+        return item.audience !== "Authors";
+
+    }).length;
+
+    const promotionCount = notifications.filter(item => {
+
+        return item.type === "Promotion";
+
+    }).length;
+
+
+    document.getElementById("totalNotifications").textContent =
+        notifications.length;
+
+    document.getElementById("todayNotifications").textContent =
+        todayCount;
+
+    document.getElementById("readerNotifications").textContent =
+        readerCount;
+
+    document.getElementById("promotionNotifications").textContent =
+        promotionCount;
+}
+
+
+function formatDate(dateString) {
+
+    if (!dateString) return "";
+
+    const date = new Date(dateString);
+
+    if (isNaN(date.getTime())) return dateString;
+
+    return date.toLocaleString();
+}
+
+
+function renderNotifications() {
+
+    const list = document.getElementById("notificationList");
+
+    const notifications = getNotifications();
+
+    list.innerHTML = "";
+
+    if (!notifications.length) {
+
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔔</div>
+                <p>No notifications have been created yet.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    [...notifications].reverse().forEach(notification => {
+
+        const item = document.createElement("div");
+
+        item.className = "notification-item";
+
+        item.innerHTML = `
+
+            <div class="notification-main">
+
+                <div class="notification-title">
+                    ${escapeHtml(notification.title)}
+                </div>
+
+                <div class="notification-message">
+                    ${escapeHtml(notification.message)}
+                </div>
+
+                <div class="notification-meta">
+
+                    <span class="tag pink">
+                        ${escapeHtml(notification.type)}
+                    </span>
+
+                    <span class="tag">
+                        ${escapeHtml(notification.audience)}
+                    </span>
+
+                    ${
+                        notification.bookTitle
+                        ? `<span class="tag">${escapeHtml(notification.bookTitle)}</span>`
+                        : ""
+                    }
+
+                    <span class="tag">
+                        ${formatDate(notification.createdAt)}
+                    </span>
+
+                </div>
+
+            </div>
+
+            <button
+                class="delete-btn"
+                onclick="deleteNotification('${notification.id}')"
+            >
+                Delete
+            </button>
+
+        `;
+
+        list.appendChild(item);
+    });
+}
+
+
+function deleteNotification(id) {
+
+    const notifications = getNotifications();
+
+    const updated = notifications.filter(item => item.id !== id);
+
+    saveNotifications(updated);
+
+    renderNotifications();
+    updateStats();
+}
+
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+document
+    .getElementById("notificationForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+
+        const title =
+            document.getElementById("notificationTitle").value.trim();
+
+        const type =
+            document.getElementById("notificationType").value;
+
+        const audience =
+            document.getElementById("notificationAudience").value;
+
+        const bookSelect =
+            document.getElementById("notificationBook");
+
+        const message =
+            document.getElementById("notificationMessage").value.trim();
+
+
+        const formMessage =
+            document.getElementById("formMessage");
+
+
+        if (!title || !message) {
+
+            formMessage.className = "form-message error";
+            formMessage.textContent =
+                "Please enter a title and message.";
+
+            return;
+        }
+
+
+        const selectedBook =
+            bookSelect.options[bookSelect.selectedIndex];
+
+
+        const notification = {
+
+            id:
+                "notification_" +
+                Date.now(),
+
+            title: title,
+
+            type: type,
+
+            audience: audience,
+
+            bookId:
+                bookSelect.value || "",
+
+            bookTitle:
+                bookSelect.value
+                    ? selectedBook.textContent
+                    : "",
+
+            message: message,
+
+            createdAt:
+                new Date().toISOString()
+        };
+
+
+        const notifications = getNotifications();
+
+        notifications.push(notification);
+
+        saveNotifications(notifications);
+
+
+        formMessage.className =
+            "form-message success";
+
+        formMessage.textContent =
+            "Notification created successfully.";
+
+
+        document
+            .getElementById("notificationForm")
+            .reset();
+
+
+        renderNotifications();
+        updateStats();
+
+
+        setTimeout(() => {
+
+            formMessage.className =
+                "form-message";
+
+            formMessage.textContent = "";
+
+        }, 3000);
+});
+
+
+/* QUICK TEMPLATES */
+
+document
+    .querySelectorAll(".type-button")
+    .forEach(button => {
+
+        button.addEventListener("click", function() {
+
+            const type =
+                this.dataset.type;
+
+            document.getElementById(
+                "notificationType"
+            ).value = type;
+
+
+            document
+                .querySelectorAll(".type-button")
+                .forEach(item => {
+
+                    item.classList.remove("selected");
+
+                });
+
+            this.classList.add("selected");
+
+
+            const title =
+                document.getElementById("notificationTitle");
+
+            const message =
+                document.getElementById("notificationMessage");
+
+
+            if (type === "New Chapter") {
+
+                title.value =
+                    "A new chapter is waiting for you 📖";
+
+                message.value =
+                    "A new chapter has just been released. Open Novelora and continue reading your favorite story.";
+
+            }
+
+
+            if (type === "Reward") {
+
+                title.value =
+                    "You have a new reward 🎁";
+
+                message.value =
+                    "Check Novelora to claim your available reader rewards and keep reading.";
+
+            }
+
+
+            if (type === "Promotion") {
+
+                title.value =
+                    "A new Novelora promotion is live 📣";
+
+                message.value =
+                    "A special promotion is now available. Open Novelora to see the latest offer.";
+
+            }
+
+
+            if (type === "System") {
+
+                title.value =
+                    "Novelora update";
+
+                message.value =
+                    "We have an important update for Novelora readers. Please check the platform for more information.";
+
+            }
+
+        });
+
+    });
+
+
+/* INITIAL LOAD */
+
+loadBooks();
+renderNotifications();
+updateStats();
+</script>
+
+</body>
+</html>
