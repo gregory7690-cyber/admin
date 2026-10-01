@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Books - Novelora Admin</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background:
+        radial-gradient(circle at top right, rgba(255,70,150,.13), transparent 30%),
+        #0d0a10;
+    color: #fff;
+    min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background: rgba(20,15,24,.98);
+    border-right: 1px solid rgba(255,255,255,.08);
+    padding: 25px 16px;
+    position: fixed;
+    inset: 0 auto 0 0;
+    overflow-y: auto;
+}
+
+.admin-logo {
+    font-size: 27px;
+    font-weight: 800;
+    margin: 0 10px 5px;
+    background: linear-gradient(90deg,#ff4f9a,#ff8fc2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.admin-subtitle {
+    color: #8f8795;
+    font-size: 12px;
+    margin: 0 10px 25px;
+}
+
+.admin-navigation {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #aaa1ad;
+    padding: 12px 14px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    transition: .2s;
+    font-size: 14px;
+}
+
+.nav-item:hover {
+    background: rgba(255,79,154,.09);
+    color: white;
+}
+
+.nav-item.active {
+    background: linear-gradient(
+        90deg,
+        rgba(255,79,154,.18),
+        rgba(255,79,154,.06)
+    );
+    color: #ff70aa;
+    border: 1px solid rgba(255,79,154,.16);
+}
+
+.nav-divider {
+    height: 1px;
+    background: rgba(255,255,255,.07);
+    margin: 10px 5px;
+}
+
+/* MAIN */
+.admin-main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    padding: 28px;
+}
+
+.admin-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.page-title {
+    font-size: 29px;
+    font-weight: 800;
+}
+
+.page-description {
+    color: #938a98;
+    margin-top: 6px;
+    font-size: 14px;
+}
+
+.add-book-btn {
+    border: none;
+    background: linear-gradient(135deg,#ff4f9a,#ff77b3);
+    color: white;
+    font-weight: 800;
+    padding: 13px 19px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(255,79,154,.18);
+}
+
+/* STATS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.stat-card {
+    background: rgba(24,18,29,.92);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.stat-label {
+    color: #928996;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.stat-small {
+    color: #77707d;
+    font-size: 11px;
+    margin-top: 6px;
+}
+
+/* PANEL */
+.panel {
+    background: rgba(24,18,29,.94);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 20px;
+}
+
+.panel-title {
+    font-size: 18px;
+    font-weight: 750;
+}
+
+.panel-description {
+    color: #817987;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+}
+
+/* ADD BOOK */
+.book-form {
+    display: none;
+}
+
+.book-form.open {
+    display: block;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group.full {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    color: #aaa1ad;
+    font-size: 12px;
+    margin-bottom: 7px;
+}
+
+.form-control {
+    width: 100%;
+    background: #120e15;
+    color: white;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 11px;
+    padding: 13px 14px;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: rgba(255,79,154,.55);
+    box-shadow: 0 0 0 3px rgba(255,79,154,.07);
+}
+
+textarea.form-control {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.cover-preview {
+    width: 95px;
+    height: 130px;
+    border-radius: 10px;
+    background: linear-gradient(145deg,#271522,#100d12);
+    border: 1px dashed rgba(255,255,255,.13);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #706875;
+    font-size: 11px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.cover-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.check-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin: 4px 0 18px;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #aaa1ad;
+    font-size: 12px;
+}
+
+.check-item input {
+    accent-color: #ff4f9a;
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.primary-btn,
+.secondary-btn {
+    border: none;
+    padding: 12px 17px;
+    border-radius: 11px;
+    font-weight: 700;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg,#ff4f9a,#ff77b3);
+    color: white;
+}
+
+.secondary-btn {
+    background: rgba(255,255,255,.06);
+    color: #c4bcc8;
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+/* TOOLBAR */
+.books-toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 220px;
+}
+
+.filter-box {
+    width: 180px;
+}
+
+/* BOOK GRID */
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 15px;
+}
+
+.book-card {
+    background: #130f16;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 17px;
+    overflow: hidden;
+}
+
+.book-card-top {
+    display: flex;
+    gap: 14px;
+    padding: 15px;
+}
+
+.book-cover {
+    width: 82px;
+    height: 112px;
+    flex-shrink: 0;
+    border-radius: 9px;
+    background: linear-gradient(145deg,#2c1726,#100d12);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #756c78;
+    font-size: 10px;
+    text-align: center;
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.book-info {
+    min-width: 0;
+}
+
+.book-title {
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 1.3;
+    margin-bottom: 5px;
+    word-break: break-word;
+}
+
+.book-author {
+    color: #918995;
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.book-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.tag {
+    font-size: 9px;
+    padding: 5px 7px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.06);
+    color: #aaa1ad;
+}
+
+.tag.pink {
+    color: #ff79b1;
+    background: rgba(255,79,154,.1);
+}
+
+.book-stats {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    border-top: 1px solid rgba(255,255,255,.06);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.book-stat {
+    text-align: center;
+    padding: 10px 4px;
+}
+
+.book-stat:not(:last-child) {
+    border-right: 1px solid rgba(255,255,255,.05);
+}
+
+.book-stat strong {
+    display: block;
+    font-size: 12px;
+}
+
+.book-stat span {
+    color: #716975;
+    font-size: 9px;
+}
+
+.book-actions {
+    display: flex;
+    gap: 7px;
+    padding: 12px;
+}
+
+.action-btn {
+    flex: 1;
+    border-radius: 9px;
+    padding: 8px 5px;
+    font-size: 10px;
+    background: rgba(255,255,255,.05);
+    color: #bcb4c0;
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.action-btn:hover {
+    border-color: rgba(255,79,154,.35);
+    color: white;
+}
+
+.action-btn.danger {
+    color: #ff8797;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 15px;
+    color: #706975;
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+/* MESSAGE */
+.form-message {
+    display: none;
+    margin-top: 14px;
+    padding: 11px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.form-message.success {
+    display: block;
+    background: rgba(55,210,130,.08);
+    border: 1px solid rgba(55,210,130,.18);
+    color: #75e3a8;
+}
+
+.form-message.error {
+    display: block;
+    background: rgba(255,70,90,.08);
+    border: 1px solid rgba(255,70,90,.18);
+    color: #ff8c9a;
+}
+
+/* RESPONSIVE */
+@media(max-width:1100px) {
+    .book-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2,1fr);
+    }
+}
+
+@media(max-width:750px) {
+    .admin-sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+    }
+
+    .admin-layout {
+        display: block;
+    }
+
+    .admin-main {
+        margin-left: 0;
+        width: 100%;
+        padding: 18px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full {
+        grid-column: auto;
+    }
+
+    .book-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-topbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media(max-width:480px) {
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .filter-box {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+<aside class="admin-sidebar">
+
+    <div class="admin-logo">Novelora</div>
+    <div class="admin-subtitle">Admin Control Center</div>
+
+    <nav class="admin-navigation">
+
+        <a href="index.html" class="nav-item">🏠 Dashboard</a>
+        <a href="books.html" class="nav-item active">📚 Books</a>
+        <a href="chapters.html" class="nav-item">📖 Chapters</a>
+        <a href="readers.html" class="nav-item">👥 Readers</a>
+        <a href="authors.html" class="nav-item">✍️ Authors</a>
+        <a href="community.html" class="nav-item">💬 Community</a>
+
+        <div class="nav-divider"></div>
+
+        <a href="notifications.html" class="nav-item">🔔 Notifications</a>
+        <a href="money.html" class="nav-item">💰 Money</a>
+        <a href="analytics.html" class="nav-item">📊 Analytics</a>
+        <a href="rewards.html" class="nav-item">🎁 Rewards</a>
+        <a href="promotions.html" class="nav-item">📣 Promotions</a>
+
+        <div class="nav-divider"></div>
+
+        <a href="settings.html" class="nav-item">⚙️ Settings</a>
+        <a href="security.html" class="nav-item">🔐 Security</a>
+
+    </nav>
+</aside>
+
+
+<main class="admin-main">
+
+    <div class="admin-topbar">
+
+        <div>
+            <div class="page-title">Books</div>
+            <div class="page-description">
+                Create, publish and manage every book on Novelora.
+            </div>
+        </div>
+
+        <button class="add-book-btn" id="topAddBook">
+            ＋ Add Book
+        </button>
+
+    </div>
+
+
+    <!-- STATS -->
+
+    <section class="stats-grid">
+
+        <div class="stat-card">
+            <div class="stat-label">Total Books</div>
+            <div class="stat-value" id="totalBooks">0</div>
+            <div class="stat-small">All books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Published</div>
+            <div class="stat-value" id="publishedBooks">0</div>
+            <div class="stat-small">Live books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Drafts</div>
+            <div class="stat-value" id="draftBooks">0</div>
+            <div class="stat-small">Unpublished books</div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-label">Featured</div>
+            <div class="stat-value" id="featuredBooks">0</div>
+            <div class="stat-small">Featured books</div>
+        </div>
+
+    </section>
+
+
+    <!-- ADD BOOK FORM -->
+
+    <section class="panel book-form" id="bookFormPanel">
+
+        <div class="panel-title" id="formHeading">
+            Add New Book
+        </div>
+
+        <div class="panel-description">
+            Create a book record that can be used by Chapters,
+            Promotions, Analytics and the reader platform.
+        </div>
+
+
+        <form id="bookForm">
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Book Title *</label>
+
+                    <input
+                        id="bookTitle"
+                        class="form-control"
+                        type="text"
+                        placeholder="Enter book title"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Author *</label>
+
+                    <input
+                        id="bookAuthor"
+                        class="form-control"
+                        type="text"
+                        placeholder="Author name"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Genre *</label>
+
+                    <select id="bookGenre" class="form-control" required>
+
+                        <option value="">Select genre</option>
+                        <option>Romance</option>
+                        <option>Werewolf</option>
+                        <option>Billionaire</option>
+                        <option>Fantasy</option>
+                        <option>Mystery</option>
+                        <option>Thriller</option>
+                        <option>Drama</option>
+                        <option>Historical</option>
+                        <option>Vampire</option>
+                        <option>Young Adult</option>
+                        <option>Other</option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Chapter Price</label>
+
+                    <input
+                        id="bookPrice"
+                        class="form-control"
+                        type="number"
+                        min="0"
+                        value="5"
+                    >
+                </div>
+
+
+                <div class="form-group full">
+                    <label>Book Cover Image URL</label>
+
+                    <input
+                        id="bookCover"
+                        class="form-control"
+                        type="url"
+                        placeholder="https://..."
+                    >
+
+                    <div class="cover-preview" id="coverPreview">
+                        Cover Preview
+                    </div>
+                </div>
+
+
+                <div class="form-group full">
+                    <label>Description / Blurb *</label>
+
+                    <textarea
+                        id="bookDescription"
+                        class="form-control"
+                        placeholder="Write the book description..."
+                        required
+                    ></textarea>
+                </div>
+
+            </div>
+
+
+            <div class="check-row">
+
+                <label class="check-item">
+                    <input
+                        type="checkbox"
+                        id="bookFree"
+                    >
+                    Free Book
+                </label>
+
+                <label class="check-item">
+                    <input
+                        type="checkbox"
+                        id="bookFeatured"
+                    >
+                    Featured Book
+                </label>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    type="submit"
+                    class="primary-btn"
+                    id="publishButton"
+                >
+                    Publish Book
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="draftButton"
+                >
+                    Save Draft
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    id="cancelButton"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+            <div id="formMessage" class="form-message"></div>
+
+        </form>
+
+    </section>
+
+
+    <!-- BOOK LIBRARY -->
+
+    <section class="panel">
+
+        <div class="panel-title">
+            Book Library
+        </div>
+
+        <div class="panel-description">
+            Manage your Novelora books from one place.
+        </div>
+
+
+        <div class="books-toolbar">
+
+            <input
+                id="searchBooks"
+                class="form-control search-box"
+                type="search"
+                placeholder="Search books or authors..."
+            >
+
+            <select
+                id="filterStatus"
+                class="form-control filter-box"
+            >
+                <option value="all">All Status</option>
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+            </select>
+
+            <select
+                id="filterGenre"
+                class="form-control filter-box"
+            >
+                <option value="all">All Genres</option>
+                <option>Romance</option>
+                <option>Werewolf</option>
+                <option>Billionaire</option>
+                <option>Fantasy</option>
+                <option>Mystery</option>
+                <option>Thriller</option>
+                <option>Drama</option>
+                <option>Historical</option>
+                <option>Vampire</option>
+                <option>Young Adult</option>
+                <option>Other</option>
+            </select>
+
+        </div>
+
+
+        <div id="bookGrid" class="book-grid"></div>
+
+    </section>
+
+</main>
+
+</div>
+
+
+<script>
+const BOOK_KEY = "noveloraAdminBooks";
+
+let editingBookId = null;
+
+
+/* -----------------------------
+   STORAGE
+----------------------------- */
+
+function getBooks() {
+
+    try {
+        return JSON.parse(
+            localStorage.getItem(BOOK_KEY)
+        ) || [];
+    } catch {
+        return [];
+    }
+}
+
+
+function saveBooks(books) {
+
+    localStorage.setItem(
+        BOOK_KEY,
+        JSON.stringify(books)
+    );
+}
+
+
+/* -----------------------------
+   ELEMENTS
+----------------------------- */
+
+const formPanel =
+    document.getElementById("bookFormPanel");
+
+const bookForm =
+    document.getElementById("bookForm");
+
+const formHeading =
+    document.getElementById("formHeading");
+
+const publishButton =
+    document.getElementById("publishButton");
+
+const formMessage =
+    document.getElementById("formMessage");
+
+const coverInput =
+    document.getElementById("bookCover");
+
+const coverPreview =
+    document.getElementById("coverPreview");
+
+
+/* -----------------------------
+   OPEN FORM
+----------------------------- */
+
+function openBookForm() {
+
+    formPanel.classList.add("open");
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    document.getElementById("bookTitle").focus();
+}
+
+
+document
+    .getElementById("topAddBook")
+    .addEventListener(
+        "click",
+        () => {
+
+            editingBookId = null;
+
+            resetForm();
+
+            formHeading.textContent =
+                "Add New Book";
+
+            publishButton.textContent =
+                "Publish Book";
+
+            openBookForm();
+        }
+    );
+
+
+/* -----------------------------
+   RESET
+----------------------------- */
+
+function resetForm() {
+
+    bookForm.reset();
+
+    document.getElementById("bookPrice").value = 5;
+
+    coverPreview.innerHTML =
+        "Cover Preview";
+
+    formMessage.className =
+        "form-message";
+
+    formMessage.textContent = "";
+}
+
+
+/* -----------------------------
+   COVER PREVIEW
+----------------------------- */
+
+coverInput.addEventListener(
+    "input",
+    updateCoverPreview
+);
+
+
+function updateCoverPreview() {
+
+    const url =
+        coverInput.value.trim();
+
+    if (!url) {
+
+        coverPreview.innerHTML =
+            "Cover Preview";
+
+        return;
+    }
+
+    coverPreview.innerHTML = `
+        <img
+            src="${escapeHtml(url)}"
+            alt="Cover preview"
+            onerror="this.parentElement.innerHTML='Invalid image URL'"
+        >
+    `;
+}
+
+
+/* -----------------------------
+   SAVE BOOK
+----------------------------- */
+
+function saveBook(status) {
+
+    const title =
+        document.getElementById("bookTitle")
+            .value.trim();
+
+    const author =
+        document.getElementById("bookAuthor")
+            .value.trim();
+
+    const genre =
+        document.getElementById("bookGenre")
+            .value;
+
+    const price =
+        Number(
+            document.getElementById("bookPrice")
+                .value
+        ) || 0;
+
+    const cover =
+        document.getElementById("bookCover")
+            .value.trim();
+
+    const description =
+        document.getElementById("bookDescription")
+            .value.trim();
+
+    const free =
+        document.getElementById("bookFree")
+            .checked;
+
+    const featured =
+        document.getElementById("bookFeatured")
+            .checked;
+
+
+    if (!title || !author || !genre || !description) {
+
+        showMessage(
+            "Please fill in all required fields.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const books = getBooks();
+
+    let book;
+
+
+    if (editingBookId) {
+
+        const index =
+            books.findIndex(
+                item =>
+                    item.id === editingBookId
+            );
+
+        if (index === -1) {
+
+            showMessage(
+                "Book could not be found.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        book = {
+
+            ...books[index],
+
+            title,
+            author,
+            genre,
+            price,
+            cover,
+            description,
+            free,
+            featured,
+            status,
+
+            updatedAt:
+                new Date().toISOString()
+        };
+
+
+        books[index] = book;
+
+    } else {
+
+        book = {
+
+            id:
+                "book_" +
+                Date.now() +
+                "_" +
+                Math.random()
+                    .toString(36)
+                    .slice(2,8),
+
+            title,
+            author,
+            genre,
+            price,
+            cover,
+            description,
+            free,
+            featured,
+            status,
+
+            chapters: [],
+            chapterCount: 0,
+
+            readers: 0,
+            unlocks: 0,
+            revenue: 0,
+
+            createdAt:
+                new Date().toISOString(),
+
+            updatedAt:
+                new Date().toISOString()
+        };
+
+
+        books.push(book);
+    }
+
+
+    saveBooks(books);
+
+
+    showMessage(
+        status === "Published"
+            ? "Book published successfully! 📚"
+            : "Book saved as draft.",
+        "success"
+    );
+
+
+    renderBooks();
+    updateStats();
+
+
+    setTimeout(() => {
+
+        resetForm();
+
+        formPanel.classList.remove("open");
+
+        editingBookId = null;
+
+    }, 800);
+}
+
+
+/* -----------------------------
+   PUBLISH
+----------------------------- */
+
+bookForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+        saveBook("Published");
+    }
+);
+
+
+/* -----------------------------
+   SAVE DRAFT
+----------------------------- */
+
+document
+    .getElementById("draftButton")
+    .addEventListener(
+        "click",
+        () => saveBook("Draft")
+    );
+
+
+/* -----------------------------
+   CANCEL
+----------------------------- */
+
+document
+    .getElementById("cancelButton")
+    .addEventListener(
+        "click",
+        () => {
+
+            resetForm();
+
+            formPanel.classList.remove("open");
+
+            editingBookId = null;
+        }
+    );
+
+
+/* -----------------------------
+   EDIT
+----------------------------- */
+
+function editBook(id) {
+
+    const books = getBooks();
+
+    const book =
+        books.find(
+            item => item.id === id
+        );
+
+    if (!book) return;
+
+
+    editingBookId = id;
+
+    document.getElementById("bookTitle")
+        .value = book.title || "";
+
+    document.getElementById("bookAuthor")
+        .value = book.author || "";
+
+    document.getElementById("bookGenre")
+        .value = book.genre || "";
+
+    document.getElementById("bookPrice")
+        .value = book.price ?? 5;
+
+    document.getElementById("bookCover")
+        .value = book.cover || "";
+
+    document.getElementById("bookDescription")
+        .value = book.description || "";
+
+    document.getElementById("bookFree")
+        .checked = !!book.free;
+
+    document.getElementById("bookFeatured")
+        .checked = !!book.featured;
+
+
+    formHeading.textContent =
+        "Edit Book";
+
+    publishButton.textContent =
+        book.status === "Published"
+            ? "Update Published Book"
+            : "Publish Book";
+
+
+    updateCoverPreview();
+
+    openBookForm();
+}
+
+
+/* -----------------------------
+   DELETE
+----------------------------- */
+
+function deleteBook(id) {
+
+    const books = getBooks();
+
+    const book =
+        books.find(
+            item => item.id === id
+        );
+
+    if (!book) return;
+
+
+    const confirmed =
+        confirm(
+            `Delete "${book.title}"?\n\nThis will remove the book from the admin book database.`
+        );
+
+    if (!confirmed) return;
+
+
+    const updated =
+        books.filter(
+            item => item.id !== id
+        );
+
+
+    saveBooks(updated);
+
+    renderBooks();
+    updateStats();
+}
+
+
+/* -----------------------------
+   FEATURE
+----------------------------- */
+
+function toggleFeatured(id) {
+
+    const books = getBooks();
+
+    const index =
+        books.findIndex(
+            item => item.id === id
+        );
+
+    if (index === -1) return;
+
+
+    books[index].featured =
+        !books[index].featured;
+
+    books[index].updatedAt =
+        new Date().toISOString();
+
+
+    saveBooks(books);
+
+    renderBooks();
+    updateStats();
+}
+
+
+/* -----------------------------
+   CHAPTERS
+----------------------------- */
+
+function manageChapters(id) {
+
+    window.location.href =
+        "chapters.html?book=" +
+        encodeURIComponent(id);
+}
+
+
+/* -----------------------------
+   VIEW
+----------------------------- */
+
+function viewBook(id) {
+
+    const books = getBooks();
+
+    const book =
+        books.find(
+            item => item.id === id
+        );
+
+    if (!book) return;
+
+
+    alert(
+        "Book: " + book.title +
+        "\n\nAuthor: " + book.author +
+        "\nGenre: " + book.genre +
+        "\nStatus: " + book.status +
+        "\nChapters: " + (book.chapterCount || 0) +
+        "\nReaders: " + (book.readers || 0)
+    );
+}
+
+
+/* -----------------------------
+   RENDER
+----------------------------- */
+
+function renderBooks() {
+
+    const grid =
+        document.getElementById("bookGrid");
+
+    const books = getBooks();
+
+    const search =
+        document.getElementById("searchBooks")
+            .value
+            .toLowerCase()
+            .trim();
+
+    const status =
+        document.getElementById("filterStatus")
+            .value;
+
+    const genre =
+        document.getElementById("filterGenre")
+            .value;
+
+
+    const filtered =
+        books.filter(book => {
+
+            const matchesSearch =
+                !search ||
+                String(book.title || "")
+                    .toLowerCase()
+                    .includes(search) ||
+                String(book.author || "")
+                    .toLowerCase()
+                    .includes(search);
+
+            const matchesStatus =
+                status === "all" ||
+                book.status === status;
+
+            const matchesGenre =
+                genre === "all" ||
+                book.genre === genre;
+
+            return (
+                matchesSearch &&
+                matchesStatus &&
+                matchesGenre
+            );
+        });
+
+
+    grid.innerHTML = "";
+
+
+    if (!filtered.length) {
+
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <div>No books found.</div>
+                <p style="margin-top:7px;">
+                    Add your first Novelora book above.
+                </p>
+            </div>
+        `;
+
+        return;
+    }
+
+
+    filtered.forEach(book => {
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "book-card";
+
+
+        const cover =
+            book.cover
+                ? `
+                    <img
+                        src="${escapeHtml(book.cover)}"
+                        alt="${escapeHtml(book.title)}"
+                        onerror="this.style.display='none'"
+                    >
+                  `
+                : "No Cover";
+
+
+        card.innerHTML = `
+
+            <div class="book-card-top">
+
+                <div class="book-cover">
+                    ${cover}
+                </div>
+
+                <div class="book-info">
+
+                    <div class="book-title">
+                        ${escapeHtml(book.title)}
+                    </div>
+
+                    <div class="book-author">
+                        by ${escapeHtml(book.author)}
+                    </div>
+
+                    <div class="book-tags">
+
+                        <span class="tag pink">
+                            ${escapeHtml(book.genre)}
+                        </span>
+
+                        <span class="tag">
+                            ${escapeHtml(book.status)}
+                        </span>
+
+                        ${
+                            book.featured
+                            ? `<span class="tag pink">Featured</span>`
+                            : ""
+                        }
+
+                        ${
+                            book.free
+                            ? `<span class="tag">Free</span>`
+                            : ""
+                        }
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="book-stats">
+
+                <div class="book-stat">
+                    <strong>
+                        ${book.chapterCount || 0}
+                    </strong>
+                    <span>Chapters</span>
+                </div>
+
+                <div class="book-stat">
+                    <strong>
+                        ${book.readers || 0}
+                    </strong>
+                    <span>Readers</span>
+                </div>
+
+                <div class="book-stat">
+                    <strong>
+                        ${book.revenue || 0}
+                    </strong>
+                    <span>Revenue</span>
+                </div>
+
+            </div>
+
+
+            <div class="book-actions">
+
+                <button
+                    class="action-btn"
+                    onclick="editBook('${book.id}')"
+                >
+                    ✏️ Edit
+                </button>
+
+                <button
+                    class="action-btn"
+                    onclick="manageChapters('${book.id}')"
+                >
+                    📖 Chapters
+                </button>
+
+                <button
+                    class="action-btn"
+                    onclick="toggleFeatured('${book.id}')"
+                >
+                    ⭐
+                </button>
+
+                <button
+                    class="action-btn danger"
+                    onclick="deleteBook('${book.id}')"
+                >
+                    🗑️
+                </button>
+
+            </div>
+
+        `;
+
+
+        grid.appendChild(card);
+    });
+}
+
+
+/* -----------------------------
+   STATS
+----------------------------- */
+
+function updateStats() {
+
+    const books = getBooks();
+
+    document.getElementById("totalBooks")
+        .textContent = books.length;
+
+    document.getElementById("publishedBooks")
+        .textContent =
+        books.filter(
+            book => book.status === "Published"
+        ).length;
+
+    document.getElementById("draftBooks")
+        .textContent =
+        books.filter(
+            book => book.status === "Draft"
+        ).length;
+
+    document.getElementById("featuredBooks")
+        .textContent =
+        books.filter(
+            book => book.featured
+        ).length;
+}
+
+
+/* -----------------------------
+   SEARCH / FILTER
+----------------------------- */
+
+document
+    .getElementById("searchBooks")
+    .addEventListener(
+        "input",
+        renderBooks
+    );
+
+document
+    .getElementById("filterStatus")
+    .addEventListener(
+        "change",
+        renderBooks
+    );
+
+document
+    .getElementById("filterGenre")
+    .addEventListener(
+        "change",
+        renderBooks
+    );
+
+
+/* -----------------------------
+   MESSAGE
+----------------------------- */
+
+function showMessage(message, type) {
+
+    formMessage.className =
+        "form-message " + type;
+
+    formMessage.textContent =
+        message;
+}
+
+
+/* -----------------------------
+   SECURITY
+----------------------------- */
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+/* -----------------------------
+   START
+----------------------------- */
+
+renderBooks();
+updateStats();
+</script>
+
+</body>
+</html>
