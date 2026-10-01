@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security — Novelora Admin</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(236,72,153,.15), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(168,85,247,.10), transparent 35%),
+    #120c16;
+  color: #fff;
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 245px;
+  height: 100vh;
+  background: rgba(22,14,25,.97);
+  border-right: 1px solid rgba(255,255,255,.08);
+  padding: 28px 16px;
+  z-index: 20;
+  overflow-y: auto;
+}
+
+.admin-brand {
+  padding: 0 14px 28px;
+}
+
+.admin-brand h2 {
+  font-size: 25px;
+  color: #ff5fa2;
+  margin-bottom: 5px;
+}
+
+.admin-brand p {
+  color: #9d8f9e;
+  font-size: 12px;
+}
+
+.admin-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #b9acbb;
+  text-decoration: none;
+  font-size: 14px;
+  transition: .2s;
+}
+
+.nav-item:hover {
+  background: rgba(255,95,162,.08);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: linear-gradient(
+    135deg,
+    rgba(255,95,162,.22),
+    rgba(168,85,247,.13)
+  );
+  color: #fff;
+  border: 1px solid rgba(255,95,162,.20);
+}
+
+.nav-item span:first-child {
+  width: 20px;
+  text-align: center;
+  color: #ff69aa;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,.07);
+  margin: 12px 5px;
+}
+
+/* MAIN */
+.admin-main {
+  margin-left: 245px;
+  padding: 30px;
+  min-height: 100vh;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-title h1 {
+  font-size: 31px;
+  margin-bottom: 7px;
+}
+
+.page-title p {
+  color: #9f92a1;
+  font-size: 14px;
+}
+
+.admin-user {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 10px 15px;
+  border-radius: 12px;
+  color: #d9cbd9;
+}
+
+/* SECURITY STATUS */
+.security-status {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.status-card {
+  background: rgba(31,21,35,.9);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  padding: 21px;
+}
+
+.status-card .label {
+  color: #9f92a1;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.status-card .value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.secure {
+  color: #6ee7a0;
+}
+
+.warning {
+  color: #facc15;
+}
+
+/* PANELS */
+.security-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+
+.panel {
+  background: rgba(31,21,35,.9);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 20px;
+  padding: 25px;
+}
+
+.panel.full {
+  grid-column: 1 / -1;
+}
+
+.panel h2 {
+  font-size: 19px;
+  margin-bottom: 7px;
+}
+
+.panel-description {
+  color: #958896;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 22px;
+}
+
+/* SECURITY ROWS */
+.security-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.security-row:last-child {
+  border-bottom: none;
+}
+
+.security-info h3 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.security-info p {
+  color: #918391;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* TOGGLE */
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #342938;
+  border-radius: 30px;
+  transition: .2s;
+  cursor: pointer;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .2s;
+}
+
+.toggle input:checked + .slider {
+  background: #ff5fa2;
+}
+
+.toggle input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* FORM */
+.form-group {
+  margin-bottom: 17px;
+}
+
+.form-group label {
+  display: block;
+  color: #c9bdca;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  background: #18101c;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 11px;
+  padding: 12px;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: rgba(255,95,162,.65);
+  box-shadow: 0 0 0 3px rgba(255,95,162,.08);
+}
+
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  padding-right: 75px;
+}
+
+.show-password {
+  position: absolute;
+  right: 9px;
+  top: 7px;
+  border: none;
+  background: rgba(255,255,255,.06);
+  color: #c8bac9;
+  border-radius: 8px;
+  padding: 6px 9px;
+  font-size: 11px;
+}
+
+/* BUTTONS */
+.button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.primary-btn {
+  border: none;
+  padding: 11px 18px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #ff4f99, #d946ef);
+  color: #fff;
+  font-weight: 700;
+}
+
+.secondary-btn {
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color: #c8bac9;
+  padding: 11px 18px;
+  border-radius: 10px;
+}
+
+.danger-btn {
+  border: 1px solid rgba(255,80,100,.25);
+  background: rgba(255,80,100,.08);
+  color: #ff7d99;
+  padding: 11px 18px;
+  border-radius: 10px;
+}
+
+.message {
+  color: #6ee7a0;
+  font-size: 13px;
+  margin-top: 13px;
+  min-height: 18px;
+}
+
+/* LOG */
+.activity-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.log-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  background: #18101c;
+  border: 1px solid rgba(255,255,255,.06);
+  padding: 14px;
+  border-radius: 12px;
+}
+
+.log-main strong {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.log-main span {
+  color: #918391;
+  font-size: 11px;
+}
+
+.log-time {
+  color: #807180;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.empty-log {
+  text-align: center;
+  padding: 30px;
+  color: #918391;
+}
+
+/* DANGER */
+.danger-panel {
+  border-color: rgba(255,80,100,.16);
+}
+
+/* MOBILE */
+@media (max-width: 950px) {
+  .security-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .panel.full {
+    grid-column: auto;
+  }
+
+  .security-status {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .admin-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 20px 15px;
+  }
+
+  .admin-topbar {
+    align-items: flex-start;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-topbar {
+    flex-direction: column;
+  }
+
+  .page-title h1 {
+    font-size: 26px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .security-row {
+    align-items: flex-start;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="admin-sidebar">
+
+  <div class="admin-brand">
+    <h2>Novelora</h2>
+    <p>Admin Control Center</p>
+  </div>
+
+  <nav class="admin-navigation">
+
+    <a href="index.html" class="nav-item">
+      <span>⌂</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="books.html" class="nav-item">
+      <span>▣</span>
+      <span>Books</span>
+    </a>
+
+    <a href="chapters.html" class="nav-item">
+      <span>▤</span>
+      <span>Chapters</span>
+    </a>
+
+    <a href="readers.html" class="nav-item">
+      <span>♙</span>
+      <span>Readers</span>
+    </a>
+
+    <a href="authors.html" class="nav-item">
+      <span>✎</span>
+      <span>Authors</span>
+    </a>
+
+    <a href="community.html" class="nav-item">
+      <span>♡</span>
+      <span>Community</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a href="notifications.html" class="nav-item">
+      <span>♢</span>
+      <span>Notifications</span>
+    </a>
+
+    <a href="money.html" class="nav-item">
+      <span>$</span>
+      <span>Money</span>
+    </a>
+
+    <a href="analytics.html" class="nav-item">
+      <span>◈</span>
+      <span>Analytics</span>
+    </a>
+
+    <a href="rewards.html" class="nav-item">
+      <span>★</span>
+      <span>Rewards</span>
+    </a>
+
+    <a href="promotions.html" class="nav-item">
+      <span>♢</span>
+      <span>Promotions</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a href="settings.html" class="nav-item">
+      <span>⚙</span>
+      <span>Settings</span>
+    </a>
+
+    <a href="security.html" class="nav-item active">
+      <span>⌾</span>
+      <span>Security</span>
+    </a>
+
+  </nav>
+</aside>
+
+
+<!-- MAIN -->
+<main class="admin-main">
+
+  <div class="admin-topbar">
+
+    <div class="page-title">
+      <h1>Security</h1>
+      <p>Protect and monitor your Novelora administration system.</p>
+    </div>
+
+    <div class="admin-user">
+      Novelora Admin
+    </div>
+
+  </div>
+
+
+  <!-- STATUS -->
+  <section class="security-status">
+
+    <div class="status-card">
+
+      <div class="label">
+        Security Status
+      </div>
+
+      <div
+        class="value secure"
+        id="securityStatus"
+      >
+        Protected
+      </div>
+
+    </div>
+
+
+    <div class="status-card">
+
+      <div class="label">
+        Two-Factor Authentication
+      </div>
+
+      <div
+        class="value warning"
+        id="twoFactorStatus"
+      >
+        Not Configured
+      </div>
+
+    </div>
+
+
+    <div class="status-card">
+
+      <div class="label">
+        Security Events
+      </div>
+
+      <div
+        class="value"
+        id="securityEvents"
+      >
+        0
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="security-grid">
+
+
+    <!-- ADMIN PASSWORD -->
+    <div class="panel">
+
+      <h2>Admin Password</h2>
+
+      <p class="panel-description">
+        Change the password used for this local admin interface.
+      </p>
+
+
+      <div class="form-group">
+
+        <label for="currentPassword">
+          Current Password
+        </label>
+
+        <div class="password-wrap">
+
+          <input
+            type="password"
+            id="currentPassword"
+            placeholder="Enter current password"
+          >
+
+          <button
+            type="button"
+            class="show-password"
+            data-target="currentPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="newPassword">
+          New Password
+        </label>
+
+        <div class="password-wrap">
+
+          <input
+            type="password"
+            id="newPassword"
+            placeholder="Enter new password"
+          >
+
+          <button
+            type="button"
+            class="show-password"
+            data-target="newPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label for="confirmPassword">
+          Confirm New Password
+        </label>
+
+        <div class="password-wrap">
+
+          <input
+            type="password"
+            id="confirmPassword"
+            placeholder="Confirm new password"
+          >
+
+          <button
+            type="button"
+            class="show-password"
+            data-target="confirmPassword"
+          >
+            Show
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <div class="button-row">
+
+        <button
+          class="primary-btn"
+          id="changePassword"
+        >
+          Change Password
+        </button>
+
+      </div>
+
+      <div
+        class="message"
+        id="passwordMessage"
+      ></div>
+
+    </div>
+
+
+    <!-- LOGIN PROTECTION -->
+    <div class="panel">
+
+      <h2>Login Protection</h2>
+
+      <p class="panel-description">
+        Control additional protection for the administration interface.
+      </p>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Two-Factor Authentication</h3>
+
+          <p>
+            Require an additional verification step when supported.
+          </p>
+
+        </div>
+
+        <label class="toggle">
+
+          <input
+            type="checkbox"
+            id="twoFactor"
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Login Alerts</h3>
+
+          <p>
+            Record new administrator login events.
+          </p>
+
+        </div>
+
+        <label class="toggle">
+
+          <input
+            type="checkbox"
+            id="loginAlerts"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Session Protection</h3>
+
+          <p>
+            Keep administrative session controls enabled.
+          </p>
+
+        </div>
+
+        <label class="toggle">
+
+          <input
+            type="checkbox"
+            id="sessionProtection"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- ACTIVITY -->
+    <div class="panel full">
+
+      <h2>Security Activity</h2>
+
+      <p class="panel-description">
+        Recent security-related activity recorded by this admin interface.
+      </p>
+
+
+      <div
+        class="activity-log"
+        id="activityLog"
+      ></div>
+
+    </div>
+
+
+    <!-- DATA PROTECTION -->
+    <div class="panel">
+
+      <h2>Data Protection</h2>
+
+      <p class="panel-description">
+        Basic controls for protecting locally stored administration data.
+      </p>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Protect Saved Settings</h3>
+
+          <p>
+            Keep platform settings stored in the browser.
+          </p>
+
+        </div>
+
+        <label class="toggle">
+
+          <input
+            type="checkbox"
+            id="protectSettings"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Activity Logging</h3>
+
+          <p>
+            Record important actions performed in this admin interface.
+          </p>
+
+        </div>
+
+        <label class="toggle">
+
+          <input
+            type="checkbox"
+            id="activityLogging"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- SESSION -->
+    <div class="panel">
+
+      <h2>Session</h2>
+
+      <p class="panel-description">
+        Manage the current administration session.
+      </p>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Current Session</h3>
+
+          <p>
+            This browser session is currently active.
+          </p>
+
+        </div>
+
+        <span class="secure">
+          Active
+        </span>
+
+      </div>
+
+
+      <div class="security-row">
+
+        <div class="security-info">
+
+          <h3>Clear Session Data</h3>
+
+          <p>
+            Remove locally stored security session information.
+          </p>
+
+        </div>
+
+        <button
+          class="secondary-btn"
+          id="clearSession"
+        >
+          Clear
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- DANGER -->
+    <div class="panel full danger-panel">
+
+      <h2>Danger Zone</h2>
+
+      <p class="panel-description">
+        These actions affect security information stored in this browser.
+        They do not delete your GitHub repository or your Novelora website.
+      </p>
+
+
+      <div class="button-row">
+
+        <button
+          class="danger-btn"
+          id="clearSecurityData"
+        >
+          Clear Security Data
+        </button>
+
+      </div>
+
+      <div
+        class="message"
+        id="securityMessage"
+      ></div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+const SECURITY_KEY =
+  "noveloraSecuritySettings";
+
+const LOG_KEY =
+  "noveloraSecurityLog";
+
+
+const defaultSecurity = {
+
+  twoFactor: false,
+
+  loginAlerts: true,
+
+  sessionProtection: true,
+
+  protectSettings: true,
+
+  activityLogging: true
+
+};
+
+
+/* LOAD SETTINGS */
+function getSecuritySettings() {
+
+  try {
+
+    return {
+      ...defaultSecurity,
+      ...(JSON.parse(
+        localStorage.getItem(
+          SECURITY_KEY
+        )
+      ) || {})
+    };
+
+  } catch {
+
+    return {
+      ...defaultSecurity
+    };
+
+  }
+
+}
+
+
+/* SAVE SETTINGS */
+function saveSecuritySettings(settings) {
+
+  localStorage.setItem(
+    SECURITY_KEY,
+    JSON.stringify(settings)
+  );
+
+}
+
+
+/* LOAD TOGGLES */
+function loadSecuritySettings() {
+
+  const settings =
+    getSecuritySettings();
+
+
+  Object.keys(settings)
+    .forEach(key => {
+
+      const element =
+        document.getElementById(key);
+
+      if (
+        element &&
+        element.type === "checkbox"
+      ) {
+
+        element.checked =
+          Boolean(settings[key]);
+
+      }
+
+    });
+
+
+  updateSecurityStatus();
+
+}
+
+
+/* LOG */
+function getLogs() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        LOG_KEY
+      )
+    ) || [];
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function addLog(action) {
+
+  const settings =
+    getSecuritySettings();
+
+  if (!settings.activityLogging)
+    return;
+
+
+  const logs =
+    getLogs();
+
+
+  logs.push({
+
+    action,
+
+    time:
+      new Date().toLocaleString()
+
+  });
+
+
+  localStorage.setItem(
+    LOG_KEY,
+    JSON.stringify(
+      logs.slice(-50)
+    )
+  );
+
+
+  renderLogs();
+
+}
+
+
+/* RENDER LOGS */
+function renderLogs() {
+
+  const container =
+    document.getElementById(
+      "activityLog"
+    );
+
+  const logs =
+    getLogs();
+
+
+  document.getElementById(
+    "securityEvents"
+  ).textContent =
+    logs.length;
+
+
+  if (!logs.length) {
+
+    container.innerHTML = `
+      <div class="empty-log">
+        No security activity has been recorded yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  logs
+    .slice()
+    .reverse()
+    .forEach(log => {
+
+      const item =
+        document.createElement("div");
+
+      item.className =
+        "log-item";
+
+
+      item.innerHTML = `
+
+        <div class="log-main">
+
+          <strong>
+            ${escapeHTML(log.action)}
+          </strong>
+
+          <span>
+            Security event
+          </span>
+
+        </div>
+
+        <div class="log-time">
+          ${escapeHTML(log.time)}
+        </div>
+
+      `;
+
+
+      container.appendChild(item);
+
+    });
+
+}
+
+
+/* STATUS */
+function updateSecurityStatus() {
+
+  const settings =
+    getSecuritySettings();
+
+
+  const twoFactor =
+    document.getElementById(
+      "twoFactorStatus"
+    );
+
+
+  if (settings.twoFactor) {
+
+    twoFactor.textContent =
+      "Enabled";
+
+    twoFactor.className =
+      "value secure";
+
+  } else {
+
+    twoFactor.textContent =
+      "Not Configured";
+
+    twoFactor.className =
+      "value warning";
+
+  }
+
+
+  const status =
+    document.getElementById(
+      "securityStatus"
+    );
+
+
+  if (
+    settings.loginAlerts &&
+    settings.sessionProtection &&
+    settings.activityLogging
+  ) {
+
+    status.textContent =
+      "Protected";
+
+    status.className =
+      "value secure";
+
+  } else {
+
+    status.textContent =
+      "Review Settings";
+
+    status.className =
+      "value warning";
+
+  }
+
+}
+
+
+/* TOGGLES */
+document
+  .querySelectorAll(
+    ".toggle input"
+  )
+  .forEach(toggle => {
+
+    toggle.addEventListener(
+      "change",
+      () => {
+
+        const settings =
+          getSecuritySettings();
+
+
+        settings[
+          toggle.id
+        ] =
+          toggle.checked;
+
+
+        saveSecuritySettings(
+          settings
+        );
+
+
+        addLog(
+          toggle.checked
+          ? `${toggle.id} enabled`
+          : `${toggle.id} disabled`
+        );
+
+
+        updateSecurityStatus();
+
+      }
+    );
+
+  });
+
+
+/* SHOW PASSWORD */
+document
+  .querySelectorAll(
+    ".show-password"
+  )
+  .forEach(button => {
+
+    button.addEventListener(
+      "click",
+      () => {
+
+        const input =
+          document.getElementById(
+            button.dataset.target
+          );
+
+
+        if (
+          input.type === "password"
+        ) {
+
+          input.type =
+            "text";
+
+          button.textContent =
+            "Hide";
+
+        } else {
+
+          input.type =
+            "password";
+
+          button.textContent =
+            "Show";
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* CHANGE PASSWORD */
+document
+  .getElementById(
+    "changePassword"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      const current =
+        document.getElementById(
+          "currentPassword"
+        ).value;
+
+
+      const newPassword =
+        document.getElementById(
+          "newPassword"
+        ).value;
+
+
+      const confirmPassword =
+        document.getElementById(
+          "confirmPassword"
+        ).value;
+
+
+      const message =
+        document.getElementById(
+          "passwordMessage"
+        );
+
+
+      if (
+        !current ||
+        !newPassword ||
+        !confirmPassword
+      ) {
+
+        message.textContent =
+          "Please fill in all password fields.";
+
+        return;
+
+      }
+
+
+      if (
+        newPassword.length < 6
+      ) {
+
+        message.textContent =
+          "New password must contain at least 6 characters.";
+
+        return;
+
+      }
+
+
+      if (
+        newPassword !==
+        confirmPassword
+      ) {
+
+        message.textContent =
+          "New passwords do not match.";
+
+        return;
+
+      }
+
+
+      /*
+        Local demo/admin setting.
+        Real authentication should be handled
+        by a secure backend before launch.
+      */
+
+      localStorage.setItem(
+        "noveloraAdminPassword",
+        newPassword
+      );
+
+
+      message.textContent =
+        "Admin password updated.";
+
+      addLog(
+        "Admin password changed"
+      );
+
+
+      document.getElementById(
+        "currentPassword"
+      ).value = "";
+
+      document.getElementById(
+        "newPassword"
+      ).value = "";
+
+      document.getElementById(
+        "confirmPassword"
+      ).value = "";
+
+    }
+  );
+
+
+/* CLEAR SESSION */
+document
+  .getElementById(
+    "clearSession"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      localStorage.removeItem(
+        "noveloraAdminSession"
+      );
+
+
+      addLog(
+        "Admin session data cleared"
+      );
+
+
+      alert(
+        "Local admin session data has been cleared."
+      );
+
+    }
+  );
+
+
+/* CLEAR SECURITY */
+document
+  .getElementById(
+    "clearSecurityData"
+  )
+  .addEventListener(
+    "click",
+    () => {
+
+      const confirmed =
+        confirm(
+          "Clear saved security settings and security logs?"
+        );
+
+
+      if (!confirmed)
+        return;
+
+
+      localStorage.removeItem(
+        SECURITY_KEY
+      );
+
+      localStorage.removeItem(
+        LOG_KEY
+      );
+
+      localStorage.removeItem(
+        "noveloraAdminPassword"
+      );
+
+
+      loadSecuritySettings();
+
+      renderLogs();
+
+
+      document.getElementById(
+        "securityMessage"
+      ).textContent =
+        "Security data cleared.";
+
+    }
+  );
+
+
+/* ESCAPE */
+function escapeHTML(value) {
+
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+/* START */
+loadSecuritySettings();
+renderLogs();
+
+</script>
+
+</body>
+</html>
