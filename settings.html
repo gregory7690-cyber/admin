@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings — Novelora Admin</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at top right, rgba(236,72,153,.15), transparent 35%),
+    radial-gradient(circle at bottom left, rgba(168,85,247,.10), transparent 35%),
+    #120c16;
+  color: #fff;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 245px;
+  height: 100vh;
+  background: rgba(22,14,25,.97);
+  border-right: 1px solid rgba(255,255,255,.08);
+  padding: 28px 16px;
+  z-index: 20;
+  overflow-y: auto;
+}
+
+.admin-brand {
+  padding: 0 14px 28px;
+}
+
+.admin-brand h2 {
+  font-size: 25px;
+  color: #ff5fa2;
+  margin-bottom: 5px;
+}
+
+.admin-brand p {
+  color: #9d8f9e;
+  font-size: 12px;
+}
+
+.admin-navigation {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #b9acbb;
+  text-decoration: none;
+  font-size: 14px;
+  transition: .2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(255,95,162,.08);
+  color: #fff;
+}
+
+.nav-item.active {
+  background: linear-gradient(
+    135deg,
+    rgba(255,95,162,.22),
+    rgba(168,85,247,.13)
+  );
+  color: #fff;
+  border: 1px solid rgba(255,95,162,.20);
+}
+
+.nav-item span:first-child {
+  width: 20px;
+  text-align: center;
+  color: #ff69aa;
+}
+
+.nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,.07);
+  margin: 12px 5px;
+}
+
+/* MAIN */
+.admin-main {
+  margin-left: 245px;
+  padding: 30px;
+  min-height: 100vh;
+}
+
+.admin-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-title h1 {
+  font-size: 31px;
+  margin-bottom: 7px;
+}
+
+.page-title p {
+  color: #9f92a1;
+  font-size: 14px;
+}
+
+.admin-user {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 10px 15px;
+  border-radius: 12px;
+  color: #d9cbd9;
+}
+
+/* LAYOUT */
+.settings-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 22px;
+}
+
+/* SETTINGS MENU */
+.settings-menu {
+  background: rgba(31,21,35,.9);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 18px;
+  padding: 12px;
+  height: fit-content;
+}
+
+.settings-tab {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: #a99aaa;
+  padding: 12px 13px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.settings-tab:hover {
+  background: rgba(255,95,162,.07);
+  color: #fff;
+}
+
+.settings-tab.active {
+  background: rgba(255,95,162,.13);
+  color: #ff70ad;
+}
+
+/* PANELS */
+.settings-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.settings-panel {
+  background: rgba(31,21,35,.9);
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 20px;
+  padding: 25px;
+}
+
+.settings-panel h2 {
+  font-size: 19px;
+  margin-bottom: 7px;
+}
+
+.settings-panel > p {
+  color: #958896;
+  font-size: 13px;
+  margin-bottom: 22px;
+}
+
+/* FORM */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  color: #c9bdca;
+  margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  background: #18101c;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.09);
+  border-radius: 11px;
+  padding: 12px 13px;
+  outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: rgba(255,95,162,.65);
+  box-shadow: 0 0 0 3px rgba(255,95,162,.08);
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* TOGGLE */
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-info h3 {
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.setting-info p {
+  color: #918391;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.toggle {
+  position: relative;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  inset: 0;
+  background: #342938;
+  border-radius: 30px;
+  transition: .2s;
+  cursor: pointer;
+}
+
+.slider:before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: .2s;
+}
+
+.toggle input:checked + .slider {
+  background: #ff5fa2;
+}
+
+.toggle input:checked + .slider:before {
+  transform: translateX(22px);
+}
+
+/* BUTTONS */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.save-btn {
+  border: none;
+  padding: 12px 22px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #ff4f99, #d946ef);
+  color: #fff;
+  font-weight: 700;
+}
+
+.reset-btn {
+  border: 1px solid rgba(255,255,255,.10);
+  padding: 12px 22px;
+  border-radius: 11px;
+  background: rgba(255,255,255,.04);
+  color: #c8bac9;
+}
+
+.save-btn:hover,
+.reset-btn:hover {
+  transform: translateY(-1px);
+}
+
+.message {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #6ee7a0;
+  min-height: 18px;
+}
+
+/* DANGER */
+.danger-panel {
+  border-color: rgba(255,80,100,.16);
+}
+
+.danger-btn {
+  border: 1px solid rgba(255,80,100,.25);
+  background: rgba(255,80,100,.08);
+  color: #ff7d99;
+  padding: 11px 18px;
+  border-radius: 10px;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-menu {
+    display: flex;
+    overflow-x: auto;
+    gap: 5px;
+  }
+
+  .settings-tab {
+    width: auto;
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .admin-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .admin-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-main {
+    margin-left: 0;
+    padding: 20px 15px;
+  }
+
+  .admin-topbar {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-navigation {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-topbar {
+    flex-direction: column;
+  }
+
+  .page-title h1 {
+    font-size: 26px;
+  }
+
+  .settings-panel {
+    padding: 18px;
+  }
+
+  .setting-row {
+    align-items: flex-start;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<aside class="admin-sidebar">
+
+  <div class="admin-brand">
+    <h2>Novelora</h2>
+    <p>Admin Control Center</p>
+  </div>
+
+  <nav class="admin-navigation">
+
+    <a href="index.html" class="nav-item">
+      <span>⌂</span>
+      <span>Dashboard</span>
+    </a>
+
+    <a href="books.html" class="nav-item">
+      <span>▣</span>
+      <span>Books</span>
+    </a>
+
+    <a href="chapters.html" class="nav-item">
+      <span>▤</span>
+      <span>Chapters</span>
+    </a>
+
+    <a href="readers.html" class="nav-item">
+      <span>♙</span>
+      <span>Readers</span>
+    </a>
+
+    <a href="authors.html" class="nav-item">
+      <span>✎</span>
+      <span>Authors</span>
+    </a>
+
+    <a href="community.html" class="nav-item">
+      <span>♡</span>
+      <span>Community</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a href="notifications.html" class="nav-item">
+      <span>♢</span>
+      <span>Notifications</span>
+    </a>
+
+    <a href="money.html" class="nav-item">
+      <span>$</span>
+      <span>Money</span>
+    </a>
+
+    <a href="analytics.html" class="nav-item">
+      <span>◈</span>
+      <span>Analytics</span>
+    </a>
+
+    <a href="rewards.html" class="nav-item">
+      <span>★</span>
+      <span>Rewards</span>
+    </a>
+
+    <a href="promotions.html" class="nav-item">
+      <span>♢</span>
+      <span>Promotions</span>
+    </a>
+
+    <div class="nav-divider"></div>
+
+    <a href="settings.html" class="nav-item active">
+      <span>⚙</span>
+      <span>Settings</span>
+    </a>
+
+    <a href="security.html" class="nav-item">
+      <span>⌾</span>
+      <span>Security</span>
+    </a>
+
+  </nav>
+</aside>
+
+
+<!-- MAIN -->
+<main class="admin-main">
+
+  <div class="admin-topbar">
+
+    <div class="page-title">
+      <h1>Settings</h1>
+      <p>Manage your Novelora platform settings.</p>
+    </div>
+
+    <div class="admin-user">
+      Novelora Admin
+    </div>
+
+  </div>
+
+
+  <div class="settings-layout">
+
+    <!-- SETTINGS MENU -->
+    <div class="settings-menu">
+
+      <button class="settings-tab active" data-target="general">
+        General
+      </button>
+
+      <button class="settings-tab" data-target="reading">
+        Reading & Coins
+      </button>
+
+      <button class="settings-tab" data-target="rewards">
+        Rewards
+      </button>
+
+      <button class="settings-tab" data-target="notifications">
+        Notifications
+      </button>
+
+      <button class="settings-tab" data-target="platform">
+        Platform
+      </button>
+
+    </div>
+
+
+    <!-- SETTINGS CONTENT -->
+    <div class="settings-content">
+
+
+      <!-- GENERAL -->
+      <section
+        class="settings-panel settings-section"
+        id="general"
+      >
+
+        <h2>General Settings</h2>
+
+        <p>
+          Basic information about your Novelora platform.
+        </p>
+
+
+        <div class="form-group">
+
+          <label for="siteName">
+            Platform Name
+          </label>
+
+          <input
+            type="text"
+            id="siteName"
+            value="Novelora"
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="siteTagline">
+            Tagline
+          </label>
+
+          <input
+            type="text"
+            id="siteTagline"
+            value="Your next story awaits."
+          >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label for="siteDescription">
+            Platform Description
+          </label>
+
+          <textarea
+            id="siteDescription"
+          >Novelora is a romance reading and writing platform where readers discover stories and authors share their imagination.</textarea>
+
+        </div>
+
+      </section>
+
+
+      <!-- READING -->
+      <section
+        class="settings-panel settings-section"
+        id="reading"
+        style="display:none;"
+      >
+
+        <h2>Reading & Coins</h2>
+
+        <p>
+          Control the basic reading economy used across Novelora.
+        </p>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="chapterPrice">
+              Default Chapter Price
+            </label>
+
+            <input
+              type="number"
+              id="chapterPrice"
+              min="0"
+              value="5"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="newUserCoins">
+              New User Starting Coins
+            </label>
+
+            <input
+              type="number"
+              id="newUserCoins"
+              min="0"
+              value="20"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Allow Free Chapters</h3>
+
+            <p>
+              Authors and admins can mark selected chapters
+              as free.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="freeChapters"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Allow Chapter Unlocks</h3>
+
+            <p>
+              Readers can use coins to unlock paid chapters.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="chapterUnlocks"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- REWARDS -->
+      <section
+        class="settings-panel settings-section"
+        id="rewards"
+        style="display:none;"
+      >
+
+        <h2>Reader Rewards</h2>
+
+        <p>
+          Set the default rewards readers can earn.
+        </p>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="dailyLoginReward">
+              Daily Login Coins
+            </label>
+
+            <input
+              type="number"
+              id="dailyLoginReward"
+              min="0"
+              value="2"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="adReward">
+              Rewarded Ad Coins
+            </label>
+
+            <input
+              type="number"
+              id="adReward"
+              min="0"
+              value="2"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="form-row">
+
+          <div class="form-group">
+
+            <label for="shareReward">
+              Share Reward
+            </label>
+
+            <input
+              type="number"
+              id="shareReward"
+              min="0"
+              value="2"
+            >
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label for="newUserReward">
+              New User Bonus
+            </label>
+
+            <input
+              type="number"
+              id="newUserReward"
+              min="0"
+              value="20"
+            >
+
+          </div>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Daily Login Rewards</h3>
+
+            <p>
+              Allow readers to receive a daily login reward.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="dailyLoginEnabled"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Rewarded Ads</h3>
+
+            <p>
+              Allow readers to earn coins from rewarded ads.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="adsEnabled"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Share-to-Earn</h3>
+
+            <p>
+              Allow readers to receive coins for eligible shares.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="shareEnabled"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- NOTIFICATIONS -->
+      <section
+        class="settings-panel settings-section"
+        id="notifications"
+        style="display:none;"
+      >
+
+        <h2>Notifications</h2>
+
+        <p>
+          Control platform-wide notification categories.
+        </p>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>New Chapter Notifications</h3>
+
+            <p>
+              Notify readers when followed authors release chapters.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="chapterNotifications"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Reward Notifications</h3>
+
+            <p>
+              Notify readers when they receive rewards.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="rewardNotifications"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Promotion Notifications</h3>
+
+            <p>
+              Notify readers about special promotions.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="promotionNotifications"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Author Notifications</h3>
+
+            <p>
+              Allow platform notifications for author activity.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="authorNotifications"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- PLATFORM -->
+      <section
+        class="settings-panel settings-section"
+        id="platform"
+        style="display:none;"
+      >
+
+        <h2>Platform Settings</h2>
+
+        <p>
+          General controls for the Novelora platform.
+        </p>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Reader Registration</h3>
+
+            <p>
+              Allow new readers to create accounts.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="readerRegistration"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Author Applications</h3>
+
+            <p>
+              Allow writers to submit applications to become authors.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="authorApplications"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+
+        <div class="setting-row">
+
+          <div class="setting-info">
+
+            <h3>Community Features</h3>
+
+            <p>
+              Enable reader community features.
+            </p>
+
+          </div>
+
+          <label class="toggle">
+
+            <input
+              type="checkbox"
+              id="communityEnabled"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- ACTIONS -->
+      <section class="settings-panel">
+
+        <div class="actions">
+
+          <button
+            class="save-btn"
+            id="saveSettings"
+          >
+            Save Settings
+          </button>
+
+          <button
+            class="reset-btn"
+            id="resetSettings"
+          >
+            Reset Defaults
+          </button>
+
+        </div>
+
+        <div
+          class="message"
+          id="settingsMessage"
+        ></div>
+
+      </section>
+
+
+      <!-- DANGER -->
+      <section class="settings-panel danger-panel">
+
+        <h2>Danger Zone</h2>
+
+        <p>
+          These actions affect locally stored Novelora admin settings.
+        </p>
+
+        <button
+          class="danger-btn"
+          id="clearSettings"
+        >
+          Clear Saved Settings
+        </button>
+
+      </section>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<script>
+
+const SETTINGS_KEY = "noveloraPlatformSettings";
+
+
+const defaultSettings = {
+
+  siteName: "Novelora",
+
+  siteTagline:
+    "Your next story awaits.",
+
+  siteDescription:
+    "Novelora is a romance reading and writing platform where readers discover stories and authors share their imagination.",
+
+  chapterPrice: 5,
+
+  newUserCoins: 20,
+
+  freeChapters: true,
+
+  chapterUnlocks: true,
+
+  dailyLoginReward: 2,
+
+  adReward: 2,
+
+  shareReward: 2,
+
+  newUserReward: 20,
+
+  dailyLoginEnabled: true,
+
+  adsEnabled: true,
+
+  shareEnabled: true,
+
+  chapterNotifications: true,
+
+  rewardNotifications: true,
+
+  promotionNotifications: true,
+
+  authorNotifications: true,
+
+  readerRegistration: true,
+
+  authorApplications: true,
+
+  communityEnabled: true
+
+};
+
+
+function getSettings() {
+
+  try {
+
+    return {
+      ...defaultSettings,
+      ...(JSON.parse(
+        localStorage.getItem(
+          SETTINGS_KEY
+        )
+      ) || {})
+    };
+
+  } catch {
+
+    return {
+      ...defaultSettings
+    };
+
+  }
+
+}
+
+
+function setValue(id, value) {
+
+  const element =
+    document.getElementById(id);
+
+  if (!element) return;
+
+  if (
+    element.type === "checkbox"
+  ) {
+
+    element.checked =
+      Boolean(value);
+
+  } else {
+
+    element.value =
+      value ?? "";
+
+  }
+
+}
+
+
+function loadSettings() {
+
+  const settings =
+    getSettings();
+
+
+  Object.keys(settings)
+    .forEach(key => {
+
+      setValue(
+        key,
+        settings[key]
+      );
+
+    });
+
+}
+
+
+function collectSettings() {
+
+  const settings = {};
+
+  Object.keys(defaultSettings)
+    .forEach(key => {
+
+      const element =
+        document.getElementById(key);
+
+      if (!element) return;
+
+      if (
+        element.type === "checkbox"
+      ) {
+
+        settings[key] =
+          element.checked;
+
+      } else if (
+        element.type === "number"
+      ) {
+
+        settings[key] =
+          Number(element.value);
+
+      } else {
+
+        settings[key] =
+          element.value;
+
+      }
+
+    });
+
+  return settings;
+
+}
+
+
+/* TABS */
+document
+  .querySelectorAll(".settings-tab")
+  .forEach(tab => {
+
+    tab.addEventListener(
+      "click",
+      () => {
+
+        document
+          .querySelectorAll(
+            ".settings-tab"
+          )
+          .forEach(item =>
+            item.classList.remove(
+              "active"
+            )
+          );
+
+
+        document
+          .querySelectorAll(
+            ".settings-section"
+          )
+          .forEach(section =>
+            section.style.display =
+              "none"
+          );
+
+
+        tab.classList.add(
+          "active"
+        );
+
+
+        const target =
+          document.getElementById(
+            tab.dataset.target
+          );
+
+        if (target) {
+
+          target.style.display =
+            "block";
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* SAVE */
+document
+  .getElementById("saveSettings")
+  .addEventListener(
+    "click",
+    () => {
+
+      const settings =
+        collectSettings();
+
+
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(
+          settings
+        )
+      );
+
+
+      const message =
+        document.getElementById(
+          "settingsMessage"
+        );
+
+      message.textContent =
+        "Settings saved successfully.";
+
+      setTimeout(() => {
+
+        message.textContent = "";
+
+      }, 3000);
+
+    }
+  );
+
+
+/* RESET */
+document
+  .getElementById("resetSettings")
+  .addEventListener(
+    "click",
+    () => {
+
+      const confirmed =
+        confirm(
+          "Reset all settings to their default values?"
+        );
+
+      if (!confirmed) return;
+
+
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(
+          defaultSettings
+        )
+      );
+
+
+      loadSettings();
+
+
+      document
+        .getElementById(
+          "settingsMessage"
+        )
+        .textContent =
+          "Settings restored to defaults.";
+
+    }
+  );
+
+
+/* CLEAR */
+document
+  .getElementById("clearSettings")
+  .addEventListener(
+    "click",
+    () => {
+
+      const confirmed =
+        confirm(
+          "Clear all saved Novelora platform settings?"
+        );
+
+      if (!confirmed) return;
+
+
+      localStorage.removeItem(
+        SETTINGS_KEY
+      );
+
+
+      loadSettings();
+
+
+      document
+        .getElementById(
+          "settingsMessage"
+        )
+        .textContent =
+          "Saved settings cleared.";
+
+    }
+  );
+
+
+/* START */
+loadSettings();
+
+</script>
+
+</body>
+</html>
