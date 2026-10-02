@@ -1,1729 +1,1838 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Novelora — Add New Book</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #120912;
-      --panel: #1c101c;
-      --panel-2: #241323;
-      --border: rgba(255, 255, 255, 0.08);
-      --text: #fff;
-      --muted: #bcaebd;
-      --pink: #ff4fa3;
-      --pink-soft: #ff8bc5;
-      --danger: #ff5c7c;
-      --success: #62e6a7;
-    }
-
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at 70% 0%, rgba(255, 79, 163, 0.13), transparent 30%),
-        radial-gradient(circle at 10% 20%, rgba(180, 55, 160, 0.08), transparent 25%),
-        var(--bg);
-      color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
-      min-height: 100vh;
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
-    }
-
-    .page {
-      max-width: 1500px;
-      margin: auto;
-      padding: 28px;
-    }
-
-    /* TOP */
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 28px;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .back-btn {
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.05);
-      color: white;
-      width: 46px;
-      height: 46px;
-      border-radius: 14px;
-      cursor: pointer;
-      font-size: 21px;
-    }
-
-    .back-btn:hover {
-      background: rgba(255,79,163,.12);
-    }
-
-    .eyebrow {
-      color: var(--pink-soft);
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 32px;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      margin: 7px 0 0;
-      font-size: 14px;
-    }
-
-    .top-actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 13px 19px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,.07);
-      color: white;
-      border: 1px solid var(--border);
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #ff3f98, #ff6db4);
-      color: white;
-      box-shadow: 0 8px 25px rgba(255, 63, 152, .18);
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-1px);
-    }
-
-    /* LAYOUT */
-    .layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 22px;
-      align-items: start;
-    }
-
-    .main-column {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      min-width: 0;
-    }
-
-    .side-column {
-      position: sticky;
-      top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .card {
-      background: linear-gradient(
-        145deg,
-        rgba(255,255,255,.045),
-        rgba(255,255,255,.018)
-      );
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.16);
-    }
-
-    .card-header {
-      margin-bottom: 22px;
-    }
-
-    .card-header h2 {
-      margin: 0 0 6px;
-      font-size: 19px;
-    }
-
-    .card-header p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    /* FORM */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-    }
-
-    .form-grid.three {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field.full {
-      grid-column: 1 / -1;
-    }
-
-    label {
-      font-size: 13px;
-      font-weight: 700;
-      color: #f5eaf2;
-    }
-
-    .required {
-      color: var(--pink-soft);
-    }
-
-    input,
-    textarea,
-    select {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,.09);
-      background: rgba(0,0,0,.22);
-      color: white;
-      border-radius: 12px;
-      padding: 13px 14px;
-      outline: none;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: rgba(255,79,163,.65);
-      box-shadow: 0 0 0 3px rgba(255,79,163,.08);
-    }
-
-    textarea {
-      min-height: 125px;
-      resize: vertical;
-      line-height: 1.55;
-    }
-
-    select option {
-      background: #241323;
-      color: white;
-    }
-
-    .hint {
-      color: #8f818f;
-      font-size: 11px;
-      line-height: 1.4;
-    }
-
-    /* COVER */
-    .cover-section {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 25px;
-      align-items: start;
-    }
-
-    .cover-upload {
-      position: relative;
-      width: 240px;
-      height: 330px;
-      border-radius: 18px;
-      border: 1px dashed rgba(255,79,163,.55);
-      background:
-        linear-gradient(145deg, rgba(255,79,163,.09), rgba(255,255,255,.025));
-      overflow: hidden;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    .cover-upload:hover {
-      border-color: var(--pink);
-      background:
-        linear-gradient(145deg, rgba(255,79,163,.15), rgba(255,255,255,.035));
-    }
-
-    .cover-upload input {
-      display: none;
-    }
-
-    .cover-placeholder {
-      padding: 20px;
-    }
-
-    .cover-icon {
-      font-size: 45px;
-      margin-bottom: 12px;
-    }
-
-    .cover-placeholder strong {
-      display: block;
-      font-size: 15px;
-      margin-bottom: 7px;
-    }
-
-    .cover-placeholder span {
-      display: block;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    #coverPreview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-
-    .cover-tools {
-      margin-top: 12px;
-      display: none;
-      gap: 8px;
-    }
-
-    .small-btn {
-      flex: 1;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,.06);
-      color: white;
-      border-radius: 9px;
-      padding: 9px;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    .small-btn.remove {
-      color: #ff91a5;
-    }
-
-    /* CHECKBOXES */
-    .check-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
-    }
-
-    .check {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 13px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(255,255,255,.025);
-      cursor: pointer;
-    }
-
-    .check:hover {
-      border-color: rgba(255,79,163,.35);
-    }
-
-    .check input {
-      width: auto;
-      margin-top: 2px;
-      accent-color: var(--pink);
-    }
-
-    .check strong {
-      display: block;
-      font-size: 13px;
-      margin-bottom: 3px;
-    }
-
-    .check span {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.4;
-    }
-
-    /* SIDEBAR */
-    .preview-card {
-      text-align: center;
-    }
-
-    .preview-title {
-      font-size: 17px;
-      font-weight: 800;
-      margin-bottom: 14px;
-      word-break: break-word;
-    }
-
-    .mini-cover {
-      width: 145px;
-      height: 205px;
-      margin: 0 auto 16px;
-      border-radius: 12px;
-      overflow: hidden;
-      background: linear-gradient(145deg, #32152c, #160b16);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #927d8e;
-      font-size: 12px;
-      padding: 15px;
-    }
-
-    .mini-cover img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-
-    .preview-author {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .preview-tags {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 13px;
-    }
-
-    .tag {
-      padding: 6px 9px;
-      border-radius: 999px;
-      background: rgba(255,79,163,.09);
-      border: 1px solid rgba(255,79,163,.18);
-      color: #ff9bca;
-      font-size: 10px;
-    }
-
-    .info-list {
-      display: flex;
-      flex-direction: column;
-      gap: 13px;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-      padding-bottom: 11px;
-    }
-
-    .info-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .info-row span:first-child {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .info-row span:last-child {
-      font-size: 12px;
-      font-weight: 700;
-      text-align: right;
-    }
-
-    .status-draft {
-      color: #ffc36d;
-    }
-
-    .status-published {
-      color: var(--success);
-    }
-
-    /* BOTTOM */
-    .bottom-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding-top: 5px;
-    }
-
-    .message {
-      display: none;
-      border-radius: 12px;
-      padding: 13px 15px;
-      font-size: 13px;
-      margin-bottom: 18px;
-    }
-
-    .message.error {
-      display: block;
-      background: rgba(255,92,124,.09);
-      border: 1px solid rgba(255,92,124,.22);
-      color: #ff9caf;
-    }
-
-    .message.success {
-      display: block;
-      background: rgba(98,230,167,.08);
-      border: 1px solid rgba(98,230,167,.2);
-      color: #8ff0bf;
-    }
-
-    /* MOBILE */
-    @media (max-width: 1050px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
-
-      .side-column {
-        position: static;
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0,1fr));
-      }
-    }
-
-    @media (max-width: 750px) {
-      .page {
-        padding: 16px;
-      }
-
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .top-actions {
-        width: 100%;
-      }
-
-      .top-actions .btn {
-        flex: 1;
-      }
-
-      .form-grid,
-      .form-grid.three,
-      .check-grid,
-      .side-column {
-        grid-template-columns: 1fr;
-      }
-
-      .cover-section {
-        grid-template-columns: 1fr;
-      }
-
-      .cover-upload {
-        margin: auto;
-      }
-
-      .cover-tools {
-        width: 240px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-
-      h1 {
-        font-size: 26px;
-      }
-
-      .card {
-        padding: 18px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Novelora — Add New Book</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
+<style>
+*{box-sizing:border-box}
+:root{
+--bg:#120912;
+--panel:#1c101c;
+--panel-2:#241323;
+--border:rgba(255,255,255,.08);
+--text:#fff;
+--muted:#bcaebd;
+--pink:#ff4fa3;
+--pink-soft:#ff8bc5;
+--danger:#ff5c7c;
+--success:#62e6a7
+}
+body{
+margin:0;
+background:
+radial-gradient(circle at 70% 0%,rgba(255,79,163,.13),transparent 30%),
+radial-gradient(circle at 10% 20%,rgba(180,55,160,.08),transparent 25%),
+var(--bg);
+color:var(--text);
+font-family:Arial,Helvetica,sans-serif;
+min-height:100vh
+}
+button,input,textarea,select{font:inherit}
+.page{max-width:1500px;margin:auto;padding:28px}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:20px;
+margin-bottom:28px
+}
+.topbar-left{display:flex;align-items:center;gap:16px}
+.back-btn{
+border:1px solid var(--border);
+background:rgba(255,255,255,.05);
+color:white;
+width:46px;
+height:46px;
+border-radius:14px;
+cursor:pointer;
+font-size:21px
+}
+.back-btn:hover{background:rgba(255,79,163,.12)}
+.eyebrow{
+color:var(--pink-soft);
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:1.5px;
+font-weight:700;
+margin-bottom:6px
+}
+h1{margin:0;font-size:32px}
+.subtitle{color:var(--muted);margin:7px 0 0;font-size:14px}
+.top-actions{display:flex;gap:10px}
+.btn{
+border:0;
+border-radius:12px;
+padding:13px 19px;
+cursor:pointer;
+font-weight:700
+}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn-secondary{
+background:rgba(255,255,255,.07);
+color:white;
+border:1px solid var(--border)
+}
+.btn-primary{
+background:linear-gradient(135deg,#ff3f98,#ff6db4);
+color:white;
+box-shadow:0 8px 25px rgba(255,63,152,.18)
+}
+.btn-primary:hover{transform:translateY(-1px)}
+
+.layout{
+display:grid;
+grid-template-columns:minmax(0,1fr) 320px;
+gap:22px;
+align-items:start
+}
+.main-column{
+display:flex;
+flex-direction:column;
+gap:20px;
+min-width:0
+}
+.side-column{
+position:sticky;
+top:20px;
+display:flex;
+flex-direction:column;
+gap:18px
+}
+.card{
+background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
+border:1px solid var(--border);
+border-radius:20px;
+padding:24px;
+box-shadow:0 15px 40px rgba(0,0,0,.16)
+}
+.card-header{margin-bottom:22px}
+.card-header h2{margin:0 0 6px;font-size:19px}
+.card-header p{margin:0;color:var(--muted);font-size:13px}
+
+.form-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:18px
+}
+.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.field{display:flex;flex-direction:column;gap:8px}
+.field.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700;color:#f5eaf2}
+.required{color:var(--pink-soft)}
+
+input,textarea,select{
+width:100%;
+border:1px solid rgba(255,255,255,.09);
+background:rgba(0,0,0,.22);
+color:white;
+border-radius:12px;
+padding:13px 14px;
+outline:none
+}
+input:focus,textarea:focus,select:focus{
+border-color:rgba(255,79,163,.65);
+box-shadow:0 0 0 3px rgba(255,79,163,.08)
+}
+textarea{
+min-height:125px;
+resize:vertical;
+line-height:1.55
+}
+select option{background:#241323;color:white}
+.hint{color:#8f818f;font-size:11px;line-height:1.4}
+
+.cover-section{
+display:grid;
+grid-template-columns:240px 1fr;
+gap:25px;
+align-items:start
+}
+.cover-upload{
+position:relative;
+width:240px;
+height:330px;
+border-radius:18px;
+border:1px dashed rgba(255,79,163,.55);
+background:linear-gradient(145deg,rgba(255,79,163,.09),rgba(255,255,255,.025));
+overflow:hidden;
+cursor:pointer;
+display:flex;
+justify-content:center;
+align-items:center;
+text-align:center
+}
+.cover-upload:hover{
+border-color:var(--pink);
+background:linear-gradient(145deg,rgba(255,79,163,.15),rgba(255,255,255,.035))
+}
+.cover-upload input{display:none}
+.cover-placeholder{padding:20px}
+.cover-icon{font-size:45px;margin-bottom:12px}
+.cover-placeholder strong{display:block;font-size:15px;margin-bottom:7px}
+.cover-placeholder span{
+display:block;
+color:var(--muted);
+font-size:12px;
+line-height:1.5
+}
+#coverPreview{
+width:100%;
+height:100%;
+object-fit:cover;
+display:none
+}
+.cover-tools{
+margin-top:12px;
+display:none;
+gap:8px
+}
+.small-btn{
+flex:1;
+border:1px solid var(--border);
+background:rgba(255,255,255,.06);
+color:white;
+border-radius:9px;
+padding:9px;
+cursor:pointer;
+font-size:12px
+}
+.small-btn.remove{color:#ff91a5}
+
+.check-grid{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:12px
+}
+.check{
+display:flex;
+gap:10px;
+align-items:flex-start;
+padding:13px;
+border:1px solid var(--border);
+border-radius:12px;
+background:rgba(255,255,255,.025);
+cursor:pointer
+}
+.check:hover{border-color:rgba(255,79,163,.35)}
+.check input{
+width:auto;
+margin-top:2px;
+accent-color:var(--pink)
+}
+.check strong{
+display:block;
+font-size:13px;
+margin-bottom:3px
+}
+.check span{
+display:block;
+color:var(--muted);
+font-size:11px;
+line-height:1.4
+}
+
+.preview-card{text-align:center}
+.preview-title{
+font-size:17px;
+font-weight:800;
+margin-bottom:14px;
+word-break:break-word
+}
+.mini-cover{
+width:145px;
+height:205px;
+margin:0 auto 16px;
+border-radius:12px;
+overflow:hidden;
+background:linear-gradient(145deg,#32152c,#160b16);
+border:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:center;
+color:#927d8e;
+font-size:12px;
+padding:15px
+}
+.mini-cover img{
+width:100%;
+height:100%;
+object-fit:cover;
+display:none
+}
+.preview-author{color:var(--muted);font-size:13px}
+.preview-tags{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:6px;
+margin-top:13px
+}
+.tag{
+padding:6px 9px;
+border-radius:999px;
+background:rgba(255,79,163,.09);
+border:1px solid rgba(255,79,163,.18);
+color:#ff9bca;
+font-size:10px
+}
+.info-list{display:flex;flex-direction:column;gap:13px}
+.info-row{
+display:flex;
+justify-content:space-between;
+gap:15px;
+border-bottom:1px solid rgba(255,255,255,.06);
+padding-bottom:11px
+}
+.info-row:last-child{border-bottom:0;padding-bottom:0}
+.info-row span:first-child{color:var(--muted);font-size:12px}
+.info-row span:last-child{
+font-size:12px;
+font-weight:700;
+text-align:right
+}
+.status-draft{color:#ffc36d}
+.status-published{color:var(--success)}
+
+.bottom-actions{
+display:flex;
+justify-content:flex-end;
+gap:10px;
+padding-top:5px
+}
+.message{
+display:none;
+border-radius:12px;
+padding:13px 15px;
+font-size:13px;
+margin-bottom:18px
+}
+.message.error{
+display:block;
+background:rgba(255,92,124,.09);
+border:1px solid rgba(255,92,124,.22);
+color:#ff9caf
+}
+.message.success{
+display:block;
+background:rgba(98,230,167,.08);
+border:1px solid rgba(98,230,167,.2);
+color:#8ff0bf
+}
+
+@media(max-width:1050px){
+.layout{grid-template-columns:1fr}
+.side-column{
+position:static;
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr))
+}
+}
+@media(max-width:750px){
+.page{padding:16px}
+.topbar{
+align-items:flex-start;
+flex-direction:column
+}
+.top-actions{width:100%}
+.top-actions .btn{flex:1}
+.form-grid,
+.form-grid.three,
+.check-grid,
+.side-column{grid-template-columns:1fr}
+.cover-section{grid-template-columns:1fr}
+.cover-upload{margin:auto}
+.cover-tools{
+width:240px;
+margin-left:auto;
+margin-right:auto
+}
+h1{font-size:26px}
+.card{padding:18px}
+}
+</style>
 </head>
 
 <body>
 
 <div class="page">
 
-  <!-- HEADER -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <button class="back-btn" onclick="location.href='index.html'" title="Back to Dashboard">←</button>
-
-      <div>
-        <div class="eyebrow">Novelora Publishing Studio</div>
-        <h1>Create New Book</h1>
-        <p class="subtitle">
-          Build, configure and publish your next story.
-        </p>
-      </div>
-    </div>
-
-    <div class="top-actions">
-      <button class="btn btn-secondary" onclick="saveBook('Draft')">
-        💾 Save Draft
-      </button>
-
-      <button class="btn btn-primary" onclick="saveBook('Published')">
-        🚀 Publish Book
-      </button>
-    </div>
-  </header>
-
-
-  <div id="message" class="message"></div>
-
-
-  <div class="layout">
-
-    <!-- MAIN -->
-    <main class="main-column">
-
-      <!-- COVER + BASIC IDENTITY -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>📖 Book Identity</h2>
-          <p>Start with the information readers will see first.</p>
-        </div>
-
-        <div class="cover-section">
-
-          <!-- COVER -->
-          <div>
-
-            <label for="coverInput">Book Cover</label>
-
-            <label class="cover-upload" for="coverInput">
-
-              <input
-                type="file"
-                id="coverInput"
-                accept="image/*"
-              >
-
-              <div class="cover-placeholder" id="coverPlaceholder">
-                <div class="cover-icon">🖼️</div>
-                <strong>Choose Book Cover</strong>
-                <span>
-                  Tap here to choose an image from your phone or device.
-                </span>
-              </div>
-
-              <img id="coverPreview" alt="Book cover preview">
-
-            </label>
-
-            <div class="cover-tools" id="coverTools">
-              <button class="small-btn" type="button" onclick="chooseAnotherCover()">
-                Change
-              </button>
-
-              <button class="small-btn remove" type="button" onclick="removeCover()">
-                Remove
-              </button>
-            </div>
-
-            <div class="hint" style="margin-top:8px;">
-              Recommended: portrait book cover, JPG or PNG.
-            </div>
-
-          </div>
-
-
-          <!-- IDENTITY FIELDS -->
-          <div class="form-grid">
-
-            <div class="field full">
-              <label for="title">
-                Book Title <span class="required">*</span>
-              </label>
-              <input
-                id="title"
-                type="text"
-                placeholder="e.g. The Alpha's Forbidden Hybrid"
-                oninput="updatePreview()"
-              >
-            </div>
-
-            <div class="field">
-              <label for="subtitle">Subtitle</label>
-              <input
-                id="subtitle"
-                type="text"
-                placeholder="Optional subtitle"
-              >
-            </div>
-
-            <div class="field">
-              <label for="tagline">Short Tagline</label>
-              <input
-                id="tagline"
-                type="text"
-                placeholder="A forbidden love. A dangerous secret."
-              >
-            </div>
-
-            <div class="field">
-              <label for="author">
-                Author <span class="required">*</span>
-              </label>
-              <input
-                id="author"
-                type="text"
-                placeholder="Author name"
-                oninput="updatePreview()"
-              >
-            </div>
-
-            <div class="field">
-              <label for="penName">Pen Name</label>
-              <input
-                id="penName"
-                type="text"
-                placeholder="Public author name"
-              >
-            </div>
-
-            <div class="field full">
-              <label for="description">
-                Book Description / Blurb <span class="required">*</span>
-              </label>
-
-              <textarea
-                id="description"
-                placeholder="Tell readers what your story is about..."
-              ></textarea>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- GENRE -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>🏷️ Genres & Discovery</h2>
-          <p>Help readers discover your book through categories and keywords.</p>
-        </div>
-
-        <div class="form-grid three">
-
-          <div class="field">
-            <label for="genre">
-              Main Genre <span class="required">*</span>
-            </label>
-
-            <select id="genre">
-              <option value="">Select genre</option>
-              <option>Romance</option>
-              <option>Werewolf</option>
-              <option>Vampire</option>
-              <option>Billionaire</option>
-              <option>Fantasy</option>
-              <option>Mystery</option>
-              <option>Thriller</option>
-              <option>Drama</option>
-              <option>Historical</option>
-              <option>Young Adult</option>
-              <option>Contemporary</option>
-              <option>Paranormal</option>
-              <option>Crime</option>
-              <option>Action</option>
-              <option>Science Fiction</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="subgenre">Subgenre</label>
-            <input
-              id="subgenre"
-              type="text"
-              placeholder="e.g. Dark Romance"
-            >
-          </div>
-
-          <div class="field">
-            <label for="secondaryGenres">Secondary Genres</label>
-            <input
-              id="secondaryGenres"
-              type="text"
-              placeholder="Romance, Fantasy"
-            >
-          </div>
-
-          <div class="field full">
-            <label for="tags">Tags / Keywords</label>
-            <input
-              id="tags"
-              type="text"
-              placeholder="alpha, forbidden love, mate, billionaire, enemies to lovers"
-            >
-            <span class="hint">
-              Separate keywords with commas.
-            </span>
-          </div>
-
-          <div class="field full">
-            <label for="searchKeywords">Search Keywords</label>
-            <input
-              id="searchKeywords"
-              type="text"
-              placeholder="Words readers might type when searching for this story"
-            >
-          </div>
-
-          <div class="field full">
-            <label for="promotionalBlurb">Promotional Blurb</label>
-            <textarea
-              id="promotionalBlurb"
-              placeholder="A short promotional description for banners, discovery pages and campaigns..."
-            ></textarea>
-          </div>
-
-          <div class="field full">
-            <label for="featuredQuote">Featured Quote</label>
-            <input
-              id="featuredQuote"
-              type="text"
-              placeholder="One memorable line from the story"
-            >
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- STORY INFORMATION -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>✨ Story Information</h2>
-          <p>Give Novelora more information about the story itself.</p>
-        </div>
-
-        <div class="form-grid three">
-
-          <div class="field">
-            <label for="pov">Point of View</label>
-            <select id="pov">
-              <option value="">Select POV</option>
-              <option>First Person</option>
-              <option>Third Person</option>
-              <option>Multiple POV</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="storyStatus">Story Status</label>
-            <select id="storyStatus">
-              <option>Ongoing</option>
-              <option>Completed</option>
-              <option>Hiatus</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="estimatedChapters">Estimated Chapters</label>
-            <input
-              id="estimatedChapters"
-              type="number"
-              min="0"
-              placeholder="e.g. 100"
-            >
-          </div>
-
-          <div class="field">
-            <label for="setting">Story Setting</label>
-            <input
-              id="setting"
-              type="text"
-              placeholder="e.g. Modern New York"
-            >
-          </div>
-
-          <div class="field">
-            <label for="seriesName">Series Name</label>
-            <input
-              id="seriesName"
-              type="text"
-              placeholder="Optional series"
-            >
-          </div>
-
-          <div class="field">
-            <label for="bookNumber">Book Number</label>
-            <input
-              id="bookNumber"
-              type="number"
-              min="1"
-              placeholder="e.g. 1"
-            >
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- READER INFORMATION -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>👥 Reader Information</h2>
-          <p>Set the audience and content information for this book.</p>
-        </div>
-
-        <div class="form-grid three">
-
-          <div class="field">
-            <label for="ageRating">Age Rating</label>
-
-            <select id="ageRating">
-              <option>All Ages</option>
-              <option>13+</option>
-              <option>16+</option>
-              <option>18+</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="targetAudience">Target Audience</label>
-
-            <select id="targetAudience">
-              <option>General</option>
-              <option>Young Adult</option>
-              <option>New Adult</option>
-              <option>Adult</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="language">Language</label>
-
-            <select id="language">
-              <option>English</option>
-              <option>French</option>
-              <option>Spanish</option>
-              <option>Portuguese</option>
-              <option>Other</option>
-            </select>
-          </div>
-
-          <div class="field full">
-            <label for="contentWarnings">Content Warnings</label>
-
-            <textarea
-              id="contentWarnings"
-              placeholder="Optional. Example: violence, mature themes, explicit language..."
-            ></textarea>
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- AUTHOR -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>✍️ Author Information</h2>
-          <p>Store the author's information alongside the book.</p>
-        </div>
-
-        <div class="form-grid">
-
-          <div class="field">
-            <label for="authorId">Author ID</label>
-            <input
-              id="authorId"
-              type="text"
-              placeholder="Optional author ID"
-            >
-          </div>
-
-          <div class="field">
-            <label for="authorEmail">Author Contact</label>
-            <input
-              id="authorEmail"
-              type="text"
-              placeholder="Optional"
-            >
-          </div>
-
-          <div class="field full">
-            <label for="authorBio">Author Bio / Description</label>
-
-            <textarea
-              id="authorBio"
-              placeholder="Short author biography..."
-            ></textarea>
-          </div>
-
-        </div>
-      </section>
-
-
-      <!-- PUBLISHING -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>🚀 Publishing Settings</h2>
-          <p>Control how and when the book is published.</p>
-        </div>
-
-        <div class="form-grid three">
-
-          <div class="field">
-            <label for="publicationDate">Publication Date</label>
-            <input id="publicationDate" type="date">
-          </div>
-
-          <div class="field">
-            <label for="updateFrequency">Update Frequency</label>
-
-            <select id="updateFrequency">
-              <option>Daily</option>
-              <option>Several times a week</option>
-              <option>Weekly</option>
-              <option>Biweekly</option>
-              <option>Monthly</option>
-              <option>Not scheduled</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="ownership">Publication Type</label>
-
-            <select id="ownership">
-              <option>Original</option>
-              <option>Exclusive</option>
-              <option>Non-exclusive</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div style="height:18px;"></div>
-
-        <div class="check-grid">
-
-          <label class="check">
-            <input id="featured" type="checkbox">
-            <div>
-              <strong>Featured Book</strong>
-              <span>Allow this book to appear in featured sections.</span>
-            </div>
-          </label>
-
-          <label class="check">
-            <input id="promotionEligible" type="checkbox" checked>
-            <div>
-              <strong>Promotion Eligible</strong>
-              <span>Allow administrators to include this book in promotions.</span>
-            </div>
-          </label>
-
-          <label class="check">
-            <input id="originalWork" type="checkbox" checked>
-            <div>
-              <strong>Original Work</strong>
-              <span>Mark this story as an original Novelora publication.</span>
-            </div>
-          </label>
-
-        </div>
-
-      </section>
-
-
-      <!-- MONETIZATION -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>💰 Monetization</h2>
-          <p>Configure how readers will access this book.</p>
-        </div>
-
-        <div class="form-grid three">
-
-          <div class="field">
-            <label for="accessType">Book Access</label>
-
-            <select id="accessType" onchange="updatePriceState()">
-              <option value="Paid">Paid</option>
-              <option value="Free">Free</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="chapterPrice">Chapter Price</label>
-
-            <input
-              id="chapterPrice"
-              type="number"
-              min="0"
-              value="5"
-            >
-
-            <span class="hint">
-              Novelora coins per locked chapter.
-            </span>
-          </div>
-
-          <div class="field">
-            <label for="freeOpeningChapters">Free Opening Chapters</label>
-
-            <input
-              id="freeOpeningChapters"
-              type="number"
-              min="0"
-              value="0"
-            >
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- EXTRA READER OPTIONS -->
-      <section class="card">
-
-        <div class="card-header">
-          <h2>⚙️ Reader Features</h2>
-          <p>Choose which reader interactions are available for this book.</p>
-        </div>
-
-        <div class="check-grid">
-
-          <label class="check">
-            <input id="allowComments" type="checkbox" checked>
-            <div>
-              <strong>Comments</strong>
-              <span>Allow readers to comment on chapters.</span>
-            </div>
-          </label>
-
-          <label class="check">
-            <input id="allowRatings" type="checkbox" checked>
-            <div>
-              <strong>Ratings & Reviews</strong>
-              <span>Allow readers to rate and review the book.</span>
-            </div>
-          </label>
-
-          <label class="check">
-            <input id="allowGifts" type="checkbox" checked>
-            <div>
-              <strong>Reader Gifts / Tips</strong>
-              <span>Allow readers to support the author later.</span>
-            </div>
-          </label>
-
-          <label class="check">
-            <input id="discoverable" type="checkbox" checked>
-            <div>
-              <strong>Discovery Visibility</strong>
-              <span>Allow this book to appear in search and discovery.</span>
-            </div>
-          </label>
-
-        </div>
-
-      </section>
-
-
-      <!-- BOTTOM ACTIONS -->
-      <section class="card">
-
-        <div class="bottom-actions">
-
-          <button class="btn btn-secondary" onclick="location.href='index.html'">
-            Cancel
-          </button>
-
-          <button class="btn btn-secondary" onclick="saveBook('Draft')">
-            💾 Save Draft
-          </button>
-
-          <button class="btn btn-primary" onclick="saveBook('Published')">
-            🚀 Publish Book
-          </button>
-
-        </div>
-
-      </section>
-
-    </main>
-
-
-    <!-- SIDE PREVIEW -->
-    <aside class="side-column">
-
-      <section class="card preview-card">
-
-        <div class="card-header">
-          <h2>Live Preview</h2>
-          <p>How your book begins to look.</p>
-        </div>
-
-        <div class="mini-cover">
-          <span id="miniCoverText">Cover Preview</span>
-          <img id="miniCoverImage" alt="Preview">
-        </div>
-
-        <div class="preview-title" id="previewTitle">
-          Untitled Book
-        </div>
-
-        <div class="preview-author" id="previewAuthor">
-          Author name
-        </div>
-
-        <div class="preview-tags">
-          <span class="tag" id="previewGenre">Genre</span>
-          <span class="tag" id="previewStatus">Draft</span>
-        </div>
-
-      </section>
-
-
-      <section class="card">
-
-        <div class="card-header">
-          <h2>Publishing Summary</h2>
-          <p>Current configuration.</p>
-        </div>
-
-        <div class="info-list">
-
-          <div class="info-row">
-            <span>Status</span>
-            <span class="status-draft" id="summaryStatus">Draft</span>
-          </div>
-
-          <div class="info-row">
-            <span>Access</span>
-            <span id="summaryAccess">Paid</span>
-          </div>
-
-          <div class="info-row">
-            <span>Chapter Price</span>
-            <span id="summaryPrice">5 coins</span>
-          </div>
-
-          <div class="info-row">
-            <span>Genre</span>
-            <span id="summaryGenre">Not selected</span>
-          </div>
-
-          <div class="info-row">
-            <span>Story Status</span>
-            <span id="summaryStoryStatus">Ongoing</span>
-          </div>
-
-          <div class="info-row">
-            <span>Age Rating</span>
-            <span id="summaryAge">All Ages</span>
-          </div>
-
-        </div>
-
-      </section>
-
-    </aside>
-
-  </div>
+<header class="topbar">
+<div class="topbar-left">
+
+<button class="back-btn"
+onclick="location.href='index.html'"
+title="Back to Dashboard">←</button>
+
+<div>
+<div class="eyebrow">Novelora Publishing Studio</div>
+<h1>Create New Book</h1>
+<p class="subtitle">Build, configure and publish your next story.</p>
 </div>
 
+</div>
+
+<div class="top-actions">
+
+<button id="topDraftBtn"
+class="btn btn-secondary"
+onclick="saveBook('Draft')">
+💾 Save Draft
+</button>
+
+<button id="topPublishBtn"
+class="btn btn-primary"
+onclick="saveBook('Published')">
+🚀 Publish Book
+</button>
+
+</div>
+</header>
+
+<div id="message" class="message"></div>
+
+<div class="layout">
+
+<main class="main-column">
+
+<!-- BOOK IDENTITY -->
+<section class="card">
+
+<div class="card-header">
+<h2>📖 Book Identity</h2>
+<p>Start with the information readers will see first.</p>
+</div>
+
+<div class="cover-section">
+
+<div>
+
+<label for="coverInput">Book Cover</label>
+
+<label class="cover-upload" for="coverInput">
+
+<input type="file" id="coverInput" accept="image/*">
+
+<div class="cover-placeholder" id="coverPlaceholder">
+<div class="cover-icon">🖼️</div>
+<strong>Choose Book Cover</strong>
+<span>Tap here to choose an image from your phone or device.</span>
+</div>
+
+<img id="coverPreview" alt="Book cover preview">
+
+</label>
+
+<div class="cover-tools" id="coverTools">
+
+<button class="small-btn"
+type="button"
+onclick="chooseAnotherCover()">
+Change
+</button>
+
+<button class="small-btn remove"
+type="button"
+onclick="removeCover()">
+Remove
+</button>
+
+</div>
+
+<div class="hint" style="margin-top:8px;">
+Recommended: portrait book cover, JPG or PNG.
+</div>
+
+</div>
+
+<div class="form-grid">
+
+<div class="field full">
+<label for="title">
+Book Title <span class="required">*</span>
+</label>
+
+<input id="title"
+type="text"
+placeholder="e.g. The Alpha's Forbidden Hybrid"
+oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label for="subtitle">Subtitle</label>
+<input id="subtitle"
+type="text"
+placeholder="Optional subtitle">
+</div>
+
+<div class="field">
+<label for="tagline">Short Tagline</label>
+<input id="tagline"
+type="text"
+placeholder="A forbidden love. A dangerous secret.">
+</div>
+
+<div class="field">
+<label for="author">
+Author <span class="required">*</span>
+</label>
+<input id="author"
+type="text"
+placeholder="Author name"
+oninput="updatePreview()">
+</div>
+
+<div class="field">
+<label for="penName">Pen Name</label>
+<input id="penName"
+type="text"
+placeholder="Public author name">
+</div>
+
+<div class="field full">
+<label for="description">
+Book Description / Blurb <span class="required">*</span>
+</label>
+
+<textarea id="description"
+placeholder="Tell readers what your story is about..."></textarea>
+</div>
+
+</div>
+
+</div>
+</section>
+
+<!-- GENRES -->
+<section class="card">
+
+<div class="card-header">
+<h2>🏷️ Genres & Discovery</h2>
+<p>Help readers discover your book through categories and keywords.</p>
+</div>
+
+<div class="form-grid three">
+
+<div class="field">
+
+<label for="genre">
+Main Genre <span class="required">*</span>
+</label>
+
+<select id="genre">
+<option value="">Select genre</option>
+<option>Romance</option>
+<option>Werewolf</option>
+<option>Vampire</option>
+<option>Billionaire</option>
+<option>Fantasy</option>
+<option>Mystery</option>
+<option>Thriller</option>
+<option>Drama</option>
+<option>Historical</option>
+<option>Young Adult</option>
+<option>Contemporary</option>
+<option>Paranormal</option>
+<option>Crime</option>
+<option>Mafia</option>
+<option>Action</option>
+<option>Science Fiction</option>
+</select>
+
+</div>
+
+<div class="field">
+<label for="subgenre">Subgenre</label>
+<input id="subgenre"
+type="text"
+placeholder="e.g. Dark Romance">
+</div>
+
+<div class="field">
+<label for="secondaryGenres">Secondary Genres</label>
+<input id="secondaryGenres"
+type="text"
+placeholder="Romance, Fantasy">
+</div>
+
+<div class="field full">
+<label for="tags">Tags / Keywords</label>
+<input id="tags"
+type="text"
+placeholder="alpha, forbidden love, mate, billionaire, enemies to lovers">
+<span class="hint">Separate keywords with commas.</span>
+</div>
+
+<div class="field full">
+<label for="searchKeywords">Search Keywords</label>
+<input id="searchKeywords"
+type="text"
+placeholder="Words readers might type when searching for this story">
+</div>
+
+<div class="field full">
+<label for="promotionalBlurb">Promotional Blurb</label>
+<textarea id="promotionalBlurb"
+placeholder="A short promotional description for banners, discovery pages and campaigns..."></textarea>
+</div>
+
+<div class="field full">
+<label for="featuredQuote">Featured Quote</label>
+<input id="featuredQuote"
+type="text"
+placeholder="One memorable line from the story">
+</div>
+
+</div>
+</section>
+
+<!-- STORY INFORMATION -->
+<section class="card">
+
+<div class="card-header">
+<h2>✨ Story Information</h2>
+<p>Give Novelora more information about the story itself.</p>
+</div>
+
+<div class="form-grid three">
+
+<div class="field">
+<label for="pov">Point of View</label>
+<select id="pov">
+<option value="">Select POV</option>
+<option>First Person</option>
+<option>Third Person</option>
+<option>Multiple POV</option>
+</select>
+</div>
+
+<div class="field">
+<label for="storyStatus">Story Status</label>
+<select id="storyStatus">
+<option>Ongoing</option>
+<option>Completed</option>
+<option>Hiatus</option>
+</select>
+</div>
+
+<div class="field">
+<label for="estimatedChapters">Estimated Chapters</label>
+<input id="estimatedChapters"
+type="number"
+min="0"
+placeholder="e.g. 100">
+</div>
+
+<div class="field">
+<label for="setting">Story Setting</label>
+<input id="setting"
+type="text"
+placeholder="e.g. Modern New York">
+</div>
+
+<div class="field">
+<label for="seriesName">Series Name</label>
+<input id="seriesName"
+type="text"
+placeholder="Optional series">
+</div>
+
+<div class="field">
+<label for="bookNumber">Book Number</label>
+<input id="bookNumber"
+type="number"
+min="1"
+placeholder="e.g. 1">
+</div>
+
+</div>
+</section>
+
+<!-- READER INFORMATION -->
+<section class="card">
+
+<div class="card-header">
+<h2>👥 Reader Information</h2>
+<p>Set the audience and content information for this book.</p>
+</div>
+
+<div class="form-grid three">
+
+<div class="field">
+<label for="ageRating">Age Rating</label>
+<select id="ageRating">
+<option>All Ages</option>
+<option>13+</option>
+<option>16+</option>
+<option>18+</option>
+</select>
+</div>
+
+<div class="field">
+<label for="targetAudience">Target Audience</label>
+<select id="targetAudience">
+<option>General</option>
+<option>Young Adult</option>
+<option>New Adult</option>
+<option>Adult</option>
+</select>
+</div>
+
+<div class="field">
+<label for="language">Language</label>
+<select id="language">
+<option>English</option>
+<option>French</option>
+<option>Spanish</option>
+<option>Portuguese</option>
+<option>Other</option>
+</select>
+</div>
+
+<div class="field full">
+<label for="contentWarnings">Content Warnings</label>
+<textarea id="contentWarnings"
+placeholder="Optional. Example: violence, mature themes, explicit language..."></textarea>
+</div>
+
+</div>
+</section>
+
+<!-- AUTHOR -->
+<section class="card">
+
+<div class="card-header">
+<h2>✍️ Author Information</h2>
+<p>Store the author's information alongside the book.</p>
+</div>
+
+<div class="form-grid">
+
+<div class="field">
+<label for="authorId">Author ID</label>
+<input id="authorId"
+type="text"
+placeholder="Optional author ID">
+</div>
+
+<div class="field">
+<label for="authorEmail">Author Contact</label>
+<input id="authorEmail"
+type="text"
+placeholder="Optional">
+</div>
+
+<div class="field full">
+<label for="authorBio">Author Bio / Description</label>
+<textarea id="authorBio"
+placeholder="Short author biography..."></textarea>
+</div>
+
+</div>
+</section>
+
+<!-- PUBLISHING -->
+<section class="card">
+
+<div class="card-header">
+<h2>🚀 Publishing Settings</h2>
+<p>Control how and when the book is published.</p>
+</div>
+
+<div class="form-grid three">
+
+<div class="field">
+<label for="publicationDate">Publication Date</label>
+<input id="publicationDate" type="date">
+</div>
+
+<div class="field">
+<label for="updateFrequency">Update Frequency</label>
+<select id="updateFrequency">
+<option>Daily</option>
+<option>Several times a week</option>
+<option>Weekly</option>
+<option>Biweekly</option>
+<option>Monthly</option>
+<option>Not scheduled</option>
+</select>
+</div>
+
+<div class="field">
+<label for="ownership">Publication Type</label>
+<select id="ownership">
+<option>Original</option>
+<option>Exclusive</option>
+<option>Non-exclusive</option>
+</select>
+</div>
+
+</div>
+
+<div style="height:18px;"></div>
+
+<div class="check-grid">
+
+<label class="check">
+<input id="featured" type="checkbox">
+<div>
+<strong>Featured Book</strong>
+<span>Allow this book to appear in featured sections.</span>
+</div>
+</label>
+
+<label class="check">
+<input id="promotionEligible" type="checkbox" checked>
+<div>
+<strong>Promotion Eligible</strong>
+<span>Allow administrators to include this book in promotions.</span>
+</div>
+</label>
+
+<label class="check">
+<input id="originalWork" type="checkbox" checked>
+<div>
+<strong>Original Work</strong>
+<span>Mark this story as an original Novelora publication.</span>
+</div>
+</label>
+
+</div>
+</section>
+
+<!-- MONETIZATION -->
+<section class="card">
+
+<div class="card-header">
+<h2>💰 Monetization</h2>
+<p>Configure how readers will access this book.</p>
+</div>
+
+<div class="form-grid three">
+
+<div class="field">
+<label for="accessType">Book Access</label>
+
+<select id="accessType"
+onchange="updatePriceState()">
+<option value="Paid">Paid</option>
+<option value="Free">Free</option>
+</select>
+</div>
+
+<div class="field">
+<label for="chapterPrice">Chapter Price</label>
+
+<input id="chapterPrice"
+type="number"
+min="0"
+value="5">
+
+<span class="hint">
+Novelora coins per locked chapter.
+</span>
+</div>
+
+<div class="field">
+<label for="freeOpeningChapters">Free Opening Chapters</label>
+
+<input id="freeOpeningChapters"
+type="number"
+min="0"
+value="0">
+</div>
+
+</div>
+</section>
+
+<!-- READER FEATURES -->
+<section class="card">
+
+<div class="card-header">
+<h2>⚙️ Reader Features</h2>
+<p>Choose which reader interactions are available for this book.</p>
+</div>
+
+<div class="check-grid">
+
+<label class="check">
+<input id="allowComments" type="checkbox" checked>
+<div>
+<strong>Comments</strong>
+<span>Allow readers to comment on chapters.</span>
+</div>
+</label>
+
+<label class="check">
+<input id="allowRatings" type="checkbox" checked>
+<div>
+<strong>Ratings & Reviews</strong>
+<span>Allow readers to rate and review the book.</span>
+</div>
+</label>
+
+<label class="check">
+<input id="allowGifts" type="checkbox" checked>
+<div>
+<strong>Reader Gifts / Tips</strong>
+<span>Allow readers to support the author later.</span>
+</div>
+</label>
+
+<label class="check">
+<input id="discoverable" type="checkbox" checked>
+<div>
+<strong>Discovery Visibility</strong>
+<span>Allow this book to appear in search and discovery.</span>
+</div>
+</label>
+
+</div>
+</section>
+
+<!-- BOTTOM ACTIONS -->
+<section class="card">
+
+<div class="bottom-actions">
+
+<button class="btn btn-secondary"
+onclick="location.href='index.html'">
+Cancel
+</button>
+
+<button id="bottomDraftBtn"
+class="btn btn-secondary"
+onclick="saveBook('Draft')">
+💾 Save Draft
+</button>
+
+<button id="bottomPublishBtn"
+class="btn btn-primary"
+onclick="saveBook('Published')">
+🚀 Publish Book
+</button>
+
+</div>
+</section>
+
+</main>
+
+<!-- SIDE -->
+<aside class="side-column">
+
+<section class="card preview-card">
+
+<div class="card-header">
+<h2>Live Preview</h2>
+<p>How your book begins to look.</p>
+</div>
+
+<div class="mini-cover">
+<span id="miniCoverText">Cover Preview</span>
+<img id="miniCoverImage" alt="Preview">
+</div>
+
+<div class="preview-title" id="previewTitle">
+Untitled Book
+</div>
+
+<div class="preview-author" id="previewAuthor">
+Author name
+</div>
+
+<div class="preview-tags">
+<span class="tag" id="previewGenre">Genre</span>
+<span class="tag" id="previewStatus">Draft</span>
+</div>
+
+</section>
+
+<section class="card">
+
+<div class="card-header">
+<h2>Publishing Summary</h2>
+<p>Current configuration.</p>
+</div>
+
+<div class="info-list">
+
+<div class="info-row">
+<span>Status</span>
+<span class="status-draft" id="summaryStatus">Draft</span>
+</div>
+
+<div class="info-row">
+<span>Access</span>
+<span id="summaryAccess">Paid</span>
+</div>
+
+<div class="info-row">
+<span>Chapter Price</span>
+<span id="summaryPrice">5 coins</span>
+</div>
+
+<div class="info-row">
+<span>Genre</span>
+<span id="summaryGenre">Not selected</span>
+</div>
+
+<div class="info-row">
+<span>Story Status</span>
+<span id="summaryStoryStatus">Ongoing</span>
+</div>
+
+<div class="info-row">
+<span>Age Rating</span>
+<span id="summaryAge">All Ages</span>
+</div>
+
+</div>
+</section>
+
+</aside>
+
+</div>
+</div>
 
 <script>
 
-  const coverInput = document.getElementById("coverInput");
+const coverInput = document.getElementById("coverInput");
 
-  let coverData = "";
+let coverData = "";
+let saving = false;
 
+/* COVER PICKER */
 
-  /* COVER PICKER */
+coverInput.addEventListener("change", function(){
 
-  coverInput.addEventListener("change", function () {
+const file = this.files[0];
 
-    const file = this.files[0];
+if(!file) return;
 
-    if (!file) return;
+if(!file.type.startsWith("image/")){
+showMessage("Please choose an image file.","error");
+return;
+}
 
-    if (!file.type.startsWith("image/")) {
-      showMessage("Please choose an image file.", "error");
-      return;
-    }
+const reader = new FileReader();
 
-    const reader = new FileReader();
+reader.onload=function(event){
 
-    reader.onload = function (event) {
+coverData = event.target.result;
 
-      coverData = event.target.result;
+document.getElementById("coverPreview").src = coverData;
+document.getElementById("coverPreview").style.display = "block";
 
-      document.getElementById("coverPreview").src = coverData;
-      document.getElementById("coverPreview").style.display = "block";
+document.getElementById("coverPlaceholder").style.display = "none";
+document.getElementById("coverTools").style.display = "flex";
 
-      document.getElementById("coverPlaceholder").style.display = "none";
-      document.getElementById("coverTools").style.display = "flex";
+document.getElementById("miniCoverImage").src = coverData;
+document.getElementById("miniCoverImage").style.display = "block";
+document.getElementById("miniCoverText").style.display = "none";
 
-      document.getElementById("miniCoverImage").src = coverData;
-      document.getElementById("miniCoverImage").style.display = "block";
-      document.getElementById("miniCoverText").style.display = "none";
+};
 
-    };
+reader.readAsDataURL(file);
 
-    reader.readAsDataURL(file);
+});
 
-  });
+function chooseAnotherCover(){
+coverInput.click();
+}
 
+function removeCover(){
 
-  function chooseAnotherCover() {
-    coverInput.click();
-  }
+coverData = "";
+coverInput.value = "";
 
+document.getElementById("coverPreview").src = "";
+document.getElementById("coverPreview").style.display = "none";
 
-  function removeCover() {
+document.getElementById("coverPlaceholder").style.display = "block";
+document.getElementById("coverTools").style.display = "none";
 
-    coverData = "";
+document.getElementById("miniCoverImage").src = "";
+document.getElementById("miniCoverImage").style.display = "none";
+document.getElementById("miniCoverText").style.display = "block";
 
-    coverInput.value = "";
+}
 
-    document.getElementById("coverPreview").src = "";
-    document.getElementById("coverPreview").style.display = "none";
+/* PREVIEW */
 
-    document.getElementById("coverPlaceholder").style.display = "block";
-    document.getElementById("coverTools").style.display = "none";
+function updatePreview(){
 
-    document.getElementById("miniCoverImage").src = "";
-    document.getElementById("miniCoverImage").style.display = "none";
-    document.getElementById("miniCoverText").style.display = "block";
+const title =
+document.getElementById("title").value.trim();
 
-  }
+const author =
+document.getElementById("author").value.trim();
 
+document.getElementById("previewTitle").textContent =
+title || "Untitled Book";
 
-  /* LIVE PREVIEW */
+document.getElementById("previewAuthor").textContent =
+author || "Author name";
 
-  function updatePreview() {
+}
 
-    const title =
-      document.getElementById("title").value.trim();
+/* SUMMARY */
 
-    const author =
-      document.getElementById("author").value.trim();
+document.getElementById("genre")
+.addEventListener("change",updateSummary);
 
-    document.getElementById("previewTitle").textContent =
-      title || "Untitled Book";
+document.getElementById("storyStatus")
+.addEventListener("change",updateSummary);
 
-    document.getElementById("previewAuthor").textContent =
-      author || "Author name";
+document.getElementById("ageRating")
+.addEventListener("change",updateSummary);
 
-  }
+document.getElementById("accessType")
+.addEventListener("change",updateSummary);
 
+document.getElementById("chapterPrice")
+.addEventListener("input",updateSummary);
 
-  document.getElementById("genre").addEventListener("change", updateSummary);
-  document.getElementById("storyStatus").addEventListener("change", updateSummary);
-  document.getElementById("ageRating").addEventListener("change", updateSummary);
-  document.getElementById("accessType").addEventListener("change", updateSummary);
-  document.getElementById("chapterPrice").addEventListener("input", updateSummary);
+function updateSummary(){
 
+const genre =
+document.getElementById("genre").value || "Not selected";
 
-  function updateSummary() {
+const status =
+document.getElementById("storyStatus").value || "Ongoing";
 
-    const genre =
-      document.getElementById("genre").value || "Not selected";
+const age =
+document.getElementById("ageRating").value || "All Ages";
 
-    const status =
-      document.getElementById("storyStatus").value || "Ongoing";
+const access =
+document.getElementById("accessType").value || "Paid";
 
-    const age =
-      document.getElementById("ageRating").value || "All Ages";
+const price =
+document.getElementById("chapterPrice").value || "0";
 
-    const access =
-      document.getElementById("accessType").value || "Paid";
+document.getElementById("summaryGenre").textContent = genre;
 
-    const price =
-      document.getElementById("chapterPrice").value || "0";
+document.getElementById("summaryStoryStatus").textContent = status;
 
-    document.getElementById("summaryGenre").textContent = genre;
-    document.getElementById("summaryStoryStatus").textContent = status;
-    document.getElementById("summaryAge").textContent = age;
-    document.getElementById("summaryAccess").textContent = access;
-    document.getElementById("summaryPrice").textContent =
-      access === "Free" ? "Free" : price + " coins";
+document.getElementById("summaryAge").textContent = age;
 
-    document.getElementById("previewGenre").textContent =
-      genre === "Not selected" ? "Genre" : genre;
+document.getElementById("summaryAccess").textContent = access;
 
-    document.getElementById("previewStatus").textContent = "Draft";
+document.getElementById("summaryPrice").textContent =
+access === "Free" ? "Free" : price + " coins";
 
-  }
+document.getElementById("previewGenre").textContent =
+genre === "Not selected" ? "Genre" : genre;
 
+}
 
-  function updatePriceState() {
+/* PRICE */
 
-    const access =
-      document.getElementById("accessType").value;
+function updatePriceState(){
 
-    const price =
-      document.getElementById("chapterPrice");
+const access =
+document.getElementById("accessType").value;
 
-    if (access === "Free") {
-      price.value = 0;
-      price.disabled = true;
-    } else {
-      price.disabled = false;
+const price =
+document.getElementById("chapterPrice");
 
-      if (Number(price.value) === 0) {
-        price.value = 5;
-      }
-    }
+if(access === "Free"){
 
-    updateSummary();
+price.value = 0;
+price.disabled = true;
 
-  }
+}else{
 
+price.disabled = false;
 
-  /* MESSAGE */
+if(Number(price.value) === 0){
+price.value = 5;
+}
 
-  function showMessage(text, type) {
+}
 
-    const box = document.getElementById("message");
+updateSummary();
 
-    box.textContent = text;
+}
 
-    box.className = "message " + type;
+/* MESSAGE */
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+function showMessage(text,type){
 
-  }
+const box =
+document.getElementById("message");
 
+box.textContent = text;
 
-  /* SAVE BOOK */
+box.className = "message " + type;
 
-  function saveBook(status) {
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
-    const title =
-      document.getElementById("title").value.trim();
+}
 
-    const author =
-      document.getElementById("author").value.trim();
+/* UUID CHECK */
 
-    const description =
-      document.getElementById("description").value.trim();
+function isValidUUID(value){
 
-    const genre =
-      document.getElementById("genre").value;
+return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
-    if (!title) {
-      showMessage("Please enter the book title.", "error");
-      document.getElementById("title").focus();
-      return;
-    }
+}
 
-    if (!author) {
-      showMessage("Please enter the author name.", "error");
-      document.getElementById("author").focus();
-      return;
-    }
+/* DISABLE BUTTONS */
 
-    if (!description) {
-      showMessage("Please add a book description.", "error");
-      document.getElementById("description").focus();
-      return;
-    }
+function setSavingState(state){
 
-    if (!genre) {
-      showMessage("Please select the main genre.", "error");
-      document.getElementById("genre").focus();
-      return;
-    }
+saving = state;
 
+const buttons = [
+document.getElementById("topDraftBtn"),
+document.getElementById("topPublishBtn"),
+document.getElementById("bottomDraftBtn"),
+document.getElementById("bottomPublishBtn")
+];
 
-    let books = [];
+buttons.forEach(button=>{
+if(button){
+button.disabled = state;
+}
+});
 
-    try {
-      books = JSON.parse(
-        localStorage.getItem("noveloraAdminBooks") || "[]"
-      );
+}
 
-      if (!Array.isArray(books)) {
-        books = [];
-      }
+/* GET FORM DATA */
 
-    } catch (error) {
-      books = [];
-    }
+function getBookFormData(){
 
+return {
 
-    const bookId =
-      "book_" + Date.now() + "_" +
-      Math.random().toString(36).substring(2, 8);
+title:
+document.getElementById("title").value.trim(),
 
+subtitle:
+document.getElementById("subtitle").value.trim(),
 
-    const book = {
+author:
+document.getElementById("author").value.trim(),
 
-      id: bookId,
+penName:
+document.getElementById("penName").value.trim(),
 
-      title: title,
+description:
+document.getElementById("description").value.trim(),
 
-      subtitle:
-        document.getElementById("subtitle").value.trim(),
+tagline:
+document.getElementById("tagline").value.trim(),
 
-      author: author,
+genre:
+document.getElementById("genre").value,
 
-      penName:
-        document.getElementById("penName").value.trim(),
+subgenre:
+document.getElementById("subgenre").value.trim(),
 
-      description: description,
+secondaryGenres:
+document.getElementById("secondaryGenres").value.trim(),
 
-      tagline:
-        document.getElementById("tagline").value.trim(),
+tags:
+document.getElementById("tags").value
+.split(",")
+.map(x=>x.trim())
+.filter(Boolean),
 
-      genre: genre,
+searchKeywords:
+document.getElementById("searchKeywords").value.trim(),
 
-      subgenre:
-        document.getElementById("subgenre").value.trim(),
+promotionalBlurb:
+document.getElementById("promotionalBlurb").value.trim(),
 
-      secondaryGenres:
-        document.getElementById("secondaryGenres").value.trim(),
+featuredQuote:
+document.getElementById("featuredQuote").value.trim(),
 
-      tags:
-        document.getElementById("tags").value
-          .split(",")
-          .map(tag => tag.trim())
-          .filter(Boolean),
+pov:
+document.getElementById("pov").value,
 
-      searchKeywords:
-        document.getElementById("searchKeywords").value.trim(),
+storyStatus:
+document.getElementById("storyStatus").value,
 
-      promotionalBlurb:
-        document.getElementById("promotionalBlurb").value.trim(),
+estimatedChapters:
+Number(document.getElementById("estimatedChapters").value) || 0,
 
-      featuredQuote:
-        document.getElementById("featuredQuote").value.trim(),
+setting:
+document.getElementById("setting").value.trim(),
 
-      cover: coverData || "",
+seriesName:
+document.getElementById("seriesName").value.trim(),
 
-      coverImage: coverData || "",
+bookNumber:
+Number(document.getElementById("bookNumber").value) || 0,
 
-      pov:
-        document.getElementById("pov").value,
+ageRating:
+document.getElementById("ageRating").value,
 
-      storyStatus:
-        document.getElementById("storyStatus").value,
+targetAudience:
+document.getElementById("targetAudience").value,
 
-      estimatedChapters:
-        Number(document.getElementById("estimatedChapters").value) || 0,
+language:
+document.getElementById("language").value,
 
-      setting:
-        document.getElementById("setting").value.trim(),
+contentWarnings:
+document.getElementById("contentWarnings").value.trim(),
 
-      seriesName:
-        document.getElementById("seriesName").value.trim(),
+authorId:
+document.getElementById("authorId").value.trim(),
 
-      bookNumber:
-        Number(document.getElementById("bookNumber").value) || 0,
+authorEmail:
+document.getElementById("authorEmail").value.trim(),
 
-      ageRating:
-        document.getElementById("ageRating").value,
+authorBio:
+document.getElementById("authorBio").value.trim(),
 
-      targetAudience:
-        document.getElementById("targetAudience").value,
+publicationDate:
+document.getElementById("publicationDate").value,
 
-      language:
-        document.getElementById("language").value,
+updateFrequency:
+document.getElementById("updateFrequency").value,
 
-      contentWarnings:
-        document.getElementById("contentWarnings").value.trim(),
+ownership:
+document.getElementById("ownership").value,
 
-      authorId:
-        document.getElementById("authorId").value.trim(),
+accessType:
+document.getElementById("accessType").value,
 
-      authorEmail:
-        document.getElementById("authorEmail").value.trim(),
+chapterPrice:
+Number(document.getElementById("chapterPrice").value) || 0,
 
-      authorBio:
-        document.getElementById("authorBio").value.trim(),
+freeOpeningChapters:
+Number(document.getElementById("freeOpeningChapters").value) || 0,
 
-      publicationDate:
-        document.getElementById("publicationDate").value,
+featured:
+document.getElementById("featured").checked,
 
-      updateFrequency:
-        document.getElementById("updateFrequency").value,
+promotionEligible:
+document.getElementById("promotionEligible").checked,
 
-      ownership:
-        document.getElementById("ownership").value,
+originalWork:
+document.getElementById("originalWork").checked,
 
-      accessType:
-        document.getElementById("accessType").value,
+allowComments:
+document.getElementById("allowComments").checked,
 
-      free:
-        document.getElementById("accessType").value === "Free",
+allowRatings:
+document.getElementById("allowRatings").checked,
 
-      chapterPrice:
-        Number(document.getElementById("chapterPrice").value) || 0,
+allowGifts:
+document.getElementById("allowGifts").checked,
 
-      freeOpeningChapters:
-        Number(document.getElementById("freeOpeningChapters").value) || 0,
+discoverable:
+document.getElementById("discoverable").checked,
 
-      featured:
-        document.getElementById("featured").checked,
+cover:coverData || ""
 
-      promotionEligible:
-        document.getElementById("promotionEligible").checked,
+};
 
-      originalWork:
-        document.getElementById("originalWork").checked,
+}
 
-      allowComments:
-        document.getElementById("allowComments").checked,
+/* SAVE COMPATIBILITY COPY */
 
-      allowRatings:
-        document.getElementById("allowRatings").checked,
+function saveLocalCompatibility(book){
 
-      allowGifts:
-        document.getElementById("allowGifts").checked,
+try{
 
-      discoverable:
-        document.getElementById("discoverable").checked,
+let books =
+JSON.parse(
+localStorage.getItem("noveloraAdminBooks") || "[]"
+);
 
-      status: status,
+if(!Array.isArray(books)){
+books=[];
+}
 
-      chapters: 0,
+const index =
+books.findIndex(x=>x.id === book.id);
 
-      readers: 0,
+if(index >= 0){
+books[index] = book;
+}else{
+books.unshift(book);
+}
 
-      revenue: 0,
+localStorage.setItem(
+"noveloraAdminBooks",
+JSON.stringify(books)
+);
 
-      createdAt: new Date().toISOString(),
+}catch(error){
 
-      updatedAt: new Date().toISOString()
+console.warn(
+"Local compatibility save skipped:",
+error
+);
 
-    };
+}
 
+}
 
-    books.push(book);
+/* ACTIVITY */
 
+function saveActivity(book,status){
 
-    try {
+try{
 
-      localStorage.setItem(
-        "noveloraAdminBooks",
-        JSON.stringify(books)
-      );
+const activities =
+JSON.parse(
+localStorage.getItem("noveloraAdminActivities") || "[]"
+);
 
-    } catch (error) {
+const list =
+Array.isArray(activities) ? activities : [];
 
-      showMessage(
-        "The book could not be saved. The cover image may be too large. Try a smaller image.",
-        "error"
-      );
+list.unshift({
 
-      return;
+id:"activity_" + Date.now(),
 
-    }
+type:
+status === "Published"
+? "book_published"
+: "book_draft",
 
+message:
+status === "Published"
+? `Published "${book.title}"`
+: `Saved "${book.title}" as a draft`,
 
-    /* ACTIVITY LOG */
+bookId:book.id,
 
-    try {
+bookTitle:book.title,
 
-      const activities =
-        JSON.parse(
-          localStorage.getItem("noveloraAdminActivities") || "[]"
-        );
+createdAt:new Date().toISOString()
 
-      activities.unshift({
+});
 
-        id: "activity_" + Date.now(),
+localStorage.setItem(
+"noveloraAdminActivities",
+JSON.stringify(list.slice(0,100))
+);
 
-        type: status === "Published"
-          ? "book_published"
-          : "book_draft",
+}catch(error){
 
-        message:
-          status === "Published"
-            ? `Published "${title}"`
-            : `Saved "${title}" as a draft`,
+console.warn(
+"Activity logging skipped:",
+error
+);
 
-        bookId: bookId,
+}
 
-        bookTitle: title,
+}
 
-        createdAt: new Date().toISOString()
+/* MAIN SAVE */
 
-      });
+async function saveBook(status){
 
-      localStorage.setItem(
-        "noveloraAdminActivities",
-        JSON.stringify(activities.slice(0, 100))
-      );
+if(saving) return;
 
-    } catch (error) {
-      /* Activity logging is optional. */
-    }
+const form = getBookFormData();
 
+if(!form.title){
 
-    document.getElementById("summaryStatus").textContent = status;
+showMessage(
+"Please enter the book title.",
+"error"
+);
 
-    document.getElementById("summaryStatus").className =
-      status === "Published"
-        ? "status-published"
-        : "status-draft";
+document.getElementById("title").focus();
 
+return;
+}
 
-    document.getElementById("previewStatus").textContent =
-      status;
+if(!form.author){
 
+showMessage(
+"Please enter the author name.",
+"error"
+);
 
-    showMessage(
-      status === "Published"
-        ? `"${title}" has been published successfully.`
-        : `"${title}" has been saved as a draft.`,
-      "success"
-    );
+document.getElementById("author").focus();
 
+return;
+}
 
-    setTimeout(function () {
+if(!form.description){
 
-      location.href = "books.html";
+showMessage(
+"Please add a book description.",
+"error"
+);
 
-    }, 1200);
+document.getElementById("description").focus();
 
-  }
+return;
+}
 
+if(!form.genre){
 
-  /* INITIAL STATE */
+showMessage(
+"Please select the main genre.",
+"error"
+);
 
-  document.getElementById("publicationDate").value =
-    new Date().toISOString().split("T")[0];
+document.getElementById("genre").focus();
 
-  updatePreview();
-  updateSummary();
+return;
+}
+
+if(
+typeof supabaseClient === "undefined" ||
+!supabaseClient
+){
+
+showMessage(
+"Supabase is not connected. Please make sure supabase-config.js is in this folder.",
+"error"
+);
+
+return;
+}
+
+setSavingState(true);
+
+try{
+
+/*
+Get the currently signed-in Supabase user.
+This is optional because the admin may currently
+be testing with the public insert policy.
+*/
+
+let currentUser = null;
+
+try{
+
+const {
+data:{user}
+} = await supabaseClient.auth.getUser();
+
+currentUser = user || null;
+
+}catch(error){
+
+console.warn(
+"Could not get current user:",
+error
+);
+
+}
+
+/*
+Only send columns that exist in the current
+Novelora books table.
+*/
+
+const row = {
+
+title:form.title,
+
+subtitle:form.subtitle || null,
+
+description:form.description,
+
+cover_url:form.cover || null,
+
+genre:form.genre,
+
+subgenre:form.subgenre || null,
+
+access_type:
+form.accessType.toLowerCase(),
+
+chapter_price:
+form.chapterPrice,
+
+featured:
+form.featured,
+
+discoverable:
+form.discoverable,
+
+status:
+status.toLowerCase(),
+
+views:0,
+
+library_count:0
+
+};
+
+/*
+author_id is a UUID in Supabase.
+Only send it if it is actually a UUID.
+Otherwise, if the signed-in user ID is a UUID,
+use that.
+*/
+
+if(isValidUUID(form.authorId)){
+
+row.author_id = form.authorId;
+
+}else if(
+currentUser &&
+isValidUUID(currentUser.id)
+){
+
+row.author_id = currentUser.id;
+
+}
+
+/*
+Insert into Supabase.
+Supabase generates the book UUID automatically.
+*/
+
+const {
+data,
+error
+} = await supabaseClient
+.from("books")
+.insert(row)
+.select()
+.single();
+
+if(error){
+
+console.error(
+"Supabase book insert error:",
+error
+);
+
+throw new Error(
+error.message ||
+"Supabase could not save the book."
+);
+
+}
+
+if(!data){
+
+throw new Error(
+"The book was not returned after saving."
+);
+
+}
+
+/*
+Create the richer local compatibility object.
+This keeps the existing frontend pages that still
+read noveloraAdminBooks working while we finish
+moving everything to Supabase.
+*/
+
+const compatibilityBook = {
+
+id:data.id,
+
+title:form.title,
+
+subtitle:form.subtitle,
+
+author:form.author,
+
+penName:form.penName,
+
+description:form.description,
+
+tagline:form.tagline,
+
+genre:form.genre,
+
+subgenre:form.subgenre,
+
+secondaryGenres:form.secondaryGenres,
+
+tags:form.tags,
+
+searchKeywords:form.searchKeywords,
+
+promotionalBlurb:form.promotionalBlurb,
+
+featuredQuote:form.featuredQuote,
+
+cover:form.cover,
+
+coverImage:form.cover,
+
+pov:form.pov,
+
+storyStatus:form.storyStatus,
+
+estimatedChapters:form.estimatedChapters,
+
+setting:form.setting,
+
+seriesName:form.seriesName,
+
+bookNumber:form.bookNumber,
+
+ageRating:form.ageRating,
+
+targetAudience:form.targetAudience,
+
+language:form.language,
+
+contentWarnings:form.contentWarnings,
+
+authorId:
+data.author_id ||
+form.authorId ||
+(currentUser ? currentUser.id : ""),
+
+authorEmail:form.authorEmail,
+
+authorBio:form.authorBio,
+
+publicationDate:form.publicationDate,
+
+updateFrequency:form.updateFrequency,
+
+ownership:form.ownership,
+
+accessType:form.accessType,
+
+free:form.accessType === "Free",
+
+chapterPrice:form.chapterPrice,
+
+freeOpeningChapters:form.freeOpeningChapters,
+
+featured:form.featured,
+
+promotionEligible:form.promotionEligible,
+
+originalWork:form.originalWork,
+
+allowComments:form.allowComments,
+
+allowRatings:form.allowRatings,
+
+allowGifts:form.allowGifts,
+
+discoverable:form.discoverable,
+
+status:status,
+
+chapters:0,
+
+readers:0,
+
+revenue:0,
+
+views:data.views || 0,
+
+libraryCount:data.library_count || 0,
+
+createdAt:
+data.created_at ||
+new Date().toISOString(),
+
+updatedAt:
+data.updated_at ||
+new Date().toISOString(),
+
+supabaseId:data.id
+
+};
+
+/*
+Local compatibility storage.
+*/
+
+saveLocalCompatibility(
+compatibilityBook
+);
+
+/*
+Local activity log.
+*/
+
+saveActivity(
+compatibilityBook,
+status
+);
+
+/*
+Update page summary.
+*/
+
+document.getElementById(
+"summaryStatus"
+).textContent = status;
+
+document.getElementById(
+"summaryStatus"
+).className =
+status === "Published"
+? "status-published"
+: "status-draft";
+
+document.getElementById(
+"previewStatus"
+).textContent = status;
+
+/*
+Show success.
+*/
+
+showMessage(
+
+status === "Published"
+
+? `"${form.title}" has been published successfully.`
+
+: `"${form.title}" has been saved as a draft.`,
+
+"success"
+
+);
+
+/*
+Give the success message a moment,
+then go to Books management.
+*/
+
+setTimeout(()=>{
+
+location.href="books.html";
+
+},1200);
+
+}catch(error){
+
+console.error(error);
+
+showMessage(
+"Could not save the book: " +
+(error.message || "Unknown Supabase error"),
+"error"
+);
+
+setSavingState(false);
+
+}
+
+}
+
+/* INITIAL STATE */
+
+document.getElementById("publicationDate").value =
+new Date().toISOString().split("T")[0];
+
+updatePreview();
+updateSummary();
+updatePriceState();
 
 </script>
 
