@@ -18,7 +18,8 @@
 body {
     font-family: Arial, sans-serif;
     background:
-        radial-gradient(circle at top right, rgba(255,70,150,.13), transparent 30%),
+        radial-gradient(circle at top right, rgba(255,70,150,.14), transparent 30%),
+        radial-gradient(circle at bottom left, rgba(180,70,255,.07), transparent 28%),
         #0d0a10;
     color: #fff;
     min-height: 100vh;
@@ -26,8 +27,7 @@ body {
 
 button,
 input,
-select,
-textarea {
+select {
     font: inherit;
 }
 
@@ -40,7 +40,10 @@ button {
     min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* =========================
+   SIDEBAR
+========================= */
+
 .admin-sidebar {
     width: 250px;
     min-height: 100vh;
@@ -50,6 +53,7 @@ button {
     position: fixed;
     inset: 0 auto 0 0;
     overflow-y: auto;
+    z-index: 20;
 }
 
 .admin-logo {
@@ -88,6 +92,7 @@ button {
 .nav-item:hover {
     background: rgba(255,79,154,.09);
     color: white;
+    transform: translateX(2px);
 }
 
 .nav-item.active {
@@ -106,7 +111,10 @@ button {
     margin: 10px 5px;
 }
 
-/* MAIN */
+/* =========================
+   MAIN
+========================= */
+
 .admin-main {
     margin-left: 250px;
     width: calc(100% - 250px);
@@ -122,7 +130,7 @@ button {
 }
 
 .page-title {
-    font-size: 29px;
+    font-size: 30px;
     font-weight: 800;
 }
 
@@ -140,9 +148,44 @@ button {
     padding: 13px 19px;
     border-radius: 12px;
     box-shadow: 0 8px 25px rgba(255,79,154,.18);
+    transition: .2s;
 }
 
-/* STATS */
+.add-book-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(255,79,154,.28);
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+.page-message {
+    display: none;
+    margin-bottom: 18px;
+    padding: 13px 15px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+
+.page-message.success {
+    display: block;
+    background: rgba(55,210,130,.08);
+    border: 1px solid rgba(55,210,130,.18);
+    color: #75e3a8;
+}
+
+.page-message.error {
+    display: block;
+    background: rgba(255,70,90,.08);
+    border: 1px solid rgba(255,70,90,.18);
+    color: #ff8c9a;
+}
+
+/* =========================
+   STATS
+========================= */
+
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(4,1fr);
@@ -151,10 +194,34 @@ button {
 }
 
 .stat-card {
-    background: rgba(24,18,29,.92);
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,21,36,.98),
+            rgba(20,15,25,.95)
+        );
     border: 1px solid rgba(255,255,255,.07);
     border-radius: 18px;
     padding: 20px;
+    transition: .2s;
+}
+
+.stat-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: rgba(255,79,154,.08);
+    right: -35px;
+    top: -35px;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,79,154,.18);
 }
 
 .stat-label {
@@ -164,7 +231,7 @@ button {
 }
 
 .stat-value {
-    font-size: 27px;
+    font-size: 28px;
     font-weight: 800;
 }
 
@@ -174,17 +241,21 @@ button {
     margin-top: 6px;
 }
 
-/* PANEL */
+/* =========================
+   PANEL
+========================= */
+
 .panel {
     background: rgba(24,18,29,.94);
     border: 1px solid rgba(255,255,255,.07);
     border-radius: 20px;
     padding: 22px;
     margin-bottom: 20px;
+    box-shadow: 0 15px 45px rgba(0,0,0,.12);
 }
 
 .panel-title {
-    font-size: 18px;
+    font-size: 19px;
     font-weight: 750;
 }
 
@@ -195,12 +266,15 @@ button {
     margin-bottom: 20px;
 }
 
-/* TOOLBAR */
+/* =========================
+   TOOLBAR
+========================= */
+
 .books-toolbar {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 .search-box {
@@ -222,37 +296,64 @@ button {
     outline: none;
 }
 
+.form-control::placeholder {
+    color: #665f6b;
+}
+
 .form-control:focus {
     border-color: rgba(255,79,154,.55);
     box-shadow: 0 0 0 3px rgba(255,79,154,.07);
 }
 
-/* BOOK GRID */
+/* =========================
+   BOOK GRID
+========================= */
+
 .book-grid {
     display: grid;
     grid-template-columns: repeat(3,1fr);
-    gap: 15px;
+    gap: 16px;
 }
 
 .book-card {
-    background: #130f16;
+    position: relative;
+    background:
+        linear-gradient(
+            145deg,
+            #171119,
+            #100c13
+        );
     border: 1px solid rgba(255,255,255,.07);
-    border-radius: 17px;
+    border-radius: 18px;
     overflow: hidden;
+    transition: .25s;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,79,154,.22);
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.28),
+        0 0 25px rgba(255,79,154,.06);
 }
 
 .book-card-top {
     display: flex;
     gap: 14px;
-    padding: 15px;
+    padding: 16px;
 }
 
 .book-cover {
-    width: 82px;
-    height: 112px;
+    width: 88px;
+    height: 120px;
     flex-shrink: 0;
-    border-radius: 9px;
-    background: linear-gradient(145deg,#2c1726,#100d12);
+    border-radius: 10px;
+    background:
+        linear-gradient(
+            145deg,
+            #351b2e,
+            #110d13
+        );
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -260,6 +361,8 @@ button {
     color: #756c78;
     font-size: 10px;
     text-align: center;
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: 0 8px 20px rgba(0,0,0,.2);
 }
 
 .book-cover img {
@@ -270,20 +373,28 @@ button {
 
 .book-info {
     min-width: 0;
+    flex: 1;
 }
 
 .book-title {
     font-size: 15px;
     font-weight: 750;
-    line-height: 1.3;
+    line-height: 1.35;
     margin-bottom: 5px;
     word-break: break-word;
+}
+
+.book-subtitle {
+    color: #716a76;
+    font-size: 10px;
+    line-height: 1.4;
+    margin-bottom: 6px;
 }
 
 .book-author {
     color: #918995;
     font-size: 11px;
-    margin-bottom: 8px;
+    margin-bottom: 9px;
 }
 
 .book-tags {
@@ -305,9 +416,19 @@ button {
     background: rgba(255,79,154,.1);
 }
 
+.tag.green {
+    color: #73e2a7;
+    background: rgba(55,210,130,.08);
+}
+
+.tag.orange {
+    color: #ffc17b;
+    background: rgba(255,175,75,.08);
+}
+
 .book-stats {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(4,1fr);
     border-top: 1px solid rgba(255,255,255,.06);
     border-bottom: 1px solid rgba(255,255,255,.06);
 }
@@ -329,6 +450,8 @@ button {
 .book-stat span {
     color: #716975;
     font-size: 9px;
+    display: block;
+    margin-top: 3px;
 }
 
 .book-actions {
@@ -345,11 +468,13 @@ button {
     background: rgba(255,255,255,.05);
     color: #bcb4c0;
     border: 1px solid rgba(255,255,255,.07);
+    transition: .2s;
 }
 
 .action-btn:hover {
     border-color: rgba(255,79,154,.35);
     color: white;
+    transform: translateY(-1px);
 }
 
 .action-btn.primary {
@@ -362,21 +487,35 @@ button {
     color: #ff8797;
 }
 
+.action-btn.view {
+    color: #aaa5ff;
+}
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
 .empty-state {
     text-align: center;
-    padding: 60px 15px;
+    padding: 65px 15px;
     color: #706975;
     grid-column: 1 / -1;
 }
 
 .empty-icon {
     font-size: 42px;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+}
+
+.empty-title {
+    color: #bdb5c1;
+    font-weight: 700;
+    margin-bottom: 6px;
 }
 
 .loading-state {
     text-align: center;
-    padding: 60px 15px;
+    padding: 65px 15px;
     color: #918995;
     grid-column: 1 / -1;
 }
@@ -397,7 +536,10 @@ button {
     }
 }
 
-/* PAGINATION */
+/* =========================
+   PAGINATION
+========================= */
+
 .pagination-wrap {
     display: flex;
     justify-content: space-between;
@@ -450,31 +592,12 @@ button {
     padding: 0 3px;
 }
 
-/* MESSAGE */
-.page-message {
-    display: none;
-    margin-bottom: 18px;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 12px;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
-.page-message.success {
-    display: block;
-    background: rgba(55,210,130,.08);
-    border: 1px solid rgba(55,210,130,.18);
-    color: #75e3a8;
-}
-
-.page-message.error {
-    display: block;
-    background: rgba(255,70,90,.08);
-    border: 1px solid rgba(255,70,90,.18);
-    color: #ff8c9a;
-}
-
-/* RESPONSIVE */
 @media(max-width:1100px) {
+
     .book-grid {
         grid-template-columns: repeat(2,1fr);
     }
@@ -485,6 +608,7 @@ button {
 }
 
 @media(max-width:750px) {
+
     .admin-sidebar {
         position: static;
         width: 100%;
@@ -516,6 +640,7 @@ button {
 }
 
 @media(max-width:480px) {
+
     .stats-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -526,6 +651,10 @@ button {
 
     .book-actions {
         grid-template-columns: 1fr 1fr;
+    }
+
+    .book-stats {
+        grid-template-columns: repeat(4,1fr);
     }
 }
 </style>
@@ -588,8 +717,6 @@ button {
     <div id="pageMessage" class="page-message"></div>
 
 
-    <!-- STATS -->
-
     <section class="stats-grid">
 
         <div class="stat-card">
@@ -619,8 +746,6 @@ button {
     </section>
 
 
-    <!-- BOOK LIBRARY -->
-
     <section class="panel">
 
         <div class="panel-title">
@@ -631,14 +756,13 @@ button {
             Manage your Novelora books from one place.
         </div>
 
-
         <div class="books-toolbar">
 
             <input
                 id="searchBooks"
                 class="form-control search-box"
                 type="search"
-                placeholder="Search books or authors..."
+                placeholder="Search books..."
             >
 
             <select
@@ -703,8 +827,8 @@ button {
 <script>
 
 /* =========================================================
-   NOVELORA ADMIN BOOK LIBRARY
-   Supabase-backed
+   NOVELORA BOOKS MANAGEMENT
+   REAL SUPABASE DATA
 ========================================================= */
 
 const PAGE_SIZE = 12;
@@ -713,6 +837,7 @@ let currentPage = 1;
 let totalPages = 1;
 let allBooks = [];
 let filteredBooks = [];
+let bookChapterCounts = {};
 
 
 /* =========================================================
@@ -761,15 +886,19 @@ function formatNumber(value) {
     const number = Number(value || 0);
 
     if (number >= 1000000) {
-        return (number / 1000000)
-            .toFixed(number >= 10000000 ? 0 : 1)
-            .replace(".0", "") + "M";
+        return (
+            number / 1000000
+        )
+        .toFixed(number >= 10000000 ? 0 : 1)
+        .replace(".0", "") + "M";
     }
 
     if (number >= 1000) {
-        return (number / 1000)
-            .toFixed(number >= 10000 ? 0 : 1)
-            .replace(".0", "") + "K";
+        return (
+            number / 1000
+        )
+        .toFixed(number >= 10000 ? 0 : 1)
+        .replace(".0", "") + "K";
     }
 
     return number.toLocaleString();
@@ -779,6 +908,7 @@ function formatNumber(value) {
 function showMessage(message, type = "success") {
 
     pageMessage.textContent = message;
+
     pageMessage.className =
         "page-message " + type;
 
@@ -798,8 +928,95 @@ function showMessage(message, type = "success") {
 }
 
 
+function getBookStatus(book) {
+
+    return String(
+        book.status || "draft"
+    ).trim().toLowerCase();
+}
+
+
+function getBookGenre(book) {
+
+    return String(
+        book.genre || ""
+    ).trim();
+}
+
+
+function getBookAuthor(book) {
+
+    /*
+       Books page does not depend on a separate
+       author query. If the publishing record has
+       pen_name or author text, use it. Otherwise
+       simply show "Author".
+    */
+
+    return (
+        book.pen_name ||
+        book.author ||
+        book.author_name ||
+        "Author"
+    );
+}
+
+
 /* =========================================================
-   LOAD BOOKS FROM SUPABASE
+   LOAD CHAPTER COUNTS
+========================================================= */
+
+async function loadChapterCounts() {
+
+    bookChapterCounts = {};
+
+    if (!allBooks.length) {
+        return;
+    }
+
+    const ids =
+        allBooks
+            .map(book => book.id)
+            .filter(Boolean);
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("chapters")
+            .select("id, book_id")
+            .in("book_id", ids);
+
+        if (error) {
+            console.warn(
+                "Chapter count query:",
+                error.message
+            );
+            return;
+        }
+
+        (data || []).forEach(chapter => {
+
+            const id = chapter.book_id;
+
+            bookChapterCounts[id] =
+                (bookChapterCounts[id] || 0) + 1;
+        });
+
+    } catch (error) {
+
+        console.warn(
+            "Chapter count error:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD BOOKS
 ========================================================= */
 
 async function loadBooks() {
@@ -811,7 +1028,28 @@ async function loadBooks() {
         </div>
     `;
 
+    paginationInfo.textContent =
+        "Loading books...";
+
+    pagination.innerHTML = "";
+
     try {
+
+        if (
+            typeof supabaseClient === "undefined" ||
+            !supabaseClient
+        ) {
+            throw new Error(
+                "Supabase is not connected. Check supabase-config.js."
+            );
+        }
+
+
+        /*
+           Select only columns that belong to the
+           books table and are part of the publishing
+           system.
+        */
 
         const {
             data,
@@ -837,15 +1075,30 @@ async function loadBooks() {
                 created_at,
                 updated_at
             `)
-            .order("created_at", {
-                ascending: false
-            });
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
         if (error) {
             throw error;
         }
 
-        allBooks = data || [];
+        allBooks = Array.isArray(data)
+            ? data
+            : [];
+
+
+        /*
+           Chapter counts are optional.
+           A failure here must NOT stop books
+           from displaying.
+        */
+
+        await loadChapterCounts();
+
 
         updateStats();
 
@@ -853,23 +1106,43 @@ async function loadBooks() {
 
     } catch (error) {
 
-        console.error("Books load error:", error);
+        console.error(
+            "Books load error:",
+            error
+        );
+
+        allBooks = [];
+        filteredBooks = [];
 
         bookGrid.innerHTML = `
             <div class="empty-state">
+
                 <div class="empty-icon">⚠️</div>
-                <div>Unable to load books.</div>
-                <div style="margin-top:8px;font-size:11px;">
+
+                <div class="empty-title">
+                    Unable to load books
+                </div>
+
+                <div style="
+                    margin-top:8px;
+                    font-size:11px;
+                    line-height:1.6;
+                ">
                     ${escapeHtml(error.message)}
                 </div>
+
             </div>
         `;
 
         paginationInfo.textContent =
-            "Unable to load books.";
+            "Books could not be loaded.";
 
         pagination.innerHTML = "";
 
+        showMessage(
+            error.message,
+            "error"
+        );
     }
 }
 
@@ -885,14 +1158,12 @@ function updateStats() {
 
     const published =
         allBooks.filter(book =>
-            String(book.status || "")
-                .toLowerCase() === "published"
+            getBookStatus(book) === "published"
         ).length;
 
     const drafts =
         allBooks.filter(book =>
-            String(book.status || "")
-                .toLowerCase() === "draft"
+            getBookStatus(book) === "draft"
         ).length;
 
     const featured =
@@ -900,17 +1171,29 @@ function updateStats() {
             book.featured === true
         ).length;
 
-    document.getElementById("totalBooks")
-        .textContent = formatNumber(total);
 
-    document.getElementById("publishedBooks")
-        .textContent = formatNumber(published);
+    document.getElementById(
+        "totalBooks"
+    ).textContent =
+        formatNumber(total);
 
-    document.getElementById("draftBooks")
-        .textContent = formatNumber(drafts);
 
-    document.getElementById("featuredBooks")
-        .textContent = formatNumber(featured);
+    document.getElementById(
+        "publishedBooks"
+    ).textContent =
+        formatNumber(published);
+
+
+    document.getElementById(
+        "draftBooks"
+    ).textContent =
+        formatNumber(drafts);
+
+
+    document.getElementById(
+        "featuredBooks"
+    ).textContent =
+        formatNumber(featured);
 }
 
 
@@ -927,43 +1210,59 @@ function applyFilters() {
 
     const status =
         statusFilter.value
+            .trim()
             .toLowerCase();
 
     const genre =
         genreFilter.value
+            .trim()
             .toLowerCase();
+
 
     filteredBooks =
         allBooks.filter(book => {
 
             const title =
-                String(book.title || "")
-                    .toLowerCase();
+                String(
+                    book.title || ""
+                ).toLowerCase();
 
-            const author =
-                String(book.author_name || "")
-                    .toLowerCase();
+            const subtitle =
+                String(
+                    book.subtitle || ""
+                ).toLowerCase();
 
             const bookGenre =
-                String(book.genre || "")
-                    .toLowerCase();
+                String(
+                    book.genre || ""
+                ).toLowerCase();
+
+            const bookSubgenre =
+                String(
+                    book.subgenre || ""
+                ).toLowerCase();
 
             const bookStatus =
-                String(book.status || "")
-                    .toLowerCase();
+                getBookStatus(book);
+
 
             const matchesSearch =
                 !search ||
                 title.includes(search) ||
-                author.includes(search);
+                subtitle.includes(search) ||
+                bookGenre.includes(search) ||
+                bookSubgenre.includes(search);
+
 
             const matchesStatus =
                 status === "all" ||
                 bookStatus === status;
 
+
             const matchesGenre =
                 genre === "all" ||
                 bookGenre === genre;
+
 
             return (
                 matchesSearch &&
@@ -971,6 +1270,7 @@ function applyFilters() {
                 matchesGenre
             );
         });
+
 
     currentPage = 1;
 
@@ -993,9 +1293,13 @@ function renderBooks() {
             )
         );
 
-    if (currentPage > totalPages) {
+
+    if (
+        currentPage > totalPages
+    ) {
         currentPage = totalPages;
     }
+
 
     const start =
         (currentPage - 1) *
@@ -1004,21 +1308,40 @@ function renderBooks() {
     const end =
         start + PAGE_SIZE;
 
+
     const pageBooks =
         filteredBooks.slice(
             start,
             end
         );
 
+
     if (!pageBooks.length) {
 
         bookGrid.innerHTML = `
             <div class="empty-state">
+
                 <div class="empty-icon">📚</div>
-                <div>No books found.</div>
-                <div style="margin-top:7px;font-size:11px;">
-                    Try another search or filter.
+
+                <div class="empty-title">
+                    ${
+                        allBooks.length
+                        ? "No books match your search"
+                        : "No books yet"
+                    }
                 </div>
+
+                <div style="
+                    margin-top:7px;
+                    font-size:11px;
+                ">
+                    ${
+                        allBooks.length
+                        ? "Try another search or filter."
+                        : "Publish a book from Add Book and it will appear here."
+                    }
+                </div>
+
             </div>
         `;
 
@@ -1030,6 +1353,23 @@ function renderBooks() {
                 .join("");
     }
 
+
+    const showingStart =
+        filteredBooks.length
+        ? start + 1
+        : 0;
+
+    const showingEnd =
+        Math.min(
+            end,
+            filteredBooks.length
+        );
+
+
+    paginationInfo.textContent =
+        `Showing ${showingStart}-${showingEnd} of ${filteredBooks.length} books`;
+
+
     renderPagination();
 }
 
@@ -1040,47 +1380,80 @@ function renderBooks() {
 
 function renderBookCard(book) {
 
+    const rawId =
+        String(book.id || "");
+
     const id =
-        escapeHtml(book.id);
+        escapeHtml(rawId);
 
     const title =
-        escapeHtml(book.title || "Untitled Book");
+        escapeHtml(
+            book.title ||
+            "Untitled Book"
+        );
+
+    const subtitle =
+        escapeHtml(
+            book.subtitle || ""
+        );
 
     const author =
         escapeHtml(
-            book.author_name ||
-            "Author"
+            getBookAuthor(book)
         );
 
     const genre =
         escapeHtml(
-            book.genre ||
+            getBookGenre(book) ||
             "Uncategorized"
         );
 
     const status =
-        String(book.status || "draft");
+        getBookStatus(book);
 
     const statusText =
         status.charAt(0).toUpperCase() +
         status.slice(1);
 
+
     const cover =
         book.cover_url
-            ? `
-                <img
-                    src="${escapeHtml(book.cover_url)}"
-                    alt="${title}"
-                    onerror="this.style.display='none'"
-                >
-              `
-            : "No Cover";
+        ? `
+            <img
+                src="${escapeHtml(book.cover_url)}"
+                alt="${title}"
+                loading="lazy"
+                onerror="
+                    this.style.display='none';
+                    this.parentElement.textContent='No Cover';
+                "
+            >
+          `
+        : "No Cover";
+
 
     const price =
-        Number(book.chapter_price ?? 5);
+        Number(
+            book.chapter_price ?? 5
+        );
+
 
     const featured =
         book.featured === true;
+
+
+    const chapterCount =
+        bookChapterCounts[rawId] || 0;
+
+
+    let statusClass = "";
+
+    if (status === "published") {
+        statusClass = "green";
+    } else if (status === "paused") {
+        statusClass = "orange";
+    }
+
 
     return `
         <article class="book-card">
@@ -1091,15 +1464,29 @@ function renderBookCard(book) {
                     ${cover}
                 </div>
 
+
                 <div class="book-info">
 
                     <div class="book-title">
                         ${title}
                     </div>
 
+
+                    ${
+                        subtitle
+                        ? `
+                            <div class="book-subtitle">
+                                ${subtitle}
+                            </div>
+                          `
+                        : ""
+                    }
+
+
                     <div class="book-author">
                         ${author}
                     </div>
+
 
                     <div class="book-tags">
 
@@ -1107,9 +1494,11 @@ function renderBookCard(book) {
                             ${genre}
                         </span>
 
-                        <span class="tag">
+
+                        <span class="tag ${statusClass}">
                             ${escapeHtml(statusText)}
                         </span>
+
 
                         ${
                             featured
@@ -1132,10 +1521,19 @@ function renderBookCard(book) {
 
                 <div class="book-stat">
                     <strong>
+                        ${formatNumber(chapterCount)}
+                    </strong>
+                    <span>Chapters</span>
+                </div>
+
+
+                <div class="book-stat">
+                    <strong>
                         ${formatNumber(book.views)}
                     </strong>
                     <span>Views</span>
                 </div>
+
 
                 <div class="book-stat">
                     <strong>
@@ -1144,9 +1542,10 @@ function renderBookCard(book) {
                     <span>Library</span>
                 </div>
 
+
                 <div class="book-stat">
                     <strong>
-                        ${price}
+                        ${formatNumber(price)}
                     </strong>
                     <span>Coins</span>
                 </div>
@@ -1163,12 +1562,14 @@ function renderBookCard(book) {
                     📖 Manage Chapters
                 </button>
 
+
                 <button
                     class="action-btn"
                     onclick="editBook('${id}')"
                 >
                     ✏️ Edit
                 </button>
+
 
                 <button
                     class="action-btn danger"
@@ -1177,8 +1578,9 @@ function renderBookCard(book) {
                     🗑️ Delete
                 </button>
 
+
                 <button
-                    class="action-btn"
+                    class="action-btn view"
                     onclick="viewBook('${id}')"
                 >
                     👁️ View
@@ -1192,230 +1594,20 @@ function renderBookCard(book) {
 
 
 /* =========================================================
-   MANAGE CHAPTERS
-========================================================= */
-
-function manageChapters(bookId) {
-
-    if (!bookId) {
-        return;
-    }
-
-    /*
-        The selected book ID is carried directly
-        into add-chapters.html.
-
-        There is NO second book selector.
-
-        add-chapters.html will read:
-        ?id=BOOK_ID
-    */
-
-    window.location.href =
-        "add-chapters.html?id=" +
-        encodeURIComponent(bookId);
-}
-
-
-/* =========================================================
-   VIEW BOOK
-========================================================= */
-
-function viewBook(bookId) {
-
-    const book =
-        allBooks.find(
-            item => item.id === bookId
-        );
-
-    if (!book) {
-        return;
-    }
-
-    /*
-        Reader-side book details will eventually
-        use the same Supabase ID.
-
-        For now we open the Reader book details
-        with the ID so the next backend stage
-        can use the same record.
-    */
-
-    const readerBase =
-        "https://gregory7690-cyber.github.io/Novelora/book-details.html";
-
-    window.open(
-        readerBase +
-        "?id=" +
-        encodeURIComponent(bookId),
-        "_blank"
-    );
-}
-
-
-/* =========================================================
-   EDIT BOOK
-========================================================= */
-
-async function editBook(bookId) {
-
-    const book =
-        allBooks.find(
-            item => item.id === bookId
-        );
-
-    if (!book) {
-        showMessage(
-            "Book could not be found.",
-            "error"
-        );
-        return;
-    }
-
-    const title =
-        prompt(
-            "Book title:",
-            book.title || ""
-        );
-
-    if (title === null) {
-        return;
-    }
-
-    const description =
-        prompt(
-            "Book description:",
-            book.description || ""
-        );
-
-    if (description === null) {
-        return;
-    }
-
-    try {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("books")
-            .update({
-                title: title.trim(),
-                description: description.trim(),
-                updated_at:
-                    new Date().toISOString()
-            })
-            .eq("id", bookId);
-
-        if (error) {
-            throw error;
-        }
-
-        showMessage(
-            "Book updated successfully."
-        );
-
-        await loadBooks();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-            error.message ||
-            "Unable to update book.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
-   DELETE BOOK
-========================================================= */
-
-async function deleteBook(bookId) {
-
-    const book =
-        allBooks.find(
-            item => item.id === bookId
-        );
-
-    if (!book) {
-        return;
-    }
-
-    const confirmed =
-        confirm(
-            `Delete "${book.title}"?\n\n` +
-            `This will remove the book from the Admin database.`
-        );
-
-    if (!confirmed) {
-        return;
-    }
-
-    try {
-
-        const {
-            error
-        } = await supabaseClient
-            .from("books")
-            .delete()
-            .eq("id", bookId);
-
-        if (error) {
-            throw error;
-        }
-
-        showMessage(
-            "Book deleted successfully."
-        );
-
-        await loadBooks();
-
-    } catch (error) {
-
-        console.error(error);
-
-        showMessage(
-            error.message ||
-            "Unable to delete book.",
-            "error"
-        );
-    }
-}
-
-
-/* =========================================================
    PAGINATION
 ========================================================= */
 
 function renderPagination() {
 
-    if (!filteredBooks.length) {
+    pagination.innerHTML = "";
 
-        paginationInfo.textContent =
-            "0 books";
 
-        pagination.innerHTML = "";
-
+    if (
+        filteredBooks.length <= PAGE_SIZE
+    ) {
         return;
     }
 
-    const start =
-        (currentPage - 1) *
-        PAGE_SIZE + 1;
-
-    const end =
-        Math.min(
-            currentPage * PAGE_SIZE,
-            filteredBooks.length
-        );
-
-    paginationInfo.textContent =
-        `Showing ${start}-${end} of ${filteredBooks.length} books`;
-
-    pagination.innerHTML = "";
 
     const previous =
         document.createElement("button");
@@ -1428,6 +1620,7 @@ function renderPagination() {
 
     previous.disabled =
         currentPage === 1;
+
 
     previous.onclick = () => {
 
@@ -1444,6 +1637,7 @@ function renderPagination() {
         }
     };
 
+
     pagination.appendChild(previous);
 
 
@@ -1452,6 +1646,7 @@ function renderPagination() {
             currentPage,
             totalPages
         );
+
 
     pages.forEach(page => {
 
@@ -1471,6 +1666,7 @@ function renderPagination() {
             return;
         }
 
+
         const button =
             document.createElement("button");
 
@@ -1485,6 +1681,7 @@ function renderPagination() {
         button.textContent =
             page;
 
+
         button.onclick = () => {
 
             currentPage = page;
@@ -1496,6 +1693,7 @@ function renderPagination() {
                 behavior: "smooth"
             });
         };
+
 
         pagination.appendChild(button);
     });
@@ -1513,6 +1711,7 @@ function renderPagination() {
     next.disabled =
         currentPage === totalPages;
 
+
     next.onclick = () => {
 
         if (currentPage < totalPages) {
@@ -1528,33 +1727,51 @@ function renderPagination() {
         }
     };
 
+
     pagination.appendChild(next);
 }
 
 
-function getPageNumbers(current, total) {
+function getPageNumbers(
+    current,
+    total
+) {
 
     if (total <= 7) {
 
         return Array.from(
-            { length: total },
-            (_, index) => index + 1
+            {
+                length: total
+            },
+            (_, index) =>
+                index + 1
         );
     }
+
 
     const pages = [];
 
     pages.push(1);
 
+
     if (current > 4) {
         pages.push("...");
     }
 
+
     const start =
-        Math.max(2, current - 1);
+        Math.max(
+            2,
+            current - 1
+        );
+
 
     const end =
-        Math.min(total - 1, current + 1);
+        Math.min(
+            total - 1,
+            current + 1
+        );
+
 
     for (
         let i = start;
@@ -1564,9 +1781,13 @@ function getPageNumbers(current, total) {
         pages.push(i);
     }
 
-    if (current < total - 3) {
+
+    if (
+        current < total - 3
+    ) {
         pages.push("...");
     }
+
 
     pages.push(total);
 
@@ -1575,7 +1796,168 @@ function getPageNumbers(current, total) {
 
 
 /* =========================================================
-   SEARCH / FILTER EVENTS
+   MANAGE CHAPTERS
+========================================================= */
+
+function manageChapters(bookId) {
+
+    if (!bookId) {
+        showMessage(
+            "This book does not have a valid ID.",
+            "error"
+        );
+        return;
+    }
+
+
+    window.location.href =
+        "add-chapters.html?id=" +
+        encodeURIComponent(bookId);
+}
+
+
+/* =========================================================
+   VIEW BOOK
+========================================================= */
+
+function viewBook(bookId) {
+
+    if (!bookId) {
+        showMessage(
+            "This book does not have a valid ID.",
+            "error"
+        );
+        return;
+    }
+
+
+    /*
+       Reader book details can later be connected
+       directly to Supabase. For now this sends
+       the real book ID so the correct book can
+       be resolved.
+    */
+
+    window.location.href =
+        "../Novelora/book-details.html?id=" +
+        encodeURIComponent(bookId);
+}
+
+
+/* =========================================================
+   EDIT BOOK
+========================================================= */
+
+function editBook(bookId) {
+
+    if (!bookId) {
+        showMessage(
+            "This book does not have a valid ID.",
+            "error"
+        );
+        return;
+    }
+
+
+    window.location.href =
+        "add-book.html?id=" +
+        encodeURIComponent(bookId);
+}
+
+
+/* =========================================================
+   DELETE BOOK
+========================================================= */
+
+async function deleteBook(bookId) {
+
+    if (!bookId) {
+        showMessage(
+            "This book does not have a valid ID.",
+            "error"
+        );
+        return;
+    }
+
+
+    const book =
+        allBooks.find(
+            item =>
+                String(item.id) ===
+                String(bookId)
+        );
+
+
+    const title =
+        book?.title ||
+        "this book";
+
+
+    const confirmed =
+        window.confirm(
+            `Delete "${title}"?\n\nThis will permanently remove the book from Supabase.`
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("books")
+            .delete()
+            .eq("id", bookId);
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        allBooks =
+            allBooks.filter(
+                item =>
+                    String(item.id) !==
+                    String(bookId)
+            );
+
+
+        delete bookChapterCounts[bookId];
+
+
+        updateStats();
+
+        applyFilters();
+
+
+        showMessage(
+            `"${title}" was deleted.`,
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Delete book error:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to delete book.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   EVENTS
 ========================================================= */
 
 searchInput.addEventListener(
@@ -1583,10 +1965,12 @@ searchInput.addEventListener(
     applyFilters
 );
 
+
 statusFilter.addEventListener(
     "change",
     applyFilters
 );
+
 
 genreFilter.addEventListener(
     "change",
@@ -1594,16 +1978,11 @@ genreFilter.addEventListener(
 );
 
 
-/* =========================================================
-   ADD BOOK
-========================================================= */
-
 document
     .getElementById("topAddBook")
     .addEventListener(
         "click",
         () => {
-
             window.location.href =
                 "add-book.html";
         }
