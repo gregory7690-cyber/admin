@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Books - Novelora Admin</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -192,122 +195,6 @@ button {
     margin-bottom: 20px;
 }
 
-/* ADD BOOK */
-.book-form {
-    display: none;
-}
-
-.book-form.open {
-    display: block;
-}
-
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-}
-
-.form-group {
-    margin-bottom: 16px;
-}
-
-.form-group.full {
-    grid-column: 1 / -1;
-}
-
-.form-group label {
-    display: block;
-    color: #aaa1ad;
-    font-size: 12px;
-    margin-bottom: 7px;
-}
-
-.form-control {
-    width: 100%;
-    background: #120e15;
-    color: white;
-    border: 1px solid rgba(255,255,255,.08);
-    border-radius: 11px;
-    padding: 13px 14px;
-    outline: none;
-}
-
-.form-control:focus {
-    border-color: rgba(255,79,154,.55);
-    box-shadow: 0 0 0 3px rgba(255,79,154,.07);
-}
-
-textarea.form-control {
-    min-height: 130px;
-    resize: vertical;
-}
-
-.cover-preview {
-    width: 95px;
-    height: 130px;
-    border-radius: 10px;
-    background: linear-gradient(145deg,#271522,#100d12);
-    border: 1px dashed rgba(255,255,255,.13);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    color: #706875;
-    font-size: 11px;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.cover-preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.check-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    margin: 4px 0 18px;
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #aaa1ad;
-    font-size: 12px;
-}
-
-.check-item input {
-    accent-color: #ff4f9a;
-}
-
-.form-actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.primary-btn,
-.secondary-btn {
-    border: none;
-    padding: 12px 17px;
-    border-radius: 11px;
-    font-weight: 700;
-}
-
-.primary-btn {
-    background: linear-gradient(135deg,#ff4f9a,#ff77b3);
-    color: white;
-}
-
-.secondary-btn {
-    background: rgba(255,255,255,.06);
-    color: #c4bcc8;
-    border: 1px solid rgba(255,255,255,.08);
-}
-
 /* TOOLBAR */
 .books-toolbar {
     display: flex;
@@ -323,6 +210,21 @@ textarea.form-control {
 
 .filter-box {
     width: 180px;
+}
+
+.form-control {
+    width: 100%;
+    background: #120e15;
+    color: white;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 11px;
+    padding: 13px 14px;
+    outline: none;
+}
+
+.form-control:focus {
+    border-color: rgba(255,79,154,.55);
+    box-shadow: 0 0 0 3px rgba(255,79,154,.07);
 }
 
 /* BOOK GRID */
@@ -430,15 +332,15 @@ textarea.form-control {
 }
 
 .book-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 7px;
     padding: 12px;
 }
 
 .action-btn {
-    flex: 1;
     border-radius: 9px;
-    padding: 8px 5px;
+    padding: 9px 5px;
     font-size: 10px;
     background: rgba(255,255,255,.05);
     color: #bcb4c0;
@@ -448,6 +350,12 @@ textarea.form-control {
 .action-btn:hover {
     border-color: rgba(255,79,154,.35);
     color: white;
+}
+
+.action-btn.primary {
+    background: rgba(255,79,154,.12);
+    color: #ff79b1;
+    border-color: rgba(255,79,154,.22);
 }
 
 .action-btn.danger {
@@ -466,23 +374,99 @@ textarea.form-control {
     margin-bottom: 10px;
 }
 
-/* MESSAGE */
-.form-message {
-    display: none;
-    margin-top: 14px;
-    padding: 11px;
-    border-radius: 9px;
+.loading-state {
+    text-align: center;
+    padding: 60px 15px;
+    color: #918995;
+    grid-column: 1 / -1;
+}
+
+.loading-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(255,255,255,.1);
+    border-top-color: #ff5da4;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 12px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* PAGINATION */
+.pagination-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination-info {
+    color: #817987;
     font-size: 12px;
 }
 
-.form-message.success {
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 9px;
+    border-radius: 9px;
+    background: rgba(255,255,255,.05);
+    color: #aaa1ad;
+    border: 1px solid rgba(255,255,255,.07);
+}
+
+.page-btn:hover {
+    color: white;
+    border-color: rgba(255,79,154,.3);
+}
+
+.page-btn.active {
+    background: linear-gradient(135deg,#ff4f9a,#ff77b3);
+    color: white;
+    border-color: transparent;
+}
+
+.page-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.page-dots {
+    color: #77707d;
+    padding: 0 3px;
+}
+
+/* MESSAGE */
+.page-message {
+    display: none;
+    margin-bottom: 18px;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.page-message.success {
     display: block;
     background: rgba(55,210,130,.08);
     border: 1px solid rgba(55,210,130,.18);
     color: #75e3a8;
 }
 
-.form-message.error {
+.page-message.error {
     display: block;
     background: rgba(255,70,90,.08);
     border: 1px solid rgba(255,70,90,.18);
@@ -517,14 +501,6 @@ textarea.form-control {
         padding: 18px;
     }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-group.full {
-        grid-column: auto;
-    }
-
     .book-grid {
         grid-template-columns: 1fr;
     }
@@ -532,6 +508,10 @@ textarea.form-control {
     .admin-topbar {
         flex-direction: column;
         align-items: flex-start;
+    }
+
+    .add-book-btn {
+        width: 100%;
     }
 }
 
@@ -542,6 +522,10 @@ textarea.form-control {
 
     .filter-box {
         width: 100%;
+    }
+
+    .book-actions {
+        grid-template-columns: 1fr 1fr;
     }
 }
 </style>
@@ -579,6 +563,7 @@ textarea.form-control {
         <a href="security.html" class="nav-item">🔐 Security</a>
 
     </nav>
+
 </aside>
 
 
@@ -598,6 +583,9 @@ textarea.form-control {
         </button>
 
     </div>
+
+
+    <div id="pageMessage" class="page-message"></div>
 
 
     <!-- STATS -->
@@ -631,171 +619,6 @@ textarea.form-control {
     </section>
 
 
-    <!-- ADD BOOK FORM -->
-
-    <section class="panel book-form" id="bookFormPanel">
-
-        <div class="panel-title" id="formHeading">
-            Add New Book
-        </div>
-
-        <div class="panel-description">
-            Create a book record that can be used by Chapters,
-            Promotions, Analytics and the reader platform.
-        </div>
-
-
-        <form id="bookForm">
-
-            <div class="form-grid">
-
-                <div class="form-group">
-                    <label>Book Title *</label>
-
-                    <input
-                        id="bookTitle"
-                        class="form-control"
-                        type="text"
-                        placeholder="Enter book title"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label>Author *</label>
-
-                    <input
-                        id="bookAuthor"
-                        class="form-control"
-                        type="text"
-                        placeholder="Author name"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label>Genre *</label>
-
-                    <select id="bookGenre" class="form-control" required>
-
-                        <option value="">Select genre</option>
-                        <option>Romance</option>
-                        <option>Werewolf</option>
-                        <option>Billionaire</option>
-                        <option>Fantasy</option>
-                        <option>Mystery</option>
-                        <option>Thriller</option>
-                        <option>Drama</option>
-                        <option>Historical</option>
-                        <option>Vampire</option>
-                        <option>Young Adult</option>
-                        <option>Other</option>
-
-                    </select>
-                </div>
-
-
-                <div class="form-group">
-                    <label>Chapter Price</label>
-
-                    <input
-                        id="bookPrice"
-                        class="form-control"
-                        type="number"
-                        min="0"
-                        value="5"
-                    >
-                </div>
-
-
-                <div class="form-group full">
-                    <label>Book Cover Image URL</label>
-
-                    <input
-                        id="bookCover"
-                        class="form-control"
-                        type="url"
-                        placeholder="https://..."
-                    >
-
-                    <div class="cover-preview" id="coverPreview">
-                        Cover Preview
-                    </div>
-                </div>
-
-
-                <div class="form-group full">
-                    <label>Description / Blurb *</label>
-
-                    <textarea
-                        id="bookDescription"
-                        class="form-control"
-                        placeholder="Write the book description..."
-                        required
-                    ></textarea>
-                </div>
-
-            </div>
-
-
-            <div class="check-row">
-
-                <label class="check-item">
-                    <input
-                        type="checkbox"
-                        id="bookFree"
-                    >
-                    Free Book
-                </label>
-
-                <label class="check-item">
-                    <input
-                        type="checkbox"
-                        id="bookFeatured"
-                    >
-                    Featured Book
-                </label>
-
-            </div>
-
-
-            <div class="form-actions">
-
-                <button
-                    type="submit"
-                    class="primary-btn"
-                    id="publishButton"
-                >
-                    Publish Book
-                </button>
-
-                <button
-                    type="button"
-                    class="secondary-btn"
-                    id="draftButton"
-                >
-                    Save Draft
-                </button>
-
-                <button
-                    type="button"
-                    class="secondary-btn"
-                    id="cancelButton"
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-            <div id="formMessage" class="form-message"></div>
-
-        </form>
-
-    </section>
-
-
     <!-- BOOK LIBRARY -->
 
     <section class="panel">
@@ -823,8 +646,10 @@ textarea.form-control {
                 class="form-control filter-box"
             >
                 <option value="all">All Status</option>
-                <option value="Published">Published</option>
-                <option value="Draft">Draft</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+                <option value="paused">Paused</option>
+                <option value="completed">Completed</option>
             </select>
 
             <select
@@ -848,7 +673,25 @@ textarea.form-control {
         </div>
 
 
-        <div id="bookGrid" class="book-grid"></div>
+        <div id="bookGrid" class="book-grid">
+
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                Loading books...
+            </div>
+
+        </div>
+
+
+        <div class="pagination-wrap">
+
+            <div class="pagination-info" id="paginationInfo">
+                Loading...
+            </div>
+
+            <div class="pagination" id="pagination"></div>
+
+        </div>
 
     </section>
 
@@ -858,573 +701,269 @@ textarea.form-control {
 
 
 <script>
-const BOOK_KEY = "noveloraAdminBooks";
 
-let editingBookId = null;
+/* =========================================================
+   NOVELORA ADMIN BOOK LIBRARY
+   Supabase-backed
+========================================================= */
 
+const PAGE_SIZE = 12;
 
-/* -----------------------------
-   STORAGE
------------------------------ */
-
-function getBooks() {
-
-    try {
-        return JSON.parse(
-            localStorage.getItem(BOOK_KEY)
-        ) || [];
-    } catch {
-        return [];
-    }
-}
+let currentPage = 1;
+let totalPages = 1;
+let allBooks = [];
+let filteredBooks = [];
 
 
-function saveBooks(books) {
-
-    localStorage.setItem(
-        BOOK_KEY,
-        JSON.stringify(books)
-    );
-}
-
-
-/* -----------------------------
+/* =========================================================
    ELEMENTS
------------------------------ */
+========================================================= */
 
-const formPanel =
-    document.getElementById("bookFormPanel");
+const bookGrid =
+    document.getElementById("bookGrid");
 
-const bookForm =
-    document.getElementById("bookForm");
+const searchInput =
+    document.getElementById("searchBooks");
 
-const formHeading =
-    document.getElementById("formHeading");
+const statusFilter =
+    document.getElementById("filterStatus");
 
-const publishButton =
-    document.getElementById("publishButton");
+const genreFilter =
+    document.getElementById("filterGenre");
 
-const formMessage =
-    document.getElementById("formMessage");
+const pagination =
+    document.getElementById("pagination");
 
-const coverInput =
-    document.getElementById("bookCover");
+const paginationInfo =
+    document.getElementById("paginationInfo");
 
-const coverPreview =
-    document.getElementById("coverPreview");
+const pageMessage =
+    document.getElementById("pageMessage");
 
 
-/* -----------------------------
-   OPEN FORM
------------------------------ */
+/* =========================================================
+   HELPERS
+========================================================= */
 
-function openBookForm() {
+function escapeHtml(value) {
 
-    formPanel.classList.add("open");
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function formatNumber(value) {
+
+    const number = Number(value || 0);
+
+    if (number >= 1000000) {
+        return (number / 1000000)
+            .toFixed(number >= 10000000 ? 0 : 1)
+            .replace(".0", "") + "M";
+    }
+
+    if (number >= 1000) {
+        return (number / 1000)
+            .toFixed(number >= 10000 ? 0 : 1)
+            .replace(".0", "") + "K";
+    }
+
+    return number.toLocaleString();
+}
+
+
+function showMessage(message, type = "success") {
+
+    pageMessage.textContent = message;
+    pageMessage.className =
+        "page-message " + type;
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
 
-    document.getElementById("bookTitle").focus();
-}
-
-
-document
-    .getElementById("topAddBook")
-    .addEventListener(
-        "click",
-        () => {
-
-            editingBookId = null;
-
-            resetForm();
-
-            formHeading.textContent =
-                "Add New Book";
-
-            publishButton.textContent =
-                "Publish Book";
-
-            openBookForm();
-        }
-    );
-
-
-/* -----------------------------
-   RESET
------------------------------ */
-
-function resetForm() {
-
-    bookForm.reset();
-
-    document.getElementById("bookPrice").value = 5;
-
-    coverPreview.innerHTML =
-        "Cover Preview";
-
-    formMessage.className =
-        "form-message";
-
-    formMessage.textContent = "";
-}
-
-
-/* -----------------------------
-   COVER PREVIEW
------------------------------ */
-
-coverInput.addEventListener(
-    "input",
-    updateCoverPreview
-);
-
-
-function updateCoverPreview() {
-
-    const url =
-        coverInput.value.trim();
-
-    if (!url) {
-
-        coverPreview.innerHTML =
-            "Cover Preview";
-
-        return;
-    }
-
-    coverPreview.innerHTML = `
-        <img
-            src="${escapeHtml(url)}"
-            alt="Cover preview"
-            onerror="this.parentElement.innerHTML='Invalid image URL'"
-        >
-    `;
-}
-
-
-/* -----------------------------
-   SAVE BOOK
------------------------------ */
-
-function saveBook(status) {
-
-    const title =
-        document.getElementById("bookTitle")
-            .value.trim();
-
-    const author =
-        document.getElementById("bookAuthor")
-            .value.trim();
-
-    const genre =
-        document.getElementById("bookGenre")
-            .value;
-
-    const price =
-        Number(
-            document.getElementById("bookPrice")
-                .value
-        ) || 0;
-
-    const cover =
-        document.getElementById("bookCover")
-            .value.trim();
-
-    const description =
-        document.getElementById("bookDescription")
-            .value.trim();
-
-    const free =
-        document.getElementById("bookFree")
-            .checked;
-
-    const featured =
-        document.getElementById("bookFeatured")
-            .checked;
-
-
-    if (!title || !author || !genre || !description) {
-
-        showMessage(
-            "Please fill in all required fields.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    const books = getBooks();
-
-    let book;
-
-
-    if (editingBookId) {
-
-        const index =
-            books.findIndex(
-                item =>
-                    item.id === editingBookId
-            );
-
-        if (index === -1) {
-
-            showMessage(
-                "Book could not be found.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        book = {
-
-            ...books[index],
-
-            title,
-            author,
-            genre,
-            price,
-            cover,
-            description,
-            free,
-            featured,
-            status,
-
-            updatedAt:
-                new Date().toISOString()
-        };
-
-
-        books[index] = book;
-
-    } else {
-
-        book = {
-
-            id:
-                "book_" +
-                Date.now() +
-                "_" +
-                Math.random()
-                    .toString(36)
-                    .slice(2,8),
-
-            title,
-            author,
-            genre,
-            price,
-            cover,
-            description,
-            free,
-            featured,
-            status,
-
-            chapters: [],
-            chapterCount: 0,
-
-            readers: 0,
-            unlocks: 0,
-            revenue: 0,
-
-            createdAt:
-                new Date().toISOString(),
-
-            updatedAt:
-                new Date().toISOString()
-        };
-
-
-        books.push(book);
-    }
-
-
-    saveBooks(books);
-
-
-    showMessage(
-        status === "Published"
-            ? "Book published successfully! 📚"
-            : "Book saved as draft.",
-        "success"
-    );
-
-
-    renderBooks();
-    updateStats();
-
-
     setTimeout(() => {
 
-        resetForm();
+        pageMessage.className =
+            "page-message";
 
-        formPanel.classList.remove("open");
+        pageMessage.textContent = "";
 
-        editingBookId = null;
-
-    }, 800);
+    }, 5000);
 }
 
 
-/* -----------------------------
-   PUBLISH
------------------------------ */
+/* =========================================================
+   LOAD BOOKS FROM SUPABASE
+========================================================= */
 
-bookForm.addEventListener(
-    "submit",
-    function(event) {
+async function loadBooks() {
 
-        event.preventDefault();
+    bookGrid.innerHTML = `
+        <div class="loading-state">
+            <div class="loading-spinner"></div>
+            Loading books...
+        </div>
+    `;
 
-        saveBook("Published");
-    }
-);
+    try {
 
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("books")
+            .select(`
+                id,
+                author_id,
+                title,
+                subtitle,
+                description,
+                cover_url,
+                genre,
+                subgenre,
+                access_type,
+                chapter_price,
+                featured,
+                discoverable,
+                status,
+                views,
+                library_count,
+                created_at,
+                updated_at
+            `)
+            .order("created_at", {
+                ascending: false
+            });
 
-/* -----------------------------
-   SAVE DRAFT
------------------------------ */
-
-document
-    .getElementById("draftButton")
-    .addEventListener(
-        "click",
-        () => saveBook("Draft")
-    );
-
-
-/* -----------------------------
-   CANCEL
------------------------------ */
-
-document
-    .getElementById("cancelButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            resetForm();
-
-            formPanel.classList.remove("open");
-
-            editingBookId = null;
+        if (error) {
+            throw error;
         }
-    );
 
+        allBooks = data || [];
 
-/* -----------------------------
-   EDIT
------------------------------ */
+        updateStats();
 
-function editBook(id) {
+        applyFilters();
 
-    const books = getBooks();
+    } catch (error) {
 
-    const book =
-        books.find(
-            item => item.id === id
-        );
+        console.error("Books load error:", error);
 
-    if (!book) return;
+        bookGrid.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <div>Unable to load books.</div>
+                <div style="margin-top:8px;font-size:11px;">
+                    ${escapeHtml(error.message)}
+                </div>
+            </div>
+        `;
 
+        paginationInfo.textContent =
+            "Unable to load books.";
 
-    editingBookId = id;
+        pagination.innerHTML = "";
 
-    document.getElementById("bookTitle")
-        .value = book.title || "";
-
-    document.getElementById("bookAuthor")
-        .value = book.author || "";
-
-    document.getElementById("bookGenre")
-        .value = book.genre || "";
-
-    document.getElementById("bookPrice")
-        .value = book.price ?? 5;
-
-    document.getElementById("bookCover")
-        .value = book.cover || "";
-
-    document.getElementById("bookDescription")
-        .value = book.description || "";
-
-    document.getElementById("bookFree")
-        .checked = !!book.free;
-
-    document.getElementById("bookFeatured")
-        .checked = !!book.featured;
-
-
-    formHeading.textContent =
-        "Edit Book";
-
-    publishButton.textContent =
-        book.status === "Published"
-            ? "Update Published Book"
-            : "Publish Book";
-
-
-    updateCoverPreview();
-
-    openBookForm();
+    }
 }
 
 
-/* -----------------------------
-   DELETE
------------------------------ */
+/* =========================================================
+   STATS
+========================================================= */
 
-function deleteBook(id) {
+function updateStats() {
 
-    const books = getBooks();
+    const total =
+        allBooks.length;
 
-    const book =
-        books.find(
-            item => item.id === id
-        );
+    const published =
+        allBooks.filter(book =>
+            String(book.status || "")
+                .toLowerCase() === "published"
+        ).length;
 
-    if (!book) return;
+    const drafts =
+        allBooks.filter(book =>
+            String(book.status || "")
+                .toLowerCase() === "draft"
+        ).length;
 
+    const featured =
+        allBooks.filter(book =>
+            book.featured === true
+        ).length;
 
-    const confirmed =
-        confirm(
-            `Delete "${book.title}"?\n\nThis will remove the book from the admin book database.`
-        );
+    document.getElementById("totalBooks")
+        .textContent = formatNumber(total);
 
-    if (!confirmed) return;
+    document.getElementById("publishedBooks")
+        .textContent = formatNumber(published);
 
+    document.getElementById("draftBooks")
+        .textContent = formatNumber(drafts);
 
-    const updated =
-        books.filter(
-            item => item.id !== id
-        );
-
-
-    saveBooks(updated);
-
-    renderBooks();
-    updateStats();
+    document.getElementById("featuredBooks")
+        .textContent = formatNumber(featured);
 }
 
 
-/* -----------------------------
-   FEATURE
------------------------------ */
+/* =========================================================
+   FILTERS
+========================================================= */
 
-function toggleFeatured(id) {
-
-    const books = getBooks();
-
-    const index =
-        books.findIndex(
-            item => item.id === id
-        );
-
-    if (index === -1) return;
-
-
-    books[index].featured =
-        !books[index].featured;
-
-    books[index].updatedAt =
-        new Date().toISOString();
-
-
-    saveBooks(books);
-
-    renderBooks();
-    updateStats();
-}
-
-
-/* -----------------------------
-   CHAPTERS
------------------------------ */
-
-function manageChapters(id) {
-
-    window.location.href =
-        "chapters.html?book=" +
-        encodeURIComponent(id);
-}
-
-
-/* -----------------------------
-   VIEW
------------------------------ */
-
-function viewBook(id) {
-
-    const books = getBooks();
-
-    const book =
-        books.find(
-            item => item.id === id
-        );
-
-    if (!book) return;
-
-
-    alert(
-        "Book: " + book.title +
-        "\n\nAuthor: " + book.author +
-        "\nGenre: " + book.genre +
-        "\nStatus: " + book.status +
-        "\nChapters: " + (book.chapterCount || 0) +
-        "\nReaders: " + (book.readers || 0)
-    );
-}
-
-
-/* -----------------------------
-   RENDER
------------------------------ */
-
-function renderBooks() {
-
-    const grid =
-        document.getElementById("bookGrid");
-
-    const books = getBooks();
+function applyFilters() {
 
     const search =
-        document.getElementById("searchBooks")
-            .value
-            .toLowerCase()
-            .trim();
+        searchInput.value
+            .trim()
+            .toLowerCase();
 
     const status =
-        document.getElementById("filterStatus")
-            .value;
+        statusFilter.value
+            .toLowerCase();
 
     const genre =
-        document.getElementById("filterGenre")
-            .value;
+        genreFilter.value
+            .toLowerCase();
 
+    filteredBooks =
+        allBooks.filter(book => {
 
-    const filtered =
-        books.filter(book => {
+            const title =
+                String(book.title || "")
+                    .toLowerCase();
+
+            const author =
+                String(book.author_name || "")
+                    .toLowerCase();
+
+            const bookGenre =
+                String(book.genre || "")
+                    .toLowerCase();
+
+            const bookStatus =
+                String(book.status || "")
+                    .toLowerCase();
 
             const matchesSearch =
                 !search ||
-                String(book.title || "")
-                    .toLowerCase()
-                    .includes(search) ||
-                String(book.author || "")
-                    .toLowerCase()
-                    .includes(search);
+                title.includes(search) ||
+                author.includes(search);
 
             const matchesStatus =
                 status === "all" ||
-                book.status === status;
+                bookStatus === status;
 
             const matchesGenre =
                 genre === "all" ||
-                book.genre === genre;
+                bookGenre === genre;
 
             return (
                 matchesSearch &&
@@ -1433,48 +972,118 @@ function renderBooks() {
             );
         });
 
+    currentPage = 1;
 
-    grid.innerHTML = "";
+    renderBooks();
+}
 
 
-    if (!filtered.length) {
+/* =========================================================
+   RENDER BOOKS
+========================================================= */
 
-        grid.innerHTML = `
+function renderBooks() {
+
+    totalPages =
+        Math.max(
+            1,
+            Math.ceil(
+                filteredBooks.length /
+                PAGE_SIZE
+            )
+        );
+
+    if (currentPage > totalPages) {
+        currentPage = totalPages;
+    }
+
+    const start =
+        (currentPage - 1) *
+        PAGE_SIZE;
+
+    const end =
+        start + PAGE_SIZE;
+
+    const pageBooks =
+        filteredBooks.slice(
+            start,
+            end
+        );
+
+    if (!pageBooks.length) {
+
+        bookGrid.innerHTML = `
             <div class="empty-state">
                 <div class="empty-icon">📚</div>
                 <div>No books found.</div>
-                <p style="margin-top:7px;">
-                    Add your first Novelora book above.
-                </p>
+                <div style="margin-top:7px;font-size:11px;">
+                    Try another search or filter.
+                </div>
             </div>
         `;
 
-        return;
+    } else {
+
+        bookGrid.innerHTML =
+            pageBooks
+                .map(renderBookCard)
+                .join("");
     }
 
-
-    filtered.forEach(book => {
-
-        const card =
-            document.createElement("div");
-
-        card.className =
-            "book-card";
+    renderPagination();
+}
 
 
-        const cover =
-            book.cover
-                ? `
-                    <img
-                        src="${escapeHtml(book.cover)}"
-                        alt="${escapeHtml(book.title)}"
-                        onerror="this.style.display='none'"
-                    >
-                  `
-                : "No Cover";
+/* =========================================================
+   BOOK CARD
+========================================================= */
 
+function renderBookCard(book) {
 
-        card.innerHTML = `
+    const id =
+        escapeHtml(book.id);
+
+    const title =
+        escapeHtml(book.title || "Untitled Book");
+
+    const author =
+        escapeHtml(
+            book.author_name ||
+            "Author"
+        );
+
+    const genre =
+        escapeHtml(
+            book.genre ||
+            "Uncategorized"
+        );
+
+    const status =
+        String(book.status || "draft");
+
+    const statusText =
+        status.charAt(0).toUpperCase() +
+        status.slice(1);
+
+    const cover =
+        book.cover_url
+            ? `
+                <img
+                    src="${escapeHtml(book.cover_url)}"
+                    alt="${title}"
+                    onerror="this.style.display='none'"
+                >
+              `
+            : "No Cover";
+
+    const price =
+        Number(book.chapter_price ?? 5);
+
+    const featured =
+        book.featured === true;
+
+    return `
+        <article class="book-card">
 
             <div class="book-card-top">
 
@@ -1485,32 +1094,30 @@ function renderBooks() {
                 <div class="book-info">
 
                     <div class="book-title">
-                        ${escapeHtml(book.title)}
+                        ${title}
                     </div>
 
                     <div class="book-author">
-                        by ${escapeHtml(book.author)}
+                        ${author}
                     </div>
 
                     <div class="book-tags">
 
                         <span class="tag pink">
-                            ${escapeHtml(book.genre)}
+                            ${genre}
                         </span>
 
                         <span class="tag">
-                            ${escapeHtml(book.status)}
+                            ${escapeHtml(statusText)}
                         </span>
 
                         ${
-                            book.featured
-                            ? `<span class="tag pink">Featured</span>`
-                            : ""
-                        }
-
-                        ${
-                            book.free
-                            ? `<span class="tag">Free</span>`
+                            featured
+                            ? `
+                                <span class="tag pink">
+                                    Featured
+                                </span>
+                              `
                             : ""
                         }
 
@@ -1525,23 +1132,23 @@ function renderBooks() {
 
                 <div class="book-stat">
                     <strong>
-                        ${book.chapterCount || 0}
+                        ${formatNumber(book.views)}
                     </strong>
-                    <span>Chapters</span>
+                    <span>Views</span>
                 </div>
 
                 <div class="book-stat">
                     <strong>
-                        ${book.readers || 0}
+                        ${formatNumber(book.library_count)}
                     </strong>
-                    <span>Readers</span>
+                    <span>Library</span>
                 </div>
 
                 <div class="book-stat">
                     <strong>
-                        ${book.revenue || 0}
+                        ${price}
                     </strong>
-                    <span>Revenue</span>
+                    <span>Coins</span>
                 </div>
 
             </div>
@@ -1550,135 +1157,465 @@ function renderBooks() {
             <div class="book-actions">
 
                 <button
+                    class="action-btn primary"
+                    onclick="manageChapters('${id}')"
+                >
+                    📖 Manage Chapters
+                </button>
+
+                <button
                     class="action-btn"
-                    onclick="editBook('${book.id}')"
+                    onclick="editBook('${id}')"
                 >
                     ✏️ Edit
                 </button>
 
                 <button
-                    class="action-btn"
-                    onclick="manageChapters('${book.id}')"
-                >
-                    📖 Chapters
-                </button>
-
-                <button
-                    class="action-btn"
-                    onclick="toggleFeatured('${book.id}')"
-                >
-                    ⭐
-                </button>
-
-                <button
                     class="action-btn danger"
-                    onclick="deleteBook('${book.id}')"
+                    onclick="deleteBook('${id}')"
                 >
-                    🗑️
+                    🗑️ Delete
+                </button>
+
+                <button
+                    class="action-btn"
+                    onclick="viewBook('${id}')"
+                >
+                    👁️ View
                 </button>
 
             </div>
 
-        `;
+        </article>
+    `;
+}
 
 
-        grid.appendChild(card);
+/* =========================================================
+   MANAGE CHAPTERS
+========================================================= */
+
+function manageChapters(bookId) {
+
+    if (!bookId) {
+        return;
+    }
+
+    /*
+        The selected book ID is carried directly
+        into add-chapters.html.
+
+        There is NO second book selector.
+
+        add-chapters.html will read:
+        ?id=BOOK_ID
+    */
+
+    window.location.href =
+        "add-chapters.html?id=" +
+        encodeURIComponent(bookId);
+}
+
+
+/* =========================================================
+   VIEW BOOK
+========================================================= */
+
+function viewBook(bookId) {
+
+    const book =
+        allBooks.find(
+            item => item.id === bookId
+        );
+
+    if (!book) {
+        return;
+    }
+
+    /*
+        Reader-side book details will eventually
+        use the same Supabase ID.
+
+        For now we open the Reader book details
+        with the ID so the next backend stage
+        can use the same record.
+    */
+
+    const readerBase =
+        "https://gregory7690-cyber.github.io/Novelora/book-details.html";
+
+    window.open(
+        readerBase +
+        "?id=" +
+        encodeURIComponent(bookId),
+        "_blank"
+    );
+}
+
+
+/* =========================================================
+   EDIT BOOK
+========================================================= */
+
+async function editBook(bookId) {
+
+    const book =
+        allBooks.find(
+            item => item.id === bookId
+        );
+
+    if (!book) {
+        showMessage(
+            "Book could not be found.",
+            "error"
+        );
+        return;
+    }
+
+    const title =
+        prompt(
+            "Book title:",
+            book.title || ""
+        );
+
+    if (title === null) {
+        return;
+    }
+
+    const description =
+        prompt(
+            "Book description:",
+            book.description || ""
+        );
+
+    if (description === null) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("books")
+            .update({
+                title: title.trim(),
+                description: description.trim(),
+                updated_at:
+                    new Date().toISOString()
+            })
+            .eq("id", bookId);
+
+        if (error) {
+            throw error;
+        }
+
+        showMessage(
+            "Book updated successfully."
+        );
+
+        await loadBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to update book.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   DELETE BOOK
+========================================================= */
+
+async function deleteBook(bookId) {
+
+    const book =
+        allBooks.find(
+            item => item.id === bookId
+        );
+
+    if (!book) {
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            `Delete "${book.title}"?\n\n` +
+            `This will remove the book from the Admin database.`
+        );
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const {
+            error
+        } = await supabaseClient
+            .from("books")
+            .delete()
+            .eq("id", bookId);
+
+        if (error) {
+            throw error;
+        }
+
+        showMessage(
+            "Book deleted successfully."
+        );
+
+        await loadBooks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to delete book.",
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+function renderPagination() {
+
+    if (!filteredBooks.length) {
+
+        paginationInfo.textContent =
+            "0 books";
+
+        pagination.innerHTML = "";
+
+        return;
+    }
+
+    const start =
+        (currentPage - 1) *
+        PAGE_SIZE + 1;
+
+    const end =
+        Math.min(
+            currentPage * PAGE_SIZE,
+            filteredBooks.length
+        );
+
+    paginationInfo.textContent =
+        `Showing ${start}-${end} of ${filteredBooks.length} books`;
+
+    pagination.innerHTML = "";
+
+    const previous =
+        document.createElement("button");
+
+    previous.className =
+        "page-btn";
+
+    previous.textContent =
+        "‹";
+
+    previous.disabled =
+        currentPage === 1;
+
+    previous.onclick = () => {
+
+        if (currentPage > 1) {
+
+            currentPage--;
+
+            renderBooks();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    };
+
+    pagination.appendChild(previous);
+
+
+    const pages =
+        getPageNumbers(
+            currentPage,
+            totalPages
+        );
+
+    pages.forEach(page => {
+
+        if (page === "...") {
+
+            const dots =
+                document.createElement("span");
+
+            dots.className =
+                "page-dots";
+
+            dots.textContent =
+                "...";
+
+            pagination.appendChild(dots);
+
+            return;
+        }
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "page-btn" +
+            (
+                page === currentPage
+                ? " active"
+                : ""
+            );
+
+        button.textContent =
+            page;
+
+        button.onclick = () => {
+
+            currentPage = page;
+
+            renderBooks();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        };
+
+        pagination.appendChild(button);
     });
+
+
+    const next =
+        document.createElement("button");
+
+    next.className =
+        "page-btn";
+
+    next.textContent =
+        "›";
+
+    next.disabled =
+        currentPage === totalPages;
+
+    next.onclick = () => {
+
+        if (currentPage < totalPages) {
+
+            currentPage++;
+
+            renderBooks();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    };
+
+    pagination.appendChild(next);
 }
 
 
-/* -----------------------------
-   STATS
------------------------------ */
+function getPageNumbers(current, total) {
 
-function updateStats() {
+    if (total <= 7) {
 
-    const books = getBooks();
+        return Array.from(
+            { length: total },
+            (_, index) => index + 1
+        );
+    }
 
-    document.getElementById("totalBooks")
-        .textContent = books.length;
+    const pages = [];
 
-    document.getElementById("publishedBooks")
-        .textContent =
-        books.filter(
-            book => book.status === "Published"
-        ).length;
+    pages.push(1);
 
-    document.getElementById("draftBooks")
-        .textContent =
-        books.filter(
-            book => book.status === "Draft"
-        ).length;
+    if (current > 4) {
+        pages.push("...");
+    }
 
-    document.getElementById("featuredBooks")
-        .textContent =
-        books.filter(
-            book => book.featured
-        ).length;
+    const start =
+        Math.max(2, current - 1);
+
+    const end =
+        Math.min(total - 1, current + 1);
+
+    for (
+        let i = start;
+        i <= end;
+        i++
+    ) {
+        pages.push(i);
+    }
+
+    if (current < total - 3) {
+        pages.push("...");
+    }
+
+    pages.push(total);
+
+    return pages;
 }
 
 
-/* -----------------------------
-   SEARCH / FILTER
------------------------------ */
+/* =========================================================
+   SEARCH / FILTER EVENTS
+========================================================= */
+
+searchInput.addEventListener(
+    "input",
+    applyFilters
+);
+
+statusFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+genreFilter.addEventListener(
+    "change",
+    applyFilters
+);
+
+
+/* =========================================================
+   ADD BOOK
+========================================================= */
 
 document
-    .getElementById("searchBooks")
+    .getElementById("topAddBook")
     .addEventListener(
-        "input",
-        renderBooks
-    );
+        "click",
+        () => {
 
-document
-    .getElementById("filterStatus")
-    .addEventListener(
-        "change",
-        renderBooks
-    );
-
-document
-    .getElementById("filterGenre")
-    .addEventListener(
-        "change",
-        renderBooks
+            window.location.href =
+                "add-book.html";
+        }
     );
 
 
-/* -----------------------------
-   MESSAGE
------------------------------ */
-
-function showMessage(message, type) {
-
-    formMessage.className =
-        "form-message " + type;
-
-    formMessage.textContent =
-        message;
-}
-
-
-/* -----------------------------
-   SECURITY
------------------------------ */
-
-function escapeHtml(value) {
-
-    return String(value || "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-}
-
-
-/* -----------------------------
+/* =========================================================
    START
------------------------------ */
+========================================================= */
 
-renderBooks();
-updateStats();
+loadBooks();
+
 </script>
 
 </body>
