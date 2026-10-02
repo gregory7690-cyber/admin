@@ -556,41 +556,54 @@ tr:hover td{
 
   <main class="admin-main">
 
-    <div class="admin-topbar">
+  <div class="admin-topbar">
 
-      <div class="page-title">
-        <h1>Chapters</h1>
-        <p>Create, publish and manage chapters across Novelora.</p>
-      </div>
+    <div class="page-title">
+      <h1>Chapters</h1>
+      <p>Create, publish and manage chapters across Novelora.</p>
+    </div>
 
-      <div class="top-actions">
-        <button class="btn" onclick="refreshPage()">Refresh</button>
-        <button class="quick-action" onclick="location.href='add-chapters.html'">
+    <div class="top-actions">
+      <button class="btn" onclick="refreshPage()">Refresh</button>
 
-     <section class="stats-grid">
+      <button
+        class="quick-action"
+        onclick="location.href='add-chapters.html'"
+      >
+        <span>＋</span>
+        <div>
+          <strong>Add Chapters</strong>
+          <small>Write a new chapter</small>
+        </div>
+      </button>
+    </div>
 
-      <div class="stat-card">
-        <small>Total Chapters</small>
-        <strong id="totalChapters">0</strong>
-      </div>
+  </div>
 
-      <div class="stat-card">
-        <small>Published</small>
-        <strong id="publishedChapters">0</strong>
-      </div>
 
-      <div class="stat-card">
-        <small>Drafts</small>
-        <strong id="draftChapters">0</strong>
-      </div>
+  <section class="stats-grid">
 
-      <div class="stat-card">
-        <small>Paid Chapters</small>
-        <strong id="paidChapters">0</strong>
-      </div>
+    <div class="stat-card">
+      <small>Total Chapters</small>
+      <strong id="totalChapters">0</strong>
+    </div>
 
-    </section>
+    <div class="stat-card">
+      <small>Published</small>
+      <strong id="publishedChapters">0</strong>
+    </div>
 
+    <div class="stat-card">
+      <small>Drafts</small>
+      <strong id="draftChapters">0</strong>
+    </div>
+
+    <div class="stat-card">
+      <small>Paid Chapters</small>
+      <strong id="paidChapters">0</strong>
+    </div>
+
+  </section>
 
     <section class="panel">
 
