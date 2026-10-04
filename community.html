@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Novelora Admin — Community</title>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+
 <style>
 * {
   box-sizing: border-box;
@@ -37,8 +40,6 @@ a {
   display: flex;
   min-height: 100vh;
 }
-
-/* SIDEBAR */
 
 .admin-sidebar {
   width: 245px;
@@ -86,8 +87,6 @@ a {
   margin: 12px 5px;
 }
 
-/* MAIN */
-
 .admin-main {
   margin-left: 245px;
   width: calc(100% - 245px);
@@ -121,8 +120,6 @@ a {
   border-radius: 11px;
 }
 
-/* STATS */
-
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -154,8 +151,6 @@ a {
   margin-top: 9px;
 }
 
-/* GRID */
-
 .community-grid {
   display: grid;
   grid-template-columns: 1.35fr .9fr;
@@ -185,8 +180,6 @@ a {
   color: #a998a8;
   font-size: 13px;
 }
-
-/* TOOLBAR */
 
 .toolbar {
   display: flex;
@@ -249,8 +242,6 @@ textarea {
   background: #37785c;
 }
 
-/* ITEMS */
-
 .community-item {
   border-top: 1px solid #352037;
   padding: 17px 0;
@@ -300,8 +291,6 @@ textarea {
   margin-top: 10px;
 }
 
-/* EMPTY */
-
 .empty-state {
   text-align: center;
   padding: 35px 15px;
@@ -314,8 +303,6 @@ textarea {
   margin-bottom: 6px;
 }
 
-/* FORM */
-
 .form-grid {
   display: grid;
   gap: 13px;
@@ -326,18 +313,6 @@ textarea {
   font-size: 12px;
   color: #b9a7b8;
   margin-bottom: 6px;
-}
-
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #d8c9d6;
-  margin: 12px 0;
-}
-
-.checkbox-row input {
-  width: auto;
 }
 
 .settings-row {
@@ -364,7 +339,20 @@ textarea {
   margin-top: 4px;
 }
 
-/* MOBILE */
+.loading {
+  text-align: center;
+  padding: 25px;
+  color: #a998a8;
+}
+
+.error-box {
+  background: rgba(141,49,86,.18);
+  border: 1px solid #8d3156;
+  color: #ffb6cd;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
 
 @media (max-width: 1000px) {
   .stats-grid {
@@ -425,357 +413,434 @@ textarea {
 
 <div class="admin-layout">
 
-  <!-- SIDEBAR -->
-  <aside class="admin-sidebar">
+<aside class="admin-sidebar">
 
-    <div class="admin-logo">Novelora</div>
+  <div class="admin-logo">Novelora</div>
 
-    <nav class="admin-navigation">
+  <nav class="admin-navigation">
 
-      <a class="nav-item" href="index.html">Dashboard</a>
-      <a class="nav-item" href="books.html">Books</a>
-      <a class="nav-item" href="chapters.html">Chapters</a>
-      <a class="nav-item" href="readers.html">Readers</a>
-      <a class="nav-item" href="authors.html">Authors</a>
-      <a class="nav-item active" href="community.html">Community</a>
+    <a class="nav-item" href="index.html">Dashboard</a>
+    <a class="nav-item" href="books.html">Books</a>
+    <a class="nav-item" href="chapters.html">Chapters</a>
+    <a class="nav-item" href="readers.html">Readers</a>
+    <a class="nav-item" href="authors.html">Authors</a>
+    <a class="nav-item active" href="community.html">Community</a>
 
-      <div class="nav-divider"></div>
+    <div class="nav-divider"></div>
 
-      <a class="nav-item" href="notifications.html">Notifications</a>
-      <a class="nav-item" href="money.html">Money</a>
-      <a class="nav-item" href="analytics.html">Analytics</a>
-      <a class="nav-item" href="rewards.html">Rewards</a>
-      <a class="nav-item" href="promotions.html">Promotions</a>
+    <a class="nav-item" href="notifications.html">Notifications</a>
+    <a class="nav-item" href="money.html">Money</a>
+    <a class="nav-item" href="analytics.html">Analytics</a>
+    <a class="nav-item" href="rewards.html">Rewards</a>
+    <a class="nav-item" href="promotions.html">Promotions</a>
 
-      <div class="nav-divider"></div>
+    <div class="nav-divider"></div>
 
-      <a class="nav-item" href="settings.html">Settings</a>
-      <a class="nav-item" href="security.html">Security</a>
+    <a class="nav-item" href="settings.html">Settings</a>
+    <a class="nav-item" href="security.html">Security</a>
 
-    </nav>
-  </aside>
+  </nav>
+</aside>
 
 
-  <!-- MAIN -->
-  <main class="admin-main">
+<main class="admin-main">
 
-    <header class="admin-topbar">
+<header class="admin-topbar">
 
-      <div class="page-title">
-        <h1>Community</h1>
-        <p>Manage reader conversations, discussions and reported content.</p>
+  <div class="page-title">
+    <h1>Community</h1>
+    <p>Manage reader conversations, discussions and reported content.</p>
+  </div>
+
+  <button class="back-btn" onclick="location.href='index.html'">
+    ← Dashboard
+  </button>
+
+</header>
+
+
+<section class="stats-grid">
+
+  <div class="stat-card">
+    <span>Total Comments</span>
+    <strong id="totalComments">0</strong>
+  </div>
+
+  <div class="stat-card">
+    <span>Today's Comments</span>
+    <strong id="todayComments">0</strong>
+  </div>
+
+  <div class="stat-card">
+    <span>Discussions</span>
+    <strong id="totalDiscussions">0</strong>
+  </div>
+
+  <div class="stat-card">
+    <span>Reports</span>
+    <strong id="totalReports">0</strong>
+  </div>
+
+</section>
+
+
+<div id="pageError"></div>
+
+
+<div class="community-grid">
+
+<div>
+
+<section class="admin-card">
+
+  <div class="card-heading">
+    <div>
+      <h2>Reader Comments</h2>
+      <p>Review and moderate comments from readers.</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+
+    <input
+      class="search-box"
+      id="commentSearch"
+      type="search"
+      placeholder="Search comments..."
+    >
+
+    <select id="commentFilter">
+      <option value="all">All Comments</option>
+      <option value="visible">Visible</option>
+      <option value="hidden">Hidden</option>
+    </select>
+
+  </div>
+
+  <div id="commentsList"></div>
+
+</section>
+
+
+<section class="admin-card">
+
+  <div class="card-heading">
+    <div>
+      <h2>Reported Content</h2>
+      <p>Review reports submitted by readers.</p>
+    </div>
+  </div>
+
+  <div id="reportsList"></div>
+
+</section>
+
+
+<section class="admin-card">
+
+  <div class="card-heading">
+
+    <div>
+      <h2>Discussion Boards</h2>
+      <p>Create and moderate community discussions.</p>
+    </div>
+
+    <button class="btn" onclick="openDiscussionForm()">
+      + New Discussion
+    </button>
+
+  </div>
+
+  <div id="discussionForm" style="display:none;margin-bottom:20px;">
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Discussion Title</label>
+        <input id="discussionTitle" placeholder="Enter discussion title">
       </div>
 
-      <button class="back-btn" onclick="location.href='index.html'">
-        ← Dashboard
-      </button>
-
-    </header>
-
-
-    <!-- STATS -->
-    <section class="stats-grid">
-
-      <div class="stat-card">
-        <span>Total Comments</span>
-        <strong id="totalComments">0</strong>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea
+          id="discussionDescription"
+          placeholder="What is this discussion about?"
+        ></textarea>
       </div>
 
-      <div class="stat-card">
-        <span>Today's Comments</span>
-        <strong id="todayComments">0</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Discussions</span>
-        <strong id="totalDiscussions">0</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Reports</span>
-        <strong id="totalReports">0</strong>
-      </div>
-
-    </section>
-
-
-    <div class="community-grid">
-
-      <!-- LEFT COLUMN -->
-
-      <div>
-
-        <!-- COMMENTS -->
-        <section class="admin-card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Reader Comments</h2>
-              <p>Review and moderate comments from readers.</p>
-            </div>
-          </div>
-
-          <div class="toolbar">
-
-            <input
-              class="search-box"
-              id="commentSearch"
-              type="search"
-              placeholder="Search comments..."
-            >
-
-            <select id="commentFilter">
-              <option value="all">All Comments</option>
-              <option value="visible">Visible</option>
-              <option value="hidden">Hidden</option>
-            </select>
-
-          </div>
-
-          <div id="commentsList"></div>
-
-        </section>
-
-
-        <!-- REPORTED CONTENT -->
-        <section class="admin-card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Reported Content</h2>
-              <p>Review reports submitted by readers.</p>
-            </div>
-          </div>
-
-          <div id="reportsList"></div>
-
-        </section>
-
-
-        <!-- DISCUSSIONS -->
-        <section class="admin-card">
-
-          <div class="card-heading">
-
-            <div>
-              <h2>Discussion Boards</h2>
-              <p>Create and moderate community discussions.</p>
-            </div>
-
-            <button class="btn" onclick="openDiscussionForm()">
-              + New Discussion
-            </button>
-
-          </div>
-
-          <div id="discussionForm" style="display:none; margin-bottom:20px;">
-
-            <div class="form-grid">
-
-              <div class="form-group">
-                <label>Discussion Title</label>
-                <input id="discussionTitle" placeholder="Enter discussion title">
-              </div>
-
-              <div class="form-group">
-                <label>Description</label>
-                <textarea id="discussionDescription" placeholder="What is this discussion about?"></textarea>
-              </div>
-
-              <div class="item-actions">
-                <button class="btn" onclick="saveDiscussion()">Create Discussion</button>
-                <button class="btn secondary" onclick="closeDiscussionForm()">Cancel</button>
-              </div>
-
-            </div>
-
-          </div>
-
-          <div id="discussionsList"></div>
-
-        </section>
-
-      </div>
-
-
-      <!-- RIGHT COLUMN -->
-
-      <div>
-
-        <!-- COMMUNITY SETTINGS -->
-        <section class="admin-card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Community Settings</h2>
-              <p>Control which community features are available.</p>
-            </div>
-          </div>
-
-
-          <div class="settings-row">
-
-            <div>
-              <strong>Reader Comments</strong>
-              <small>Allow readers to comment on books.</small>
-            </div>
-
-            <input
-              type="checkbox"
-              id="allowComments"
-              style="width:auto"
-            >
-
-          </div>
-
-
-          <div class="settings-row">
-
-            <div>
-              <strong>Ratings & Reviews</strong>
-              <small>Allow readers to rate and review books.</small>
-            </div>
-
-            <input
-              type="checkbox"
-              id="allowRatings"
-              style="width:auto"
-            >
-
-          </div>
-
-
-          <div class="settings-row">
-
-            <div>
-              <strong>Discussion Boards</strong>
-              <small>Allow community discussion boards.</small>
-            </div>
-
-            <input
-              type="checkbox"
-              id="allowDiscussions"
-              style="width:auto"
-            >
-
-          </div>
-
-
-          <div class="settings-row">
-
-            <div>
-              <strong>Content Moderation</strong>
-              <small>Enable moderation controls for community content.</small>
-            </div>
-
-            <input
-              type="checkbox"
-              id="allowModeration"
-              style="width:auto"
-            >
-
-          </div>
-
-
-          <button
-            class="btn"
-            style="margin-top:18px;"
-            onclick="saveCommunitySettings()"
-          >
-            Save Settings
-          </button>
-
-        </section>
-
-
-        <!-- MODERATION INFO -->
-        <section class="admin-card">
-
-          <div class="card-heading">
-            <div>
-              <h2>Moderation</h2>
-              <p>Keep Novelora's community safe and organized.</p>
-            </div>
-          </div>
-
-          <div class="item-text">
-            Comments, reports and discussions created by the platform
-            will appear here once real reader activity is connected.
-          </div>
-
-          <div class="badge">
-            Local moderation system active
-          </div>
-
-        </section>
+      <div class="item-actions">
+
+        <button class="btn" onclick="saveDiscussion()">
+          Create Discussion
+        </button>
+
+        <button
+          class="btn secondary"
+          onclick="closeDiscussionForm()"
+        >
+          Cancel
+        </button>
 
       </div>
 
     </div>
 
-  </main>
+  </div>
+
+  <div id="discussionsList"></div>
+
+</section>
+
+</div>
+
+
+<div>
+
+<section class="admin-card">
+
+  <div class="card-heading">
+
+    <div>
+      <h2>Community Settings</h2>
+      <p>Control which community features are available.</p>
+    </div>
+
+  </div>
+
+
+  <div class="settings-row">
+
+    <div>
+      <strong>Reader Comments</strong>
+      <small>Allow readers to comment on books.</small>
+    </div>
+
+    <input
+      type="checkbox"
+      id="allowComments"
+      style="width:auto"
+    >
+
+  </div>
+
+
+  <div class="settings-row">
+
+    <div>
+      <strong>Ratings & Reviews</strong>
+      <small>Allow readers to rate and review books.</small>
+    </div>
+
+    <input
+      type="checkbox"
+      id="allowRatings"
+      style="width:auto"
+    >
+
+  </div>
+
+
+  <div class="settings-row">
+
+    <div>
+      <strong>Discussion Boards</strong>
+      <small>Allow community discussion boards.</small>
+    </div>
+
+    <input
+      type="checkbox"
+      id="allowDiscussions"
+      style="width:auto"
+    >
+
+  </div>
+
+
+  <div class="settings-row">
+
+    <div>
+      <strong>Content Moderation</strong>
+      <small>Enable moderation controls for community content.</small>
+    </div>
+
+    <input
+      type="checkbox"
+      id="allowModeration"
+      style="width:auto"
+    >
+
+  </div>
+
+
+  <button
+    class="btn"
+    style="margin-top:18px;"
+    onclick="saveCommunitySettings()"
+  >
+    Save Settings
+  </button>
+
+</section>
+
+
+<section class="admin-card">
+
+  <div class="card-heading">
+
+    <div>
+      <h2>Moderation</h2>
+      <p>Keep Novelora's community safe and organized.</p>
+    </div>
+
+  </div>
+
+  <div class="item-text">
+    Community activity is now loaded directly from Supabase.
+    Deleted books are excluded automatically.
+  </div>
+
+  <div class="badge">
+    Supabase community system active
+  </div>
+
+</section>
+
+</div>
+
+</div>
+
+</main>
 
 </div>
 
 
 <script>
-const COMMENTS_KEY = "noveloraCommunityComments";
-const REPORTS_KEY = "noveloraCommunityReports";
-const DISCUSSIONS_KEY = "noveloraCommunityDiscussions";
-const SETTINGS_KEY = "noveloraCommunitySettings";
+
+let books = [];
+let comments = [];
+let reports = [];
+let discussions = [];
+
+const DISCUSSIONS_TABLE = "community_discussions";
+const SETTINGS_TABLE = "community_settings";
 
 
-function getData(key) {
-  try {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  } catch (error) {
-    return [];
-  }
+/* =========================
+   HELPERS
+========================= */
+
+function escapeHTML(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 
-function saveData(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+function formatDate(value) {
+
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+}
+
+
+function showError(message) {
+
+  document.getElementById("pageError").innerHTML = `
+    <div class="error-box">
+      ${escapeHTML(message)}
+    </div>
+  `;
+}
+
+
+function clearError() {
+  document.getElementById("pageError").innerHTML = "";
+}
+
+
+function getBookMap() {
+
+  const map = new Map();
+
+  books.forEach(book => {
+    map.set(String(book.id), book);
+  });
+
+  return map;
+}
+
+
+function getBookTitle(book) {
+
+  return (
+    book?.title ||
+    book?.name ||
+    "Unknown Book"
+  );
+}
+
+
+/*
+ * Only comments whose book_id still exists
+ * in public.books are allowed into the UI.
+ */
+function getValidComments() {
+
+  const validBookIds = new Set(
+    books.map(book => String(book.id))
+  );
+
+  return comments.filter(comment => {
+
+    if (!comment.book_id) {
+      return true;
+    }
+
+    return validBookIds.has(
+      String(comment.book_id)
+    );
+  });
 }
 
 
 /* =========================
-   STATS
+   LOAD BOOKS
 ========================= */
 
-function updateStats() {
+async function loadBooks() {
 
-  const comments = getData(COMMENTS_KEY);
-  const reports = getData(REPORTS_KEY);
-  const discussions = getData(DISCUSSIONS_KEY);
+  const { data, error } =
+    await supabaseClient
+      .from("books")
+      .select("id,title,author,status")
+      .order("created_at", {
+        ascending: false
+      });
 
-  const today = new Date().toDateString();
+  if (error) {
+    throw error;
+  }
 
-  const todayComments = comments.filter(comment => {
-
-    const date =
-      comment.date ||
-      comment.createdAt ||
-      comment.timestamp;
-
-    if (!date) return false;
-
-    return new Date(date).toDateString() === today;
-
-  }).length;
-
-
-  document.getElementById("totalComments").textContent =
-    comments.length;
-
-  document.getElementById("todayComments").textContent =
-    todayComments;
-
-  document.getElementById("totalDiscussions").textContent =
-    discussions.length;
-
-  document.getElementById("totalReports").textContent =
-    reports.length;
+  /*
+   * Supabase is the ONLY source.
+   * No localStorage books are used.
+   */
+  books = data || [];
 }
 
 
@@ -783,51 +848,151 @@ function updateStats() {
    COMMENTS
 ========================= */
 
+async function loadComments() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("comments")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+    throw error;
+  }
+
+  comments = data || [];
+}
+
+
+function getCommentText(comment) {
+
+  return (
+    comment.text ||
+    comment.comment ||
+    comment.content ||
+    ""
+  );
+}
+
+
+function getCommentUsername(comment) {
+
+  return (
+    comment.username ||
+    comment.reader_name ||
+    comment.readerName ||
+    comment.display_name ||
+    "Reader"
+  );
+}
+
+
+function getCommentDate(comment) {
+
+  return (
+    comment.created_at ||
+    comment.createdAt ||
+    comment.date ||
+    comment.timestamp ||
+    ""
+  );
+}
+
+
+function isCommentHidden(comment) {
+
+  return (
+    comment.hidden === true ||
+    comment.status === "hidden"
+  );
+}
+
+
 function renderComments() {
 
-  const container = document.getElementById("commentsList");
+  const container =
+    document.getElementById("commentsList");
 
-  const comments = getData(COMMENTS_KEY);
+  const validComments =
+    getValidComments();
 
   const search =
-    document.getElementById("commentSearch").value
+    document.getElementById("commentSearch")
+      .value
       .toLowerCase()
       .trim();
 
   const filter =
-    document.getElementById("commentFilter").value;
+    document.getElementById("commentFilter")
+      .value;
 
 
-  let filtered = comments.filter(comment => {
+  const bookMap =
+    getBookMap();
 
-    const text = (
-      (comment.text || "") +
-      " " +
-      (comment.comment || "") +
-      " " +
-      (comment.username || "") +
-      " " +
-      (comment.bookTitle || "")
-    ).toLowerCase();
 
-    if (search && !text.includes(search)) {
-      return false;
-    }
+  const filtered =
+    validComments.filter(comment => {
 
-    const hidden =
-      comment.hidden === true ||
-      comment.status === "hidden";
+      const book =
+        comment.book_id
+          ? bookMap.get(String(comment.book_id))
+          : null;
 
-    if (filter === "visible" && hidden) {
-      return false;
-    }
+      const bookTitle =
+        book
+          ? getBookTitle(book)
+          : (
+              comment.book_title ||
+              comment.bookTitle ||
+              ""
+            );
 
-    if (filter === "hidden" && !hidden) {
-      return false;
-    }
 
-    return true;
-  });
+      const text = (
+
+        getCommentText(comment) +
+        " " +
+        getCommentUsername(comment) +
+        " " +
+        bookTitle
+
+      ).toLowerCase();
+
+
+      if (
+        search &&
+        !text.includes(search)
+      ) {
+        return false;
+      }
+
+
+      const hidden =
+        isCommentHidden(comment);
+
+
+      if (
+        filter === "visible" &&
+        hidden
+      ) {
+        return false;
+      }
+
+
+      if (
+        filter === "hidden" &&
+        !hidden
+      ) {
+        return false;
+      }
+
+
+      return true;
+
+    });
 
 
   if (!filtered.length) {
@@ -843,126 +1008,187 @@ function renderComments() {
   }
 
 
-  container.innerHTML = filtered.map(comment => {
+  container.innerHTML =
+    filtered.map(comment => {
 
-    const id =
-      comment.id ||
-      comment.commentId ||
-      Date.now();
+      const id =
+        comment.id;
 
-    const hidden =
-      comment.hidden === true ||
-      comment.status === "hidden";
-
-    const username =
-      comment.username ||
-      comment.readerName ||
-      "Reader";
-
-    const book =
-      comment.bookTitle ||
-      comment.book ||
-      "Unknown book";
-
-    const text =
-      comment.text ||
-      comment.comment ||
-      "";
-
-    const date =
-      comment.date ||
-      comment.createdAt ||
-      comment.timestamp ||
-      "";
+      const book =
+        comment.book_id
+          ? bookMap.get(
+              String(comment.book_id)
+            )
+          : null;
 
 
-    return `
-      <div class="community-item">
+      const bookTitle =
+        book
+          ? getBookTitle(book)
+          : (
+              comment.book_title ||
+              comment.bookTitle ||
+              "General"
+            );
 
-        <div class="item-top">
 
-          <div>
-            <div class="item-title">${escapeHTML(username)}</div>
+      const hidden =
+        isCommentHidden(comment);
 
-            <div class="item-meta">
-              ${escapeHTML(book)}
-              ${date ? " • " + escapeHTML(formatDate(date)) : ""}
+
+      return `
+
+        <div class="community-item">
+
+          <div class="item-top">
+
+            <div>
+
+              <div class="item-title">
+                ${escapeHTML(
+                  getCommentUsername(comment)
+                )}
+              </div>
+
+              <div class="item-meta">
+                ${escapeHTML(bookTitle)}
+                ${
+                  getCommentDate(comment)
+                    ? " • " +
+                      escapeHTML(
+                        formatDate(
+                          getCommentDate(comment)
+                        )
+                      )
+                    : ""
+                }
+              </div>
+
             </div>
+
+            <span class="badge">
+              ${hidden ? "Hidden" : "Visible"}
+            </span>
+
           </div>
 
-          <span class="badge">
-            ${hidden ? "Hidden" : "Visible"}
-          </span>
+
+          <div class="item-text">
+            ${escapeHTML(
+              getCommentText(comment)
+            )}
+          </div>
+
+
+          <div class="item-actions">
+
+            <button
+              class="btn secondary"
+              onclick="toggleComment('${id}')"
+            >
+              ${hidden ? "Show" : "Hide"}
+            </button>
+
+            <button
+              class="btn danger"
+              onclick="deleteComment('${id}')"
+            >
+              Delete
+            </button>
+
+          </div>
 
         </div>
 
-        <div class="item-text">
-          ${escapeHTML(text)}
-        </div>
+      `;
 
-        <div class="item-actions">
-
-          <button
-            class="btn secondary"
-            onclick="toggleComment('${id}')"
-          >
-            ${hidden ? "Show" : "Hide"}
-          </button>
-
-          <button
-            class="btn danger"
-            onclick="deleteComment('${id}')"
-          >
-            Delete
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-  }).join("");
+    }).join("");
 }
 
 
-function toggleComment(id) {
+async function toggleComment(id) {
 
-  const comments = getData(COMMENTS_KEY);
+  const comment =
+    comments.find(
+      item =>
+        String(item.id) === String(id)
+    );
 
-  const index = comments.findIndex(comment =>
-    String(comment.id || comment.commentId) === String(id)
-  );
 
-  if (index === -1) return;
+  if (!comment) return;
 
-  comments[index].hidden =
-    comments[index].hidden !== true;
 
-  comments[index].status =
-    comments[index].hidden ? "hidden" : "visible";
+  const hidden =
+    !isCommentHidden(comment);
 
-  saveData(COMMENTS_KEY, comments);
+
+  const updateData = {
+    hidden: hidden,
+    status: hidden
+      ? "hidden"
+      : "visible"
+  };
+
+
+  const { error } =
+    await supabaseClient
+      .from("comments")
+      .update(updateData)
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Could not update comment: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadComments();
 
   renderComments();
+
   updateStats();
 }
 
 
-function deleteComment(id) {
+async function deleteComment(id) {
 
-  if (!confirm("Delete this comment?")) {
+  if (
+    !confirm(
+      "Delete this comment permanently?"
+    )
+  ) {
     return;
   }
 
-  const comments = getData(COMMENTS_KEY);
 
-  const filtered = comments.filter(comment =>
-    String(comment.id || comment.commentId) !== String(id)
-  );
+  const { error } =
+    await supabaseClient
+      .from("comments")
+      .delete()
+      .eq("id", id);
 
-  saveData(COMMENTS_KEY, filtered);
+
+  if (error) {
+
+    alert(
+      "Could not delete comment: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadComments();
 
   renderComments();
+
   updateStats();
 }
 
@@ -971,11 +1197,61 @@ function deleteComment(id) {
    REPORTS
 ========================= */
 
+async function loadReports() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("reports")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+    throw error;
+  }
+
+  reports = data || [];
+}
+
+
+function getReportReason(report) {
+
+  return (
+    report.reason ||
+    report.type ||
+    "General Report"
+  );
+}
+
+
+function getReportText(report) {
+
+  return (
+    report.text ||
+    report.content ||
+    report.comment ||
+    report.description ||
+    "No report details provided."
+  );
+}
+
+
+function getReporter(report) {
+
+  return (
+    report.reporter ||
+    report.username ||
+    report.reporter_name ||
+    "Reader"
+  );
+}
+
+
 function renderReports() {
 
-  const container = document.getElementById("reportsList");
-
-  const reports = getData(REPORTS_KEY);
+  const container =
+    document.getElementById("reportsList");
 
 
   if (!reports.length) {
@@ -991,124 +1267,197 @@ function renderReports() {
   }
 
 
-  container.innerHTML = reports.map(report => {
-
-    const id =
-      report.id ||
-      report.reportId ||
-      Date.now();
-
-    const reason =
-      report.reason ||
-      "General report";
-
-    const text =
-      report.text ||
-      report.content ||
-      report.comment ||
-      "No report details provided.";
-
-    const reporter =
-      report.reporter ||
-      report.username ||
-      "Reader";
-
-    const book =
-      report.bookTitle ||
-      report.book ||
-      "Unknown book";
-
-    const status =
-      report.status ||
-      "Pending";
+  const bookMap =
+    getBookMap();
 
 
-    return `
-      <div class="community-item">
+  const validReports =
+    reports.filter(report => {
 
-        <div class="item-top">
+      if (!report.book_id) {
+        return true;
+      }
 
-          <div>
-            <div class="item-title">
-              ${escapeHTML(reason)}
-            </div>
+      return bookMap.has(
+        String(report.book_id)
+      );
 
-            <div class="item-meta">
-              Reported by ${escapeHTML(reporter)}
-              • ${escapeHTML(book)}
-            </div>
-          </div>
+    });
 
-          <span class="badge">
-            ${escapeHTML(status)}
-          </span>
 
-        </div>
+  if (!validReports.length) {
 
-        <div class="item-text">
-          ${escapeHTML(text)}
-        </div>
-
-        <div class="item-actions">
-
-          <button
-            class="btn success"
-            onclick="resolveReport('${id}')"
-          >
-            Resolve
-          </button>
-
-          <button
-            class="btn danger"
-            onclick="deleteReport('${id}')"
-          >
-            Delete
-          </button>
-
-        </div>
-
+    container.innerHTML = `
+      <div class="empty-state">
+        <strong>No reports</strong>
+        Reports for deleted books are automatically excluded.
       </div>
     `;
 
-  }).join("");
+    return;
+  }
+
+
+  container.innerHTML =
+    validReports.map(report => {
+
+      const id =
+        report.id;
+
+
+      const book =
+        report.book_id
+          ? bookMap.get(
+              String(report.book_id)
+            )
+          : null;
+
+
+      const bookTitle =
+        book
+          ? getBookTitle(book)
+          : (
+              report.book_title ||
+              report.bookTitle ||
+              "General"
+            );
+
+
+      const status =
+        report.status ||
+        "Pending";
+
+
+      return `
+
+        <div class="community-item">
+
+          <div class="item-top">
+
+            <div>
+
+              <div class="item-title">
+                ${escapeHTML(
+                  getReportReason(report)
+                )}
+              </div>
+
+              <div class="item-meta">
+                Reported by
+                ${escapeHTML(
+                  getReporter(report)
+                )}
+                •
+                ${escapeHTML(bookTitle)}
+              </div>
+
+            </div>
+
+            <span class="badge">
+              ${escapeHTML(status)}
+            </span>
+
+          </div>
+
+
+          <div class="item-text">
+            ${escapeHTML(
+              getReportText(report)
+            )}
+          </div>
+
+
+          <div class="item-actions">
+
+            <button
+              class="btn success"
+              onclick="resolveReport('${id}')"
+            >
+              Resolve
+            </button>
+
+            <button
+              class="btn danger"
+              onclick="deleteReport('${id}')"
+            >
+              Delete
+            </button>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
 }
 
 
-function resolveReport(id) {
+async function resolveReport(id) {
 
-  const reports = getData(REPORTS_KEY);
+  const { error } =
+    await supabaseClient
+      .from("reports")
+      .update({
+        status: "Resolved",
+        resolved_at:
+          new Date().toISOString()
+      })
+      .eq("id", id);
 
-  const index = reports.findIndex(report =>
-    String(report.id || report.reportId) === String(id)
-  );
 
-  if (index === -1) return;
+  if (error) {
 
-  reports[index].status = "Resolved";
-  reports[index].resolvedAt = new Date().toISOString();
+    alert(
+      "Could not resolve report: " +
+      error.message
+    );
 
-  saveData(REPORTS_KEY, reports);
+    return;
+  }
+
+
+  await loadReports();
 
   renderReports();
+
   updateStats();
 }
 
 
-function deleteReport(id) {
+async function deleteReport(id) {
 
-  if (!confirm("Delete this report?")) {
+  if (
+    !confirm(
+      "Delete this report permanently?"
+    )
+  ) {
     return;
   }
 
-  const reports = getData(REPORTS_KEY);
 
-  const filtered = reports.filter(report =>
-    String(report.id || report.reportId) !== String(id)
-  );
+  const { error } =
+    await supabaseClient
+      .from("reports")
+      .delete()
+      .eq("id", id);
 
-  saveData(REPORTS_KEY, filtered);
+
+  if (error) {
+
+    alert(
+      "Could not delete report: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadReports();
 
   renderReports();
+
   updateStats();
 }
 
@@ -1117,59 +1466,101 @@ function deleteReport(id) {
    DISCUSSIONS
 ========================= */
 
+async function loadDiscussions() {
+
+  const { data, error } =
+    await supabaseClient
+      .from(DISCUSSIONS_TABLE)
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+    throw error;
+  }
+
+  discussions = data || [];
+}
+
+
 function openDiscussionForm() {
-  document.getElementById("discussionForm").style.display = "block";
+
+  document.getElementById(
+    "discussionForm"
+  ).style.display = "block";
 }
 
 
 function closeDiscussionForm() {
 
-  document.getElementById("discussionForm").style.display = "none";
+  document.getElementById(
+    "discussionForm"
+  ).style.display = "none";
 
-  document.getElementById("discussionTitle").value = "";
-  document.getElementById("discussionDescription").value = "";
+
+  document.getElementById(
+    "discussionTitle"
+  ).value = "";
+
+
+  document.getElementById(
+    "discussionDescription"
+  ).value = "";
 }
 
 
-function saveDiscussion() {
+async function saveDiscussion() {
 
   const title =
-    document.getElementById("discussionTitle").value.trim();
+    document.getElementById(
+      "discussionTitle"
+    ).value.trim();
+
 
   const description =
-    document.getElementById("discussionDescription").value.trim();
+    document.getElementById(
+      "discussionDescription"
+    ).value.trim();
 
 
   if (!title) {
-    alert("Please enter a discussion title.");
+
+    alert(
+      "Please enter a discussion title."
+    );
+
     return;
   }
 
 
-  const discussions = getData(DISCUSSIONS_KEY);
-
-  discussions.unshift({
-
-    id: "discussion_" + Date.now(),
-
-    title: title,
-
-    description: description,
-
-    pinned: false,
-
-    locked: false,
-
-    status: "active",
-
-    createdAt: new Date().toISOString()
-
-  });
+  const { error } =
+    await supabaseClient
+      .from(DISCUSSIONS_TABLE)
+      .insert({
+        title: title,
+        description:
+          description || null,
+        pinned: false,
+        locked: false,
+        status: "active"
+      });
 
 
-  saveData(DISCUSSIONS_KEY, discussions);
+  if (error) {
+
+    alert(
+      "Could not create discussion: " +
+      error.message
+    );
+
+    return;
+  }
+
 
   closeDiscussionForm();
+
+  await loadDiscussions();
 
   renderDiscussions();
 
@@ -1180,10 +1571,9 @@ function saveDiscussion() {
 function renderDiscussions() {
 
   const container =
-    document.getElementById("discussionsList");
-
-  const discussions =
-    getData(DISCUSSIONS_KEY);
+    document.getElementById(
+      "discussionsList"
+    );
 
 
   if (!discussions.length) {
@@ -1199,138 +1589,232 @@ function renderDiscussions() {
   }
 
 
-  container.innerHTML = discussions.map(discussion => {
+  container.innerHTML =
+    discussions.map(discussion => {
 
-    const id = discussion.id;
+      const pinned =
+        discussion.pinned === true;
 
-    const title =
-      discussion.title ||
-      "Untitled discussion";
-
-    const description =
-      discussion.description ||
-      "";
-
-    const pinned =
-      discussion.pinned === true;
-
-    const locked =
-      discussion.locked === true;
+      const locked =
+        discussion.locked === true;
 
 
-    return `
-      <div class="community-item">
+      return `
 
-        <div class="item-top">
+        <div class="community-item">
 
-          <div>
+          <div class="item-top">
 
-            <div class="item-title">
-              ${escapeHTML(title)}
+            <div>
+
+              <div class="item-title">
+                ${escapeHTML(
+                  discussion.title
+                )}
+              </div>
+
+              <div class="item-meta">
+
+                ${
+                  pinned
+                    ? "Pinned • "
+                    : ""
+                }
+
+                ${
+                  locked
+                    ? "Locked"
+                    : "Open"
+                }
+
+                ${
+                  discussion.created_at
+                    ? " • " +
+                      escapeHTML(
+                        formatDate(
+                          discussion.created_at
+                        )
+                      )
+                    : ""
+                }
+
+              </div>
+
             </div>
 
-            <div class="item-meta">
-              ${pinned ? "Pinned • " : ""}
-              ${locked ? "Locked" : "Open"}
-            </div>
+
+            <span class="badge">
+              ${
+                locked
+                  ? "Locked"
+                  : "Active"
+              }
+            </span>
 
           </div>
 
-          <span class="badge">
-            ${locked ? "Locked" : "Active"}
-          </span>
+
+          <div class="item-text">
+            ${escapeHTML(
+              discussion.description || ""
+            )}
+          </div>
+
+
+          <div class="item-actions">
+
+            <button
+              class="btn secondary"
+              onclick="togglePin('${discussion.id}')"
+            >
+              ${
+                pinned
+                  ? "Unpin"
+                  : "Pin"
+              }
+            </button>
+
+
+            <button
+              class="btn secondary"
+              onclick="toggleLock('${discussion.id}')"
+            >
+              ${
+                locked
+                  ? "Unlock"
+                  : "Lock"
+              }
+            </button>
+
+
+            <button
+              class="btn danger"
+              onclick="deleteDiscussion('${discussion.id}')"
+            >
+              Delete
+            </button>
+
+          </div>
 
         </div>
 
-        <div class="item-text">
-          ${escapeHTML(description)}
-        </div>
+      `;
 
-        <div class="item-actions">
-
-          <button
-            class="btn secondary"
-            onclick="togglePin('${id}')"
-          >
-            ${pinned ? "Unpin" : "Pin"}
-          </button>
-
-          <button
-            class="btn secondary"
-            onclick="toggleLock('${id}')"
-          >
-            ${locked ? "Unlock" : "Lock"}
-          </button>
-
-          <button
-            class="btn danger"
-            onclick="deleteDiscussion('${id}')"
-          >
-            Delete
-          </button>
-
-        </div>
-
-      </div>
-    `;
-
-  }).join("");
+    }).join("");
 }
 
 
-function togglePin(id) {
+async function togglePin(id) {
 
-  const discussions = getData(DISCUSSIONS_KEY);
-
-  const index = discussions.findIndex(
-    discussion => String(discussion.id) === String(id)
-  );
-
-  if (index === -1) return;
-
-  discussions[index].pinned =
-    discussions[index].pinned !== true;
-
-  saveData(DISCUSSIONS_KEY, discussions);
-
-  renderDiscussions();
-}
+  const discussion =
+    discussions.find(
+      item =>
+        String(item.id) === String(id)
+    );
 
 
-function toggleLock(id) {
-
-  const discussions = getData(DISCUSSIONS_KEY);
-
-  const index = discussions.findIndex(
-    discussion => String(discussion.id) === String(id)
-  );
-
-  if (index === -1) return;
-
-  discussions[index].locked =
-    discussions[index].locked !== true;
-
-  saveData(DISCUSSIONS_KEY, discussions);
-
-  renderDiscussions();
-}
+  if (!discussion) return;
 
 
-function deleteDiscussion(id) {
+  const { error } =
+    await supabaseClient
+      .from(DISCUSSIONS_TABLE)
+      .update({
+        pinned:
+          !discussion.pinned
+      })
+      .eq("id", id);
 
-  if (!confirm("Delete this discussion?")) {
+
+  if (error) {
+
+    alert(
+      "Could not update discussion: " +
+      error.message
+    );
+
     return;
   }
 
-  const discussions = getData(DISCUSSIONS_KEY);
 
-  const filtered = discussions.filter(
-    discussion => String(discussion.id) !== String(id)
-  );
-
-  saveData(DISCUSSIONS_KEY, filtered);
+  await loadDiscussions();
 
   renderDiscussions();
+}
+
+
+async function toggleLock(id) {
+
+  const discussion =
+    discussions.find(
+      item =>
+        String(item.id) === String(id)
+    );
+
+
+  if (!discussion) return;
+
+
+  const { error } =
+    await supabaseClient
+      .from(DISCUSSIONS_TABLE)
+      .update({
+        locked:
+          !discussion.locked
+      })
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Could not update discussion: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadDiscussions();
+
+  renderDiscussions();
+}
+
+
+async function deleteDiscussion(id) {
+
+  if (
+    !confirm(
+      "Delete this discussion permanently?"
+    )
+  ) {
+    return;
+  }
+
+
+  const { error } =
+    await supabaseClient
+      .from(DISCUSSIONS_TABLE)
+      .delete()
+      .eq("id", id);
+
+
+  if (error) {
+
+    alert(
+      "Could not delete discussion: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  await loadDiscussions();
+
+  renderDiscussions();
+
   updateStats();
 }
 
@@ -1339,88 +1823,173 @@ function deleteDiscussion(id) {
    SETTINGS
 ========================= */
 
-function loadCommunitySettings() {
+async function loadCommunitySettings() {
 
-  let settings;
+  const { data, error } =
+    await supabaseClient
+      .from("community_settings")
+      .select("*")
+      .eq("id", 1)
+      .maybeSingle();
 
-  try {
-    settings =
-      JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
-  } catch (error) {
-    settings = {};
+
+  if (error) {
+    throw error;
   }
 
 
-  document.getElementById("allowComments").checked =
-    settings.allowComments !== false;
+  const settings =
+    data || {};
 
-  document.getElementById("allowRatings").checked =
-    settings.allowRatings !== false;
 
-  document.getElementById("allowDiscussions").checked =
-    settings.allowDiscussions !== false;
+  document.getElementById(
+    "allowComments"
+  ).checked =
+    settings.allow_comments !== false;
 
-  document.getElementById("allowModeration").checked =
-    settings.allowModeration !== false;
+
+  document.getElementById(
+    "allowRatings"
+  ).checked =
+    settings.allow_ratings !== false;
+
+
+  document.getElementById(
+    "allowDiscussions"
+  ).checked =
+    settings.allow_discussions !== false;
+
+
+  document.getElementById(
+    "allowModeration"
+  ).checked =
+    settings.allow_moderation !== false;
 }
 
 
-function saveCommunitySettings() {
+async function saveCommunitySettings() {
 
   const settings = {
 
-    allowComments:
-      document.getElementById("allowComments").checked,
+    id: 1,
 
-    allowRatings:
-      document.getElementById("allowRatings").checked,
+    allow_comments:
+      document.getElementById(
+        "allowComments"
+      ).checked,
 
-    allowDiscussions:
-      document.getElementById("allowDiscussions").checked,
+    allow_ratings:
+      document.getElementById(
+        "allowRatings"
+      ).checked,
 
-    allowModeration:
-      document.getElementById("allowModeration").checked,
+    allow_discussions:
+      document.getElementById(
+        "allowDiscussions"
+      ).checked,
 
-    updatedAt:
+    allow_moderation:
+      document.getElementById(
+        "allowModeration"
+      ).checked,
+
+    updated_at:
       new Date().toISOString()
 
   };
 
 
-  localStorage.setItem(
-    SETTINGS_KEY,
-    JSON.stringify(settings)
+  const { error } =
+    await supabaseClient
+      .from("community_settings")
+      .upsert(settings, {
+        onConflict: "id"
+      });
+
+
+  if (error) {
+
+    alert(
+      "Could not save settings: " +
+      error.message
+    );
+
+    return;
+  }
+
+
+  alert(
+    "Community settings saved."
   );
-
-
-  alert("Community settings saved.");
 }
 
 
 /* =========================
-   HELPERS
+   STATS
 ========================= */
 
-function formatDate(value) {
+function updateStats() {
 
-  const date = new Date(value);
-
-  if (isNaN(date.getTime())) {
-    return String(value);
-  }
-
-  return date.toLocaleDateString();
-}
+  const validComments =
+    getValidComments();
 
 
-function escapeHTML(value) {
+  const today =
+    new Date().toDateString();
 
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+
+  const todayComments =
+    validComments.filter(comment => {
+
+      const date =
+        getCommentDate(comment);
+
+      if (!date) return false;
+
+      return (
+        new Date(date)
+          .toDateString() === today
+      );
+
+    }).length;
+
+
+  const validReports =
+    reports.filter(report => {
+
+      if (!report.book_id) {
+        return true;
+      }
+
+      return getBookMap().has(
+        String(report.book_id)
+      );
+
+    });
+
+
+  document.getElementById(
+    "totalComments"
+  ).textContent =
+    validComments.length;
+
+
+  document.getElementById(
+    "todayComments"
+  ).textContent =
+    todayComments;
+
+
+  document.getElementById(
+    "totalDiscussions"
+  ).textContent =
+    discussions.length;
+
+
+  document.getElementById(
+    "totalReports"
+  ).textContent =
+    validReports.length;
 }
 
 
@@ -1430,29 +1999,127 @@ function escapeHTML(value) {
 
 document
   .getElementById("commentSearch")
-  .addEventListener("input", renderComments);
+  .addEventListener(
+    "input",
+    renderComments
+  );
 
 
 document
   .getElementById("commentFilter")
-  .addEventListener("change", renderComments);
+  .addEventListener(
+    "change",
+    renderComments
+  );
 
 
 /* =========================
    INITIALIZE
 ========================= */
 
-function initializeCommunity() {
+async function initializeCommunity() {
 
-  loadCommunitySettings();
+  try {
 
-  renderComments();
+    clearError();
 
-  renderReports();
 
-  renderDiscussions();
+    if (
+      typeof supabaseClient ===
+      "undefined"
+    ) {
+      throw new Error(
+        "Supabase client was not loaded. Check supabase-config.js."
+      );
+    }
 
-  updateStats();
+
+    document.getElementById(
+      "commentsList"
+    ).innerHTML =
+      `<div class="loading">Loading comments...</div>`;
+
+
+    document.getElementById(
+      "reportsList"
+    ).innerHTML =
+      `<div class="loading">Loading reports...</div>`;
+
+
+    document.getElementById(
+      "discussionsList"
+    ).innerHTML =
+      `<div class="loading">Loading discussions...</div>`;
+
+
+    /*
+     * Load books first.
+     *
+     * This is important because the Community page
+     * must never display deleted/old books from
+     * localStorage or stale data.
+     */
+    await loadBooks();
+
+
+    await Promise.all([
+      loadComments(),
+      loadReports(),
+      loadDiscussions(),
+      loadCommunitySettings()
+    ]);
+
+
+    renderComments();
+    renderReports();
+    renderDiscussions();
+    updateStats();
+
+
+  } catch (error) {
+
+    console.error(
+      "Community initialization error:",
+      error
+    );
+
+
+    showError(
+      error.message ||
+      "Unable to load Community from Supabase."
+    );
+
+
+    document.getElementById(
+      "commentsList"
+    ).innerHTML = `
+      <div class="empty-state">
+        <strong>Unable to load comments</strong>
+        Check your Supabase table permissions.
+      </div>
+    `;
+
+
+    document.getElementById(
+      "reportsList"
+    ).innerHTML = `
+      <div class="empty-state">
+        <strong>Unable to load reports</strong>
+        Check your Supabase table permissions.
+      </div>
+    `;
+
+
+    document.getElementById(
+      "discussionsList"
+    ).innerHTML = `
+      <div class="empty-state">
+        <strong>Unable to load discussions</strong>
+        Check your Supabase table permissions.
+      </div>
+    `;
+
+  }
 
 }
 
