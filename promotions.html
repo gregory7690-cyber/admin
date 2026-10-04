@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Promotions — Novelora Admin</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
 
 <style>
 * {
@@ -34,6 +38,7 @@ button {
 }
 
 /* SIDEBAR */
+
 .admin-sidebar {
   position: fixed;
   left: 0;
@@ -108,6 +113,7 @@ button {
 }
 
 /* MAIN */
+
 .admin-main {
   margin-left: 245px;
   padding: 30px;
@@ -140,6 +146,7 @@ button {
 }
 
 /* STATS */
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -172,6 +179,7 @@ button {
 }
 
 /* CONTENT */
+
 .content-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(300px, .8fr);
@@ -201,6 +209,7 @@ button {
 }
 
 /* FORM */
+
 .form-group {
   margin-bottom: 18px;
 }
@@ -259,7 +268,57 @@ button {
   box-shadow: 0 12px 30px rgba(255,79,153,.30);
 }
 
+/* PLACEMENTS */
+
+.placement-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.placement-option {
+  position: relative;
+}
+
+.placement-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.placement-option label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #18101c;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 10px;
+  padding: 11px;
+  color: #cfc2d0;
+  cursor: pointer;
+  transition: .2s;
+  font-size: 12px;
+}
+
+.placement-option label::before {
+  content: "○";
+  color: #8f8191;
+  font-size: 17px;
+}
+
+.placement-option input:checked + label {
+  border-color: rgba(255,95,162,.55);
+  background: rgba(255,95,162,.09);
+  color: #fff;
+}
+
+.placement-option input:checked + label::before {
+  content: "●";
+  color: #ff62a5;
+}
+
 /* PROMOTIONS */
+
 .promotions-list {
   display: flex;
   flex-direction: column;
@@ -352,6 +411,7 @@ button {
 }
 
 /* TYPE INFO */
+
 .info-box {
   background: linear-gradient(
     135deg,
@@ -376,7 +436,9 @@ button {
 }
 
 /* MOBILE */
+
 @media (max-width: 1050px) {
+
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -384,9 +446,11 @@ button {
   .content-grid {
     grid-template-columns: 1fr;
   }
+
 }
 
 @media (max-width: 760px) {
+
   .admin-sidebar {
     position: relative;
     width: 100%;
@@ -417,9 +481,11 @@ button {
   .form-row {
     grid-template-columns: 1fr;
   }
+
 }
 
 @media (max-width: 480px) {
+
   .admin-navigation {
     grid-template-columns: 1fr;
   }
@@ -435,13 +501,17 @@ button {
   .panel {
     padding: 18px;
   }
+
+  .placement-grid {
+    grid-template-columns: 1fr;
+  }
+
 }
 </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <aside class="admin-sidebar">
 
   <div class="admin-brand">
@@ -457,54 +527,54 @@ button {
     </a>
 
     <a href="books.html" class="nav-item">
-      <span>▣</span>
+      <span>📚</span>
       <span>Books</span>
     </a>
 
     <a href="chapters.html" class="nav-item">
-      <span>▤</span>
+      <span>📖</span>
       <span>Chapters</span>
     </a>
 
     <a href="readers.html" class="nav-item">
-      <span>♙</span>
+      <span>👥</span>
       <span>Readers</span>
     </a>
 
     <a href="authors.html" class="nav-item">
-      <span>✎</span>
+      <span>✍</span>
       <span>Authors</span>
     </a>
 
     <a href="community.html" class="nav-item">
-      <span>♡</span>
+      <span>💬</span>
       <span>Community</span>
     </a>
 
     <div class="nav-divider"></div>
 
     <a href="notifications.html" class="nav-item">
-      <span>♢</span>
+      <span>🔔</span>
       <span>Notifications</span>
     </a>
 
     <a href="money.html" class="nav-item">
-      <span>$</span>
+      <span>💵</span>
       <span>Money</span>
     </a>
 
     <a href="analytics.html" class="nav-item">
-      <span>◈</span>
+      <span>📊</span>
       <span>Analytics</span>
     </a>
 
     <a href="rewards.html" class="nav-item">
-      <span>★</span>
+      <span>🎁</span>
       <span>Rewards</span>
     </a>
 
     <a href="promotions.html" class="nav-item active">
-      <span>♢</span>
+      <span>🔥</span>
       <span>Promotions</span>
     </a>
 
@@ -516,18 +586,18 @@ button {
     </a>
 
     <a href="security.html" class="nav-item">
-      <span>⌾</span>
+      <span>🔐</span>
       <span>Security</span>
     </a>
 
   </nav>
+
 </aside>
 
 
-<!-- MAIN -->
 <main class="admin-main">
 
-  <div class="admin-topbar">
+  <header class="admin-topbar">
 
     <div class="page-title">
       <h1>Promotions</h1>
@@ -538,10 +608,9 @@ button {
       Novelora Admin
     </div>
 
-  </div>
+  </header>
 
 
-  <!-- STATS -->
   <section class="stats-grid">
 
     <div class="stat-card">
@@ -567,41 +636,60 @@ button {
   </section>
 
 
-  <!-- CONTENT -->
   <section class="content-grid">
 
+
     <!-- CREATE -->
+
     <div class="panel">
 
       <div class="panel-header">
         <h2>Create Promotion</h2>
-        <p>Set up a promotion for one of your published books.</p>
+        <p>Choose the exact Supabase book and where it should appear.</p>
       </div>
+
 
       <form id="promotionForm">
 
+
         <div class="form-group">
-          <label for="promotionTitle">Promotion Title</label>
+
+          <label for="promotionTitle">
+            Promotion Title
+          </label>
+
           <input
             type="text"
             id="promotionTitle"
-            placeholder="e.g. Weekend Romance Sale"
+            placeholder="e.g. Weekend Romance Spotlight"
             required
           >
+
         </div>
 
 
         <div class="form-group">
-          <label for="promotionBook">Book</label>
+
+          <label for="promotionBook">
+            Book
+          </label>
 
           <select id="promotionBook" required>
-            <option value="">Select a book</option>
+
+            <option value="">
+              Loading published books...
+            </option>
+
           </select>
+
         </div>
 
 
         <div class="form-group">
-          <label for="promotionType">Promotion Type</label>
+
+          <label for="promotionType">
+            Promotion Type
+          </label>
 
           <select id="promotionType" required>
 
@@ -622,47 +710,165 @@ button {
             </option>
 
           </select>
+
         </div>
 
 
-        <div class="form-group" id="discountGroup" style="display:none;">
+        <div
+          class="form-group"
+          id="discountGroup"
+          style="display:none;"
+        >
 
           <label for="discountCoins">
-            Discounted Chapter Price
+            Promotional Chapter Price
           </label>
 
           <input
             type="number"
             id="discountCoins"
             min="0"
-            placeholder="e.g. 2"
+            step="1"
+            placeholder="e.g. 3"
           >
+
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            Promotion Placement
+          </label>
+
+          <div class="placement-grid">
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementTrending"
+                value="trending"
+              >
+
+              <label for="placementTrending">
+                🔥 Trending Stories
+              </label>
+
+            </div>
+
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementHot"
+                value="hot"
+              >
+
+              <label for="placementHot">
+                ❤️ Hot Stories
+              </label>
+
+            </div>
+
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementFavorites"
+                value="favorites"
+              >
+
+              <label for="placementFavorites">
+                ⭐ Readers' Favorites
+              </label>
+
+            </div>
+
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementRomance"
+                value="romance"
+              >
+
+              <label for="placementRomance">
+                💕 Top Romance
+              </label>
+
+            </div>
+
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementFree"
+                value="free"
+              >
+
+              <label for="placementFree">
+                🆓 Free Books
+              </label>
+
+            </div>
+
+
+            <div class="placement-option">
+
+              <input
+                type="checkbox"
+                id="placementRecommended"
+                value="recommended"
+              >
+
+              <label for="placementRecommended">
+                ✨ Recommended For You
+              </label>
+
+            </div>
+
+          </div>
 
         </div>
 
 
         <div class="form-row">
 
+
           <div class="form-group">
-            <label for="startDate">Start Date</label>
+
+            <label for="startDate">
+              Start Date & Time
+            </label>
 
             <input
-              type="date"
+              type="datetime-local"
               id="startDate"
               required
             >
+
           </div>
 
 
           <div class="form-group">
-            <label for="endDate">End Date</label>
+
+            <label for="endDate">
+              End Date & Time
+            </label>
 
             <input
-              type="date"
+              type="datetime-local"
               id="endDate"
               required
             >
+
           </div>
+
 
         </div>
 
@@ -675,35 +881,47 @@ button {
 
           <textarea
             id="promotionDescription"
-            placeholder="Describe what readers will get from this promotion..."
+            placeholder="Describe this promotion..."
           ></textarea>
 
         </div>
 
 
-        <button type="submit" class="create-btn">
+        <button
+          type="submit"
+          class="create-btn"
+        >
           Create Promotion
         </button>
+
 
       </form>
 
 
       <div class="info-box">
 
-        <h3>Promotion Types</h3>
+        <h3>How Promotions Work</h3>
 
         <p>
-          <strong>Chapter Coin Discount:</strong>
-          Temporarily changes the coin cost of chapters.
+
+          <strong>Chapter Discount:</strong>
+          Changes the chapter coin price while the promotion is active.
+
           <br><br>
 
           <strong>Featured Book:</strong>
-          Highlights a book in promotional areas.
+          Places your selected book at the exact dashboard sections you choose.
+
           <br><br>
 
           <strong>Free Reading:</strong>
-          Marks selected chapters or reading periods for a
-          free-reading campaign.
+          Marks the selected book for a free-reading campaign.
+
+          <br><br>
+
+          Promotions automatically become active at the selected start time
+          and disappear from promoted placements after the end time.
+
         </p>
 
       </div>
@@ -712,6 +930,7 @@ button {
 
 
     <!-- CURRENT PROMOTIONS -->
+
     <div class="panel">
 
       <div class="panel-header">
@@ -719,7 +938,7 @@ button {
         <h2>Current Promotions</h2>
 
         <p>
-          Manage promotions currently stored in Novelora.
+          Promotions currently stored in Supabase.
         </p>
 
       </div>
@@ -731,6 +950,7 @@ button {
 
     </div>
 
+
   </section>
 
 </main>
@@ -738,352 +958,36 @@ button {
 
 <script>
 
-/* =========================================
-   NOVELORA PROMOTIONS
-========================================= */
+/* =========================================================
+   NOVELORA SUPABASE PROMOTIONS
+========================================================= */
 
-const PROMOTIONS_KEY = "noveloraPromotions";
-const BOOKS_KEY = "noveloraAdminBooks";
+const promotionForm =
+  document.getElementById("promotionForm");
 
+const promotionBook =
+  document.getElementById("promotionBook");
 
-/* GET PROMOTIONS */
-function getPromotions() {
+const promotionType =
+  document.getElementById("promotionType");
 
-  try {
+const discountGroup =
+  document.getElementById("discountGroup");
 
-    return JSON.parse(
-      localStorage.getItem(PROMOTIONS_KEY)
-    ) || [];
+const discountCoins =
+  document.getElementById("discountCoins");
 
-  } catch {
+const promotionsList =
+  document.getElementById("promotionsList");
 
-    return [];
 
-  }
+/* =========================================================
+   HELPERS
+========================================================= */
 
-}
-
-
-/* SAVE PROMOTIONS */
-function savePromotions(promotions) {
-
-  localStorage.setItem(
-    PROMOTIONS_KEY,
-    JSON.stringify(promotions)
-  );
-
-}
-
-
-/* GET BOOKS */
-function getBooks() {
-
-  try {
-
-    return JSON.parse(
-      localStorage.getItem(BOOKS_KEY)
-    ) || [];
-
-  } catch {
-
-    return [];
-
-  }
-
-}
-
-
-/* LOAD BOOK OPTIONS */
-function loadBooks() {
-
-  const select =
-    document.getElementById("promotionBook");
-
-  const books = getBooks();
-
-  select.innerHTML =
-    '<option value="">Select a book</option>';
-
-  if (!books.length) {
-
-    const option =
-      document.createElement("option");
-
-    option.value = "";
-    option.disabled = true;
-    option.textContent =
-      "No books available yet";
-
-    select.appendChild(option);
-
-    return;
-  }
-
-
-  books.forEach(book => {
-
-    const option =
-      document.createElement("option");
-
-    option.value =
-      book.id ||
-      book.bookId ||
-      book.bookID ||
-      "";
-
-    option.textContent =
-      book.title ||
-      book.name ||
-      "Untitled Book";
-
-    select.appendChild(option);
-
-  });
-
-}
-
-
-/* DATE STATUS */
-function getPromotionStatus(promotion) {
-
-  const today =
-    new Date().toISOString().split("T")[0];
-
-  if (
-    promotion.startDate &&
-    promotion.endDate &&
-    today >= promotion.startDate &&
-    today <= promotion.endDate
-  ) {
-
-    return "active";
-
-  }
-
-  if (
-    promotion.startDate &&
-    today < promotion.startDate
-  ) {
-
-    return "scheduled";
-
-  }
-
-  return "ended";
-
-}
-
-
-/* UPDATE STATS */
-function updateStats() {
-
-  const promotions =
-    getPromotions();
-
-  const active =
-    promotions.filter(
-      p => getPromotionStatus(p) === "active"
-    ).length;
-
-  const featured =
-    promotions.filter(
-      p => p.type === "featured"
-    ).length;
-
-  const discounts =
-    promotions.filter(
-      p => p.type === "discount"
-    ).length;
-
-
-  document.getElementById(
-    "activePromotions"
-  ).textContent = active;
-
-
-  document.getElementById(
-    "totalPromotions"
-  ).textContent = promotions.length;
-
-
-  document.getElementById(
-    "featuredPromotions"
-  ).textContent = featured;
-
-
-  document.getElementById(
-    "discountPromotions"
-  ).textContent = discounts;
-
-}
-
-
-/* FORMAT TYPE */
-function getTypeName(type) {
-
-  if (type === "discount")
-    return "Chapter Discount";
-
-  if (type === "featured")
-    return "Featured Book";
-
-  if (type === "free")
-    return "Free Reading";
-
-  return "Promotion";
-
-}
-
-
-/* RENDER PROMOTIONS */
-function renderPromotions() {
-
-  const list =
-    document.getElementById(
-      "promotionsList"
-    );
-
-  const promotions =
-    getPromotions();
-
-
-  if (!promotions.length) {
-
-    list.innerHTML = `
-      <div class="empty-state">
-
-        <div class="icon">♡</div>
-
-        <p>No promotions have been created yet.</p>
-
-      </div>
-    `;
-
-    updateStats();
-
-    return;
-  }
-
-
-  list.innerHTML = "";
-
-
-  promotions
-    .slice()
-    .reverse()
-    .forEach(promotion => {
-
-      const status =
-        getPromotionStatus(promotion);
-
-
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "promotion-card";
-
-
-      let discountText = "";
-
-      if (
-        promotion.type === "discount" &&
-        promotion.discountCoins !== ""
-      ) {
-
-        discountText =
-          `<span class="badge">
-            ${promotion.discountCoins} coins/chapter
-          </span>`;
-
-      }
-
-
-      card.innerHTML = `
-
-        <div class="promotion-top">
-
-          <div>
-
-            <div class="promotion-title">
-              ${escapeHTML(promotion.title)}
-            </div>
-
-            <div class="promotion-book">
-              ${escapeHTML(
-                promotion.bookTitle ||
-                "Book promotion"
-              )}
-            </div>
-
-          </div>
-
-          <button
-            class="delete-btn"
-            onclick="deletePromotion('${promotion.id}')"
-          >
-            Delete
-          </button>
-
-        </div>
-
-
-        ${
-          promotion.description
-          ? `
-            <div class="promotion-description">
-              ${escapeHTML(
-                promotion.description
-              )}
-            </div>
-          `
-          : ""
-        }
-
-
-        <div class="promotion-meta">
-
-          <span class="badge">
-            ${getTypeName(promotion.type)}
-          </span>
-
-          ${discountText}
-
-          <span class="badge">
-            ${promotion.startDate || "—"}
-            →
-            ${promotion.endDate || "—"}
-          </span>
-
-          <span class="badge ${status}">
-            ${
-              status === "active"
-              ? "Active"
-              : status === "scheduled"
-              ? "Scheduled"
-              : "Ended"
-            }
-          </span>
-
-        </div>
-
-      `;
-
-
-      list.appendChild(card);
-
-    });
-
-
-  updateStats();
-
-}
-
-
-/* ESCAPE HTML */
 function escapeHTML(value) {
 
-  return String(value || "")
+  return String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -1093,134 +997,902 @@ function escapeHTML(value) {
 }
 
 
-/* DELETE */
-function deletePromotion(id) {
+function formatDateTime(value) {
+
+  if (!value) {
+    return "—";
+  }
+
+  const date =
+    new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "—";
+  }
+
+  return date.toLocaleString(
+    undefined,
+    {
+      dateStyle: "medium",
+      timeStyle: "short"
+    }
+  );
+
+}
+
+
+function getPromotionStatus(promotion) {
+
+  const now =
+    new Date();
+
+  const start =
+    new Date(
+      promotion.start_at
+    );
+
+  const end =
+    new Date(
+      promotion.end_at
+    );
+
+  if (
+    now < start
+  ) {
+    return "scheduled";
+  }
+
+  if (
+    now > end
+  ) {
+    return "ended";
+  }
+
+  return "active";
+
+}
+
+
+function getTypeName(type) {
+
+  if (
+    type === "discount"
+  ) {
+    return "Chapter Discount";
+  }
+
+  if (
+    type === "featured"
+  ) {
+    return "Featured Book";
+  }
+
+  if (
+    type === "free"
+  ) {
+    return "Free Reading";
+  }
+
+  return "Promotion";
+
+}
+
+
+function getPlacementName(
+  placement
+) {
+
+  const names = {
+
+    trending:
+      "🔥 Trending Stories",
+
+    hot:
+      "❤️ Hot Stories",
+
+    favorites:
+      "⭐ Readers' Favorites",
+
+    romance:
+      "💕 Top Romance",
+
+    free:
+      "🆓 Free Books",
+
+    recommended:
+      "✨ Recommended For You"
+
+  };
+
+  return (
+    names[placement] ||
+    placement
+  );
+
+}
+
+
+/* =========================================================
+   LOAD ONLY REAL SUPABASE PUBLISHED BOOKS
+========================================================= */
+
+async function loadBooks() {
+
+  promotionBook.innerHTML = `
+    <option value="">
+      Loading published books...
+    </option>
+  `;
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("books")
+        .select(
+          "id,title,author,status"
+        )
+        .eq(
+          "status",
+          "published"
+        )
+        .order(
+          "title",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    promotionBook.innerHTML = `
+      <option value="">
+        Select a published book
+      </option>
+    `;
+
+
+    if (
+      !data ||
+      !data.length
+    ) {
+
+      promotionBook.innerHTML = `
+        <option value="">
+          No published books available
+        </option>
+      `;
+
+      return;
+
+    }
+
+
+    data.forEach(
+      function(book) {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          book.id;
+
+        option.textContent =
+          book.title ||
+          "Untitled Book";
+
+        promotionBook.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Book loading error:",
+      error
+    );
+
+    promotionBook.innerHTML = `
+      <option value="">
+        Could not load Supabase books
+      </option>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD PROMOTIONS
+========================================================= */
+
+async function loadPromotions() {
+
+  promotionsList.innerHTML = `
+    <div class="empty-state">
+      <div class="icon">⏳</div>
+      <p>Loading promotions...</p>
+    </div>
+  `;
+
+
+  try {
+
+    const {
+      data: promotions,
+      error
+    } =
+      await supabaseClient
+        .from("promotions")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (error) {
+      throw error;
+    }
+
+
+    /*
+      Fetch the current Supabase books separately.
+
+      This is intentional.
+
+      If a book has been deleted from Supabase,
+      it will not be allowed to appear here.
+    */
+
+    const {
+      data: books,
+      error: booksError
+    } =
+      await supabaseClient
+        .from("books")
+        .select(
+          "id,title,status"
+        );
+
+
+    if (booksError) {
+      throw booksError;
+    }
+
+
+    const bookMap =
+      new Map(
+        (books || []).map(
+          book => [
+            String(book.id),
+            book
+          ]
+        )
+      );
+
+
+    const validPromotions =
+      (promotions || [])
+        .filter(
+          promotion => {
+
+            const book =
+              bookMap.get(
+                String(
+                  promotion.book_id
+                )
+              );
+
+            /*
+              Deleted books and non-published books
+              are never displayed as promotions.
+            */
+
+            return (
+              book &&
+              book.status === "published"
+            );
+
+          }
+        );
+
+
+    renderPromotions(
+      validPromotions,
+      bookMap
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Promotion loading error:",
+      error
+    );
+
+    promotionsList.innerHTML = `
+      <div class="empty-state">
+
+        <div class="icon">⚠️</div>
+
+        <p>
+          Could not load promotions from Supabase.
+        </p>
+
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderPromotions(
+  promotions,
+  bookMap
+) {
+
+  if (
+    !promotions.length
+  ) {
+
+    promotionsList.innerHTML = `
+      <div class="empty-state">
+
+        <div class="icon">♡</div>
+
+        <p>
+          No promotions have been created yet.
+        </p>
+
+      </div>
+    `;
+
+    updateStats(
+      promotions
+    );
+
+    return;
+
+  }
+
+
+  promotionsList.innerHTML = "";
+
+
+  promotions.forEach(
+    function(promotion) {
+
+      const status =
+        getPromotionStatus(
+          promotion
+        );
+
+
+      const book =
+        bookMap.get(
+          String(
+            promotion.book_id
+          )
+        );
+
+
+      const placements =
+        Array.isArray(
+          promotion.placements
+        )
+        ? promotion.placements
+        : [];
+
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "promotion-card";
+
+
+      let discountText =
+        "";
+
+      if (
+        promotion.type ===
+          "discount" &&
+        promotion.discount_coins !==
+          null
+      ) {
+
+        discountText = `
+          <span class="badge">
+            ${escapeHTML(
+              promotion.discount_coins
+            )}
+            coins/chapter
+          </span>
+        `;
+
+      }
+
+
+      const placementText =
+        placements
+          .map(
+            getPlacementName
+          )
+          .map(
+            escapeHTML
+          )
+          .join(" • ");
+
+
+      card.innerHTML = `
+
+        <div class="promotion-top">
+
+          <div>
+
+            <div class="promotion-title">
+              ${escapeHTML(
+                promotion.title
+              )}
+            </div>
+
+            <div class="promotion-book">
+              ${escapeHTML(
+                book
+                  ? book.title
+                  : "Book unavailable"
+              )}
+            </div>
+
+          </div>
+
+
+          <button
+            class="delete-btn"
+            data-id="${escapeHTML(
+              promotion.id
+            )}"
+          >
+            Delete
+          </button>
+
+        </div>
+
+
+        ${
+          promotion.description
+            ? `
+              <div class="promotion-description">
+                ${escapeHTML(
+                  promotion.description
+                )}
+              </div>
+            `
+            : ""
+        }
+
+
+        <div class="promotion-meta">
+
+          <span class="badge">
+            ${escapeHTML(
+              getTypeName(
+                promotion.type
+              )
+            )}
+          </span>
+
+          ${discountText}
+
+          ${
+            placementText
+              ? `
+                <span class="badge">
+                  ${placementText}
+                </span>
+              `
+              : ""
+          }
+
+          <span class="badge">
+            ${escapeHTML(
+              formatDateTime(
+                promotion.start_at
+              )
+            )}
+            →
+            ${escapeHTML(
+              formatDateTime(
+                promotion.end_at
+              )
+            )}
+          </span>
+
+          <span class="badge ${status}">
+            ${
+              status === "active"
+                ? "Active"
+                : status === "scheduled"
+                ? "Scheduled"
+                : "Ended"
+            }
+          </span>
+
+        </div>
+
+      `;
+
+
+      const deleteButton =
+        card.querySelector(
+          ".delete-btn"
+        );
+
+
+      deleteButton.addEventListener(
+        "click",
+        function() {
+
+          deletePromotion(
+            promotion.id
+          );
+
+        }
+      );
+
+
+      promotionsList.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  updateStats(
+    promotions
+  );
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(
+  promotions
+) {
+
+  const active =
+    promotions.filter(
+      promotion =>
+        getPromotionStatus(
+          promotion
+        ) === "active"
+    ).length;
+
+
+  const featured =
+    promotions.filter(
+      promotion =>
+        promotion.type ===
+        "featured"
+    ).length;
+
+
+  const discounts =
+    promotions.filter(
+      promotion =>
+        promotion.type ===
+        "discount"
+    ).length;
+
+
+  document.getElementById(
+    "activePromotions"
+  ).textContent =
+    active;
+
+
+  document.getElementById(
+    "totalPromotions"
+  ).textContent =
+    promotions.length;
+
+
+  document.getElementById(
+    "featuredPromotions"
+  ).textContent =
+    featured;
+
+
+  document.getElementById(
+    "discountPromotions"
+  ).textContent =
+    discounts;
+
+}
+
+
+/* =========================================================
+   DELETE
+========================================================= */
+
+async function deletePromotion(
+  id
+) {
 
   const confirmed =
     confirm(
       "Delete this promotion?"
     );
 
-  if (!confirmed) return;
+
+  if (!confirmed) {
+    return;
+  }
 
 
-  const promotions =
-    getPromotions()
-      .filter(
-        promotion =>
-          promotion.id !== id
-      );
+  try {
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("promotions")
+        .delete()
+        .eq(
+          "id",
+          id
+        );
 
 
-  savePromotions(promotions);
+    if (error) {
+      throw error;
+    }
 
-  renderPromotions();
+
+    await loadPromotions();
+
+
+  } catch (error) {
+
+    console.error(
+      "Delete promotion error:",
+      error
+    );
+
+    alert(
+      "Could not delete this promotion."
+    );
+
+  }
 
 }
 
 
-/* SHOW/HIDE DISCOUNT */
-document
-  .getElementById("promotionType")
-  .addEventListener(
-    "change",
-    function () {
+/* =========================================================
+   PROMOTION TYPE
+========================================================= */
 
-      const group =
-        document.getElementById(
-          "discountGroup"
-        );
+promotionType.addEventListener(
+  "change",
+  function() {
 
-      if (this.value === "discount") {
+    if (
+      this.value ===
+      "discount"
+    ) {
 
-        group.style.display = "block";
+      discountGroup.style.display =
+        "block";
 
-      } else {
+      discountCoins.required =
+        true;
 
-        group.style.display = "none";
+    } else {
 
-      }
+      discountGroup.style.display =
+        "none";
+
+      discountCoins.required =
+        false;
+
+      discountCoins.value =
+        "";
 
     }
-  );
+
+  }
+);
 
 
-/* CREATE PROMOTION */
-document
-  .getElementById("promotionForm")
-  .addEventListener(
-    "submit",
-    function (event) {
+/* =========================================================
+   CREATE PROMOTION
+========================================================= */
 
-      event.preventDefault();
+promotionForm.addEventListener(
+  "submit",
+  async function(event) {
 
-
-      const title =
-        document
-          .getElementById(
-            "promotionTitle"
-          )
-          .value
-          .trim();
+    event.preventDefault();
 
 
-      const bookId =
-        document
-          .getElementById(
-            "promotionBook"
-          )
-          .value;
+    const title =
+      document
+        .getElementById(
+          "promotionTitle"
+        )
+        .value
+        .trim();
 
 
-      const type =
-        document
-          .getElementById(
-            "promotionType"
-          )
-          .value;
+    const bookId =
+      promotionBook.value;
 
 
-      const discountCoins =
-        document
-          .getElementById(
-            "discountCoins"
-          )
-          .value;
+    const type =
+      promotionType.value;
 
 
-      const startDate =
-        document
-          .getElementById(
-            "startDate"
-          )
-          .value;
+    const startValue =
+      document
+        .getElementById(
+          "startDate"
+        )
+        .value;
 
 
-      const endDate =
-        document
-          .getElementById(
-            "endDate"
-          )
-          .value;
+    const endValue =
+      document
+        .getElementById(
+          "endDate"
+        )
+        .value;
 
 
-      const description =
-        document
-          .getElementById(
-            "promotionDescription"
-          )
-          .value
-          .trim();
+    const description =
+      document
+        .getElementById(
+          "promotionDescription"
+        )
+        .value
+        .trim();
 
 
-      if (!title ||
-          !bookId ||
-          !type ||
-          !startDate ||
-          !endDate) {
+    const selectedPlacements =
+      Array.from(
+        document.querySelectorAll(
+          ".placement-option input:checked"
+        )
+      ).map(
+        input =>
+          input.value
+      );
+
+
+    if (
+      !title ||
+      !bookId ||
+      !type ||
+      !startValue ||
+      !endValue
+    ) {
+
+      alert(
+        "Please fill in all required fields."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !selectedPlacements.length
+    ) {
+
+      alert(
+        "Please choose at least one dashboard placement."
+      );
+
+      return;
+
+    }
+
+
+    const startDate =
+      new Date(
+        startValue
+      );
+
+
+    const endDate =
+      new Date(
+        endValue
+      );
+
+
+    if (
+      Number.isNaN(
+        startDate.getTime()
+      ) ||
+      Number.isNaN(
+        endDate.getTime()
+      )
+    ) {
+
+      alert(
+        "Please enter valid start and end times."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      endDate <= startDate
+    ) {
+
+      alert(
+        "End time must be later than the start time."
+      );
+
+      return;
+
+    }
+
+
+    let discount =
+      null;
+
+
+    if (
+      type === "discount"
+    ) {
+
+      const value =
+        Number(
+          discountCoins.value
+        );
+
+
+      if (
+        !Number.isFinite(
+          value
+        ) ||
+        value < 0
+      ) {
 
         alert(
-          "Please fill in all required fields."
+          "Please enter a valid promotional chapter price."
         );
 
         return;
@@ -1228,110 +1900,191 @@ document
       }
 
 
-      if (endDate < startDate) {
+      discount =
+        Math.floor(
+          value
+        );
+
+    }
+
+
+    const submitButton =
+      promotionForm.querySelector(
+        "button[type='submit']"
+      );
+
+
+    submitButton.disabled =
+      true;
+
+    submitButton.textContent =
+      "Creating...";
+
+
+    try {
+
+      /*
+        Verify the selected book directly
+        from Supabase immediately before saving.
+
+        This prevents deleted/non-published books
+        from being promoted.
+      */
+
+      const {
+        data: book,
+        error: bookError
+      } =
+        await supabaseClient
+          .from("books")
+          .select(
+            "id,title,status"
+          )
+          .eq(
+            "id",
+            bookId
+          )
+          .eq(
+            "status",
+            "published"
+          )
+          .single();
+
+
+      if (bookError) {
+        throw bookError;
+      }
+
+
+      if (
+        !book
+      ) {
 
         alert(
-          "End date cannot be before start date."
+          "This book is no longer published and cannot be promoted."
         );
 
         return;
 
       }
-
-
-      const books =
-        getBooks();
-
-
-      const book =
-        books.find(
-          b =>
-            String(
-              b.id ||
-              b.bookId ||
-              b.bookID ||
-              ""
-            ) === String(bookId)
-        );
 
 
       const promotion = {
 
-        id:
-          "promo_" +
-          Date.now(),
-
         title,
 
-        bookId,
-
-        bookTitle:
-          book
-            ? (
-                book.title ||
-                book.name ||
-                "Untitled Book"
-              )
-            : "Untitled Book",
+        book_id:
+          book.id,
 
         type,
 
-        discountCoins:
-          type === "discount"
-          ? discountCoins
-          : "",
+        placements:
+          selectedPlacements,
 
-        startDate,
+        discount_coins:
+          discount,
 
-        endDate,
+        start_at:
+          startDate.toISOString(),
 
-        description,
+        end_at:
+          endDate.toISOString(),
 
-        createdAt:
-          new Date().toISOString()
+        description:
+          description ||
+          null
 
       };
 
 
-      const promotions =
-        getPromotions();
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("promotions")
+          .insert(
+            promotion
+          );
 
 
-      promotions.push(
-        promotion
-      );
-
-
-      savePromotions(
-        promotions
-      );
-
-
-      this.reset();
-
-
-      document
-        .getElementById(
-          "discountGroup"
-        )
-        .style.display = "none";
-
-
-      renderPromotions();
+      if (error) {
+        throw error;
+      }
 
 
       alert(
-        "Promotion created successfully."
+        "Promotion created successfully!"
       );
 
+
+      promotionForm.reset();
+
+
+      discountGroup.style.display =
+        "none";
+
+
+      discountCoins.required =
+        false;
+
+
+      await loadPromotions();
+
+
+    } catch (error) {
+
+      console.error(
+        "Create promotion error:",
+        error
+      );
+
+      alert(
+        "Could not create promotion: " +
+        (
+          error.message ||
+          "Unknown error"
+        )
+      );
+
+    } finally {
+
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        "Create Promotion";
+
     }
-  );
+
+  }
+);
 
 
-/* START */
-loadBooks();
-renderPromotions();
-updateStats();
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+async function initializePromotions() {
+
+  await loadBooks();
+
+  await loadPromotions();
+
+}
+
+
+/*
+  Refresh every minute so the Admin page
+  automatically changes Scheduled → Active → Ended.
+*/
+
+setInterval(
+  loadPromotions,
+  60000
+);
+
+
+initializePromotions();
 
 </script>
 
