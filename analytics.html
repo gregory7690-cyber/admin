@@ -400,7 +400,7 @@
             No reader activity yet
           </h3>
 
-          <p>
+          <p id="activityDescription">
             Reads, unlocks and engagement data will appear once real readers begin using Novelora.
           </p>
 
@@ -443,32 +443,39 @@
 </div>
 
 
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 
-const BOOKS_KEY = "noveloraAdminBooks";
-const CHAPTERS_KEY = "noveloraAdminChapters";
-const READERS_KEY = "noveloraReaders";
-const AUTHORS_KEY = "noveloraAuthors";
-const TRANSACTIONS_KEY = "noveloraTransactions";
-const UNLOCKS_KEY = "noveloraChapterUnlocks";
+/* =========================================================
+   NOVELORA SUPABASE CONNECTION
+   ========================================================= */
+
+const SUPABASE_URL =
+  "https://fydjmfdtvdtkyjmsdubd.supabase.co";
+
+/*
+   IMPORTANT:
+   Replace the value below with the SAME public/anon key
+   you already use for your Novelora frontend.
+
+   DO NOT put a service-role key here.
+*/
+
+const SUPABASE_ANON_KEY =
+  "PASTE_YOUR_SUPABASE_ANON_KEY_HERE";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
 
 
-function getData(key) {
-
-  try {
-
-    const data = localStorage.getItem(key);
-
-    return data ? JSON.parse(data) : [];
-
-  } catch {
-
-    return [];
-
-  }
-
-}
-
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
 function money(value) {
 
@@ -477,97 +484,531 @@ function money(value) {
 }
 
 
-function updateAnalytics() {
+function setText(id, value) {
 
-  const books = getData(BOOKS_KEY);
-  const chapters = getData(CHAPTERS_KEY);
-  const readers = getData(READERS_KEY);
-  const authors = getData(AUTHORS_KEY);
-  const transactions = getData(TRANSACTIONS_KEY);
-  const unlocks = getData(UNLOCKS_KEY);
+  const element = document.getElementById(id);
 
-
-  const revenue = transactions.reduce(
-    (total, transaction) =>
-      total + Number(
-        transaction.amount ||
-        transaction.revenue ||
-        transaction.total ||
-        transaction.price ||
-        0
-      ),
-    0
-  );
-
-
-  const coinsSpent = unlocks.reduce(
-    (total, unlock) =>
-      total + Number(unlock.coins || 0),
-    0
-  );
-
-
-  document.querySelector("#analyticsBooks").textContent =
-    books.length;
-
-
-  document.querySelector("#analyticsChapters").textContent =
-    chapters.length;
-
-
-  document.querySelector("#analyticsReaders").textContent =
-    readers.length;
-
-
-  document.querySelector("#analyticsRevenue").textContent =
-    money(revenue);
-
-
-  document.querySelector("#publishedBooks").textContent =
-    books.filter(book => book.published).length;
-
-
-  document.querySelector("#publishedChapters").textContent =
-    chapters.filter(chapter => chapter.published).length;
-
-
-  document.querySelector("#freeBooks").textContent =
-    books.filter(book => book.freeBook).length;
-
-
-  document.querySelector("#featuredBooks").textContent =
-    books.filter(book => book.featured).length;
-
-
-  document.querySelector("#activeAuthors").textContent =
-    authors.filter(author =>
-      author.status === "active" ||
-      author.status === "approved"
-    ).length;
-
-
-  document.querySelector("#coinsSpent").textContent =
-    coinsSpent.toLocaleString();
-
-
-  document.querySelector("#chapterUnlocks").textContent =
-    unlocks.length;
-
-
-  renderBooks(books, unlocks, transactions);
+  if (element) {
+    element.textContent = value;
+  }
 
 }
 
 
-function renderBooks(books, unlocks, transactions) {
+function showActivity(reads, unlocks, libraries) {
+
+  const title =
+    document.getElementById("activityTitle");
+
+  const description =
+    document.getElementById("activityDescription");
+
+  if (!title || !description) return;
+
+
+  const totalActivity =
+    Number(reads || 0) +
+    Number(unlocks || 0) +
+    Number(libraries || 0);
+
+
+  if (totalActivity === 0) {
+
+    title.textContent =
+      "No reader activity yet";
+
+    description.textContent =
+      "Reads, unlocks and engagement data will appear once real readers begin using Novelora.";
+
+    return;
+
+  }
+
+
+  title.textContent =
+    `${Number(reads || 0).toLocaleString()} reads recorded`;
+
+
+  description.textContent =
+    `${Number(unlocks || 0).toLocaleString()} chapter unlocks and ${Number(libraries || 0).toLocaleString()} library additions recorded.`;
+
+}
+
+
+/* =========================================================
+   LOAD BASIC COUNTS
+   ========================================================= */
+
+async function getCount(table, filter = null) {
+
+  let query =
+    supabaseClient
+      .from(table)
+      .select("*", {
+        count: "exact",
+        head: true
+      });
+
+
+  if (filter) {
+    query = filter(query);
+  }
+
+
+  const { count, error } = await query;
+
+
+  if (error) {
+
+    console.error(
+      `Error counting ${table}:`,
+      error
+    );
+
+    return 0;
+
+  }
+
+
+  return count || 0;
+
+}
+
+
+/* =========================================================
+   LOAD ANALYTICS
+   ========================================================= */
+
+async function updateAnalytics() {
+
+  try {
+
+    /*
+      BOOKS
+    */
+
+    const booksResult =
+      await supabaseClient
+        .from("books")
+        .select(`
+          id,
+          title,
+          status,
+          featured,
+          free,
+          access_type,
+          views,
+          library_count
+        `)
+        .order("created_at", {
+          ascending: false
+        });
+
+
+    if (booksResult.error) {
+      throw booksResult.error;
+    }
+
+
+    const books =
+      booksResult.data || [];
+
+
+    /*
+      CHAPTERS
+    */
+
+    const chaptersCount =
+      await getCount("chapters");
+
+
+    /*
+      READERS
+
+      We count profiles here because profiles
+      represents registered Novelora users.
+    */
+
+    const readersCount =
+      await getCount("profiles");
+
+
+    /*
+      AUTHORS
+    */
+
+    const authorsResult =
+      await supabaseClient
+        .from("authors")
+        .select("id, status");
+
+
+    if (authorsResult.error) {
+      throw authorsResult.error;
+    }
+
+
+    const authors =
+      authorsResult.data || [];
+
+
+    /*
+      CHAPTER UNLOCKS
+    */
+
+    const unlocksResult =
+      await supabaseClient
+        .from("chapter_unlocks")
+        .select(`
+          id,
+          user_id,
+          chapter_id,
+          coins_spent,
+          created_at
+        `);
+
+
+    if (unlocksResult.error) {
+      throw unlocksResult.error;
+    }
+
+
+    const unlocks =
+      unlocksResult.data || [];
+
+
+    /*
+      READING EVENTS
+    */
+
+    const readingEventsResult =
+      await supabaseClient
+        .from("reading_events")
+        .select(`
+          id,
+          user_id,
+          book_id,
+          chapter_id,
+          event_type,
+          created_at
+        `);
+
+
+    if (readingEventsResult.error) {
+      throw readingEventsResult.error;
+    }
+
+
+    const readingEvents =
+      readingEventsResult.data || [];
+
+
+    /*
+      LIBRARY
+    */
+
+    const libraryCount =
+      await getCount("library");
+
+
+    /*
+      PURCHASES
+
+      For now we use successful purchases.
+    */
+
+    const purchasesResult =
+      await supabaseClient
+        .from("purchases")
+        .select(`
+          id,
+          user_id,
+          coins,
+          amount,
+          currency,
+          provider,
+          provider_reference,
+          status,
+          created_at
+        `)
+        .eq("status", "successful");
+
+
+    if (purchasesResult.error) {
+      throw purchasesResult.error;
+    }
+
+
+    const purchases =
+      purchasesResult.data || [];
+
+
+    /*
+      CALCULATE REVENUE
+    */
+
+    const revenue =
+      purchases.reduce(
+        (total, purchase) => {
+
+          return total +
+            Number(
+              purchase.amount || 0
+            );
+
+        },
+        0
+      );
+
+
+    /*
+      CALCULATE COINS SPENT
+    */
+
+    const coinsSpent =
+      unlocks.reduce(
+        (total, unlock) => {
+
+          return total +
+            Number(
+              unlock.coins_spent || 0
+            );
+
+        },
+        0
+      );
+
+
+    /*
+      PUBLISHED BOOKS
+
+      We support both common status values.
+    */
+
+    const publishedBooks =
+      books.filter(book =>
+        String(book.status || "")
+          .toLowerCase()
+          .includes("publish")
+      ).length;
+
+
+    /*
+      PUBLISHED CHAPTERS
+
+      We query them because chapter status
+      is not included in the book query.
+    */
+
+    const publishedChaptersResult =
+      await supabaseClient
+        .from("chapters")
+        .select("id, status");
+
+
+    if (publishedChaptersResult.error) {
+      throw publishedChaptersResult.error;
+    }
+
+
+    const allChapters =
+      publishedChaptersResult.data || [];
+
+
+    const publishedChapters =
+      allChapters.filter(chapter =>
+        String(chapter.status || "")
+          .toLowerCase()
+          .includes("publish")
+      ).length;
+
+
+    /*
+      FREE BOOKS
+    */
+
+    const freeBooks =
+      books.filter(book =>
+        book.free === true ||
+        book.access_type === "free"
+      ).length;
+
+
+    /*
+      FEATURED BOOKS
+    */
+
+    const featuredBooks =
+      books.filter(book =>
+        book.featured === true
+      ).length;
+
+
+    /*
+      ACTIVE AUTHORS
+    */
+
+    const activeAuthors =
+      authors.filter(author => {
+
+        const status =
+          String(
+            author.status || ""
+          ).toLowerCase();
+
+        return (
+          status === "active" ||
+          status === "approved"
+        );
+
+      }).length;
+
+
+    /*
+      UPDATE MAIN CARDS
+    */
+
+    setText(
+      "analyticsBooks",
+      books.length.toLocaleString()
+    );
+
+
+    setText(
+      "analyticsChapters",
+      chaptersCount.toLocaleString()
+    );
+
+
+    setText(
+      "analyticsReaders",
+      readersCount.toLocaleString()
+    );
+
+
+    setText(
+      "analyticsRevenue",
+      money(revenue)
+    );
+
+
+    /*
+      UPDATE PLATFORM OVERVIEW
+    */
+
+    setText(
+      "publishedBooks",
+      publishedBooks.toLocaleString()
+    );
+
+
+    setText(
+      "publishedChapters",
+      publishedChapters.toLocaleString()
+    );
+
+
+    setText(
+      "freeBooks",
+      freeBooks.toLocaleString()
+    );
+
+
+    setText(
+      "featuredBooks",
+      featuredBooks.toLocaleString()
+    );
+
+
+    setText(
+      "activeAuthors",
+      activeAuthors.toLocaleString()
+    );
+
+
+    setText(
+      "coinsSpent",
+      coinsSpent.toLocaleString()
+    );
+
+
+    setText(
+      "chapterUnlocks",
+      unlocks.length.toLocaleString()
+    );
+
+
+    /*
+      READER ACTIVITY
+    */
+
+    showActivity(
+      readingEvents.length,
+      unlocks.length,
+      libraryCount
+    );
+
+
+    /*
+      BOOK PERFORMANCE
+    */
+
+    renderBooks(
+      books,
+      readingEvents,
+      unlocks,
+      purchases
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Novelora Analytics Error:",
+      error
+    );
+
+
+    setText(
+      "activityTitle",
+      "Unable to load analytics"
+    );
+
+
+    setText(
+      "activityDescription",
+      "Please check the Supabase connection and database permissions."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BOOK PERFORMANCE
+   ========================================================= */
+
+function renderBooks(
+  books,
+  readingEvents,
+  unlocks,
+  purchases
+) {
 
   const container =
-    document.querySelector("#bookAnalytics");
+    document.querySelector(
+      "#bookAnalytics"
+    );
+
+
+  if (!container) return;
 
 
   if (!books.length) {
 
     container.innerHTML = `
+
       <div class="empty-analytics">
 
         <div class="symbol">📚</div>
@@ -579,6 +1020,7 @@ function renderBooks(books, unlocks, transactions) {
         </p>
 
       </div>
+
     `;
 
     return;
@@ -586,59 +1028,92 @@ function renderBooks(books, unlocks, transactions) {
   }
 
 
-  container.innerHTML = books.map(book => {
-
-    const bookUnlocks = unlocks.filter(unlock =>
-      String(unlock.bookId || unlock.bookID || "") === String(book.id)
-    );
+  container.innerHTML =
+    books.map(book => {
 
 
-    const bookTransactions = transactions.filter(transaction =>
-      String(
-        transaction.bookId ||
-        transaction.bookID ||
-        ""
-      ) === String(book.id)
-    );
+      /*
+        REAL READS
+      */
+
+      const bookReads =
+        readingEvents.filter(event =>
+
+          String(event.book_id || "") ===
+          String(book.id)
+
+        ).length;
 
 
-    const bookRevenue = bookTransactions.reduce(
-      (total, transaction) =>
-        total + Number(
-          transaction.amount ||
-          transaction.revenue ||
-          transaction.total ||
-          transaction.price ||
-          0
-        ),
-      0
-    );
+      /*
+        REAL UNLOCKS
+      */
+
+      const bookUnlocks =
+        unlocks.filter(unlock => {
+
+          /*
+            chapter_unlocks does not contain
+            book_id directly.
+
+            We therefore match through the
+            chapter IDs available in reading data
+            where possible.
+
+            If chapter IDs are unavailable here,
+            this remains zero until the chapter
+            relationship is loaded below.
+          */
+
+          return false;
+
+        });
 
 
-    return `
+      /*
+        PURCHASE REVENUE
 
-      <div class="book-analytics-row">
+        Purchases are platform-level at the moment,
+        because the current purchases table does
+        not contain book_id.
 
-        <strong>
-          ${escapeHTML(book.title || "Untitled")}
-        </strong>
+        Therefore we do not falsely assign the
+        entire platform revenue to every book.
+      */
 
-        <span>
-          ${bookUnlocks.length} unlocks
-        </span>
+      const bookRevenue = 0;
 
-        <span>
-          ${money(bookRevenue)}
-        </span>
 
-      </div>
+      return `
 
-    `;
+        <div class="book-analytics-row">
 
-  }).join("");
+          <strong>
+            ${escapeHTML(
+              book.title || "Untitled"
+            )}
+          </strong>
+
+          <span>
+            ${bookReads.toLocaleString()} reads
+          </span>
+
+          <span>
+            ${money(bookRevenue)}
+          </span>
+
+        </div>
+
+      `;
+
+    }).join("");
 
 }
 
+
+/* =========================================================
+   HTML ESCAPE
+   ========================================================= */
 
 function escapeHTML(value) {
 
@@ -652,6 +1127,10 @@ function escapeHTML(value) {
 
 }
 
+
+/* =========================================================
+   START
+   ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
