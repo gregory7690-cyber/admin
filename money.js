@@ -1,411 +1,862 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
 
-  const STORAGE_KEY = "noveloraFinance";
+  /* =========================================================
+     NOVELORA MONEY — SUPABASE
+  ========================================================= */
 
-  let finance = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
-    totalEarnings: 0,
-    monthlyEarnings: 0,
-    availableBalance: 0,
-    pendingBalance: 0,
-    bank: null,
-    withdrawals: [],
-    bookEarnings: []
-  };
+  const SUPABASE_URL =
+    "https://fydjmfdtvdtkyjmsdubd.supabase.co";
 
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(finance));
-  }
+  const SUPABASE_KEY =
+    "sb_publishable_VwkLSv5ixhNHtAUhNdDnqA_tJWSF9S8";
 
-  function money(value) {
-    return "$" + Number(value || 0).toFixed(2);
-  }
 
-  function updateDashboard() {
+  /* =========================================================
+     LOAD SUPABASE
+  ========================================================= */
 
-    const total = document.getElementById("totalEarnings");
-    const monthly = document.getElementById("monthlyEarnings");
-    const available = document.getElementById("availableBalance");
-    const pending = document.getElementById("pendingBalance");
-    const withdrawBalance = document.getElementById("withdrawBalance");
-    const chartTotal = document.getElementById("chartTotal");
+  if (!window.supabase) {
 
-    if (total) total.textContent = money(finance.totalEarnings);
-    if (monthly) monthly.textContent = money(finance.monthlyEarnings);
-    if (available) available.textContent = money(finance.availableBalance);
-    if (pending) pending.textContent = money(finance.pendingBalance);
-    if (withdrawBalance) withdrawBalance.textContent = money(finance.availableBalance);
-    if (chartTotal) chartTotal.textContent = money(finance.monthlyEarnings);
+    const script = document.createElement("script");
+
+    script.src =
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
+    script.onload = () => initializeMoney();
+
+    document.head.appendChild(script);
+
+  } else {
+
+    initializeMoney();
 
   }
 
 
-  /* =========================
-     BANK METHOD SWITCHING
-  ========================= */
+  async function initializeMoney() {
 
-  const methodInputs = document.querySelectorAll(
-    'input[name="withdrawMethod"]'
-  );
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+      );
 
-  const swiftField = document.getElementById("swiftField");
-  const achField = document.getElementById("achField");
 
-  function updateBankFields() {
+    /* =========================================================
+       HELPERS
+    ========================================================= */
 
-    const selected = document.querySelector(
-      'input[name="withdrawMethod"]:checked'
-    );
+    function money(value) {
 
-    if (!selected) return;
-
-    if (selected.value === "SWIFT") {
-
-      swiftField.classList.remove("hidden-field");
-      achField.classList.add("hidden-field");
-
-    } else {
-
-      swiftField.classList.add("hidden-field");
-      achField.classList.remove("hidden-field");
-
-    }
-
-  }
-
-  methodInputs.forEach(input => {
-    input.addEventListener("change", updateBankFields);
-  });
-
-  updateBankFields();
-
-
-  /* =========================
-     SAVE BANK ACCOUNT
-  ========================= */
-
-  const bankForm = document.getElementById("bankForm");
-  const bankMessage = document.getElementById("bankMessage");
-
-  if (bankForm) {
-
-    bankForm.addEventListener("submit", event => {
-
-      event.preventDefault();
-
-      const accountName =
-        document.getElementById("accountName").value.trim();
-
-      const bankName =
-        document.getElementById("bankName").value.trim();
-
-      const accountNumber =
-        document.getElementById("accountNumber").value.trim();
-
-      const swiftCode =
-        document.getElementById("swiftCode").value.trim();
-
-      const routingNumber =
-        document.getElementById("routingNumber").value.trim();
-
-      const bankCountry =
-        document.getElementById("bankCountry").value.trim();
-
-      const selectedMethod =
-        document.querySelector(
-          'input[name="withdrawMethod"]:checked'
-        )?.value || "SWIFT";
-
-
-      if (!accountName || !bankName || !accountNumber || !bankCountry) {
-
-        bankMessage.textContent =
-          "Please complete all required bank details.";
-
-        bankMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      if (selectedMethod === "SWIFT" && !swiftCode) {
-
-        bankMessage.textContent =
-          "Please enter your SWIFT / BIC code.";
-
-        bankMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      if (selectedMethod === "ACH" && !routingNumber) {
-
-        bankMessage.textContent =
-          "Please enter your routing number.";
-
-        bankMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      finance.bank = {
-        accountName,
-        bankName,
-        accountNumber,
-        swiftCode,
-        routingNumber,
-        bankCountry,
-        method: selectedMethod
-      };
-
-      save();
-
-
-      bankMessage.textContent =
-        "Payout account saved successfully.";
-
-      bankMessage.style.color = "#65d89a";
-
-    });
-
-  }
-
-
-  /* =========================
-     WITHDRAW MONEY
-  ========================= */
-
-  const withdrawForm = document.getElementById("withdrawForm");
-  const withdrawMessage = document.getElementById("withdrawMessage");
-
-  if (withdrawForm) {
-
-    withdrawForm.addEventListener("submit", event => {
-
-      event.preventDefault();
-
-      const amount =
-        Number(document.getElementById("withdrawAmount").value);
-
-      const method =
-        document.querySelector(
-          'input[name="withdrawMethod"]:checked'
-        )?.value || "SWIFT";
-
-
-      if (!finance.bank) {
-
-        withdrawMessage.textContent =
-          "Please save a payout account before withdrawing.";
-
-        withdrawMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      if (!amount || amount < 10) {
-
-        withdrawMessage.textContent =
-          "The minimum withdrawal is $10.00.";
-
-        withdrawMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      if (amount > finance.availableBalance) {
-
-        withdrawMessage.textContent =
-          "You do not have enough available earnings.";
-
-        withdrawMessage.style.color = "#ff6b9f";
-
-        return;
-      }
-
-
-      const withdrawal = {
-
-        id: "WD-" + Date.now(),
-
-        date: new Date().toISOString(),
-
-        amount: amount,
-
-        method: method,
-
-        bank: finance.bank.bankName,
-
-        status: "Pending"
-
-      };
-
-
-      finance.availableBalance -= amount;
-
-      finance.withdrawals.unshift(withdrawal);
-
-      save();
-
-      updateDashboard();
-
-      renderWithdrawals();
-
-
-      withdrawForm.reset();
-
-      updateBankFields();
-
-
-      withdrawMessage.textContent =
-        `${money(amount)} withdrawal request submitted successfully.`;
-
-      withdrawMessage.style.color = "#65d89a";
-
-    });
-
-  }
-
-
-  /* =========================
-     WITHDRAWAL HISTORY
-  ========================= */
-
-  function renderWithdrawals() {
-
-    const container =
-      document.getElementById("withdrawalHistory");
-
-    if (!container) return;
-
-
-    if (!finance.withdrawals.length) {
-
-      container.innerHTML = `
-        <tr>
-          <td colspan="5">
-            <div class="table-empty">
-              No withdrawals yet.
-            </div>
-          </td>
-        </tr>
-      `;
-
-      return;
-    }
-
-
-    container.innerHTML = finance.withdrawals.map(item => {
-
-      const date =
-        new Date(item.date).toLocaleDateString(
+      return "$" +
+        Number(value || 0).toLocaleString(
           "en-US",
           {
-            month: "short",
-            day: "numeric",
-            year: "numeric"
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
           }
         );
 
-
-      return `
-        <tr>
-
-          <td>${date}</td>
-
-          <td>
-            <strong>${money(item.amount)}</strong>
-          </td>
-
-          <td>${item.method}</td>
-
-          <td>${item.bank}</td>
-
-          <td>
-            <span class="status-pill">
-              ${item.status}
-            </span>
-          </td>
-
-        </tr>
-      `;
-
-    }).join("");
-
-  }
+    }
 
 
-  /* =========================
-     BOOK EARNINGS
-  ========================= */
+    function escapeHTML(value) {
 
-  function renderBookEarnings() {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-    const container =
-      document.getElementById("bookEarnings");
-
-    if (!container) return;
+    }
 
 
-    if (!finance.bookEarnings.length) {
+    function isSuccessful(status) {
+
+      const value =
+        String(status || "").toLowerCase().trim();
+
+      return [
+        "successful",
+        "success",
+        "completed",
+        "complete",
+        "paid"
+      ].includes(value);
+
+    }
+
+
+    function isPending(status) {
+
+      const value =
+        String(status || "").toLowerCase().trim();
+
+      return [
+        "pending",
+        "processing",
+        "awaiting"
+      ].includes(value);
+
+    }
+
+
+    function setText(id, value) {
+
+      const element =
+        document.getElementById(id);
+
+      if (element) {
+        element.textContent = value;
+      }
+
+    }
+
+
+    /* =========================================================
+       FETCH ALL PURCHASES
+    ========================================================= */
+
+    async function getPurchases() {
+
+      const { data, error } =
+        await supabaseClient
+          .from("purchases")
+          .select(`
+            id,
+            user_id,
+            coins,
+            amount,
+            currency,
+            provider,
+            provider_reference,
+            status,
+            created_at
+          `)
+          .order("created_at", {
+            ascending: false
+          });
+
+
+      if (error) {
+
+        console.error(
+          "Money: purchase query failed",
+          error
+        );
+
+        throw error;
+
+      }
+
+      return data || [];
+
+    }
+
+
+    /* =========================================================
+       DATE HELPERS
+    ========================================================= */
+
+    function startOfMonth() {
+
+      const date = new Date();
+
+      return new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        1
+      );
+
+    }
+
+
+    function getPeriodStart(period) {
+
+      if (period === "all") {
+        return null;
+      }
+
+      const days =
+        Number(period);
+
+      const date =
+        new Date();
+
+      date.setHours(
+        0,
+        0,
+        0,
+        0
+      );
+
+      date.setDate(
+        date.getDate() - (days - 1)
+      );
+
+      return date;
+
+    }
+
+
+    /* =========================================================
+       CALCULATE FINANCES
+    ========================================================= */
+
+    function calculateFinance(purchases) {
+
+      const successful =
+        purchases.filter(item =>
+          isSuccessful(item.status)
+        );
+
+
+      const pending =
+        purchases.filter(item =>
+          isPending(item.status)
+        );
+
+
+      const totalEarnings =
+        successful.reduce(
+          (sum, item) =>
+            sum + Number(item.amount || 0),
+          0
+        );
+
+
+      const monthlyStart =
+        startOfMonth();
+
+
+      const monthlyEarnings =
+        successful
+          .filter(item =>
+            new Date(item.created_at) >= monthlyStart
+          )
+          .reduce(
+            (sum, item) =>
+              sum + Number(item.amount || 0),
+            0
+          );
+
+
+      const pendingBalance =
+        pending.reduce(
+          (sum, item) =>
+            sum + Number(item.amount || 0),
+          0
+        );
+
+
+      return {
+
+        totalEarnings,
+
+        monthlyEarnings,
+
+        pendingBalance,
+
+        /*
+          Until a real withdrawal/payout system exists,
+          successful earnings are treated as available.
+        */
+        availableBalance:
+          totalEarnings
+
+      };
+
+    }
+
+
+    /* =========================================================
+       UPDATE TOP CARDS
+    ========================================================= */
+
+    function updateDashboard(finance) {
+
+      setText(
+        "totalEarnings",
+        money(finance.totalEarnings)
+      );
+
+      setText(
+        "monthlyEarnings",
+        money(finance.monthlyEarnings)
+      );
+
+      setText(
+        "availableBalance",
+        money(finance.availableBalance)
+      );
+
+      setText(
+        "pendingBalance",
+        money(finance.pendingBalance)
+      );
+
+      setText(
+        "withdrawBalance",
+        money(finance.availableBalance)
+      );
+
+    }
+
+
+    /* =========================================================
+       EARNINGS PERIOD
+    ========================================================= */
+
+    let allPurchases = [];
+
+
+    function updateChart() {
+
+      const selector =
+        document.getElementById(
+          "earningsPeriod"
+        );
+
+      const chartTotal =
+        document.getElementById(
+          "chartTotal"
+        );
+
+      if (!selector || !chartTotal) {
+        return;
+      }
+
+
+      const selectedPeriod =
+        selector.value;
+
+
+      const periodStart =
+        getPeriodStart(
+          selectedPeriod
+        );
+
+
+      const earnings =
+        allPurchases
+          .filter(item =>
+            isSuccessful(item.status)
+          )
+          .filter(item => {
+
+            if (!periodStart) {
+              return true;
+            }
+
+            return new Date(item.created_at)
+              >= periodStart;
+
+          })
+          .reduce(
+            (sum, item) =>
+              sum + Number(item.amount || 0),
+            0
+          );
+
+
+      chartTotal.textContent =
+        money(earnings);
+
+    }
+
+
+    /* =========================================================
+       BOOK EARNINGS
+    ========================================================= */
+
+    function renderBookEarnings() {
+
+      const container =
+        document.getElementById(
+          "bookEarnings"
+        );
+
+      if (!container) {
+        return;
+      }
+
+
+      /*
+        IMPORTANT:
+
+        purchases currently does NOT contain book_id.
+
+        Therefore we cannot honestly assign a coin
+        purchase to a particular book.
+
+        We keep the original empty state instead
+        of inventing revenue data.
+      */
 
       container.innerHTML = `
+
         <div class="money-empty">
 
           <div>♡</div>
 
-          <strong>No book earnings yet</strong>
+          <strong>Book earnings not available yet</strong>
 
           <span>
-            Book revenue will appear here after readers unlock chapters.
+            Book revenue will appear here once purchases
+            can be linked to individual books.
           </span>
 
         </div>
+
       `;
 
-      return;
     }
 
 
-    container.innerHTML =
-      finance.bookEarnings.map(book => `
+    /* =========================================================
+       BANK METHOD SWITCHING
+    ========================================================= */
 
-        <div class="book-earning-row">
+    const methodInputs =
+      document.querySelectorAll(
+        'input[name="withdrawMethod"]'
+      );
 
-          <div>
 
-            <div class="book-earning-title">
-              ${book.title}
+    const swiftField =
+      document.getElementById(
+        "swiftField"
+      );
+
+
+    const achField =
+      document.getElementById(
+        "achField"
+      );
+
+
+    function updateBankFields() {
+
+      const selected =
+        document.querySelector(
+          'input[name="withdrawMethod"]:checked'
+        );
+
+
+      if (!selected) {
+        return;
+      }
+
+
+      if (selected.value === "SWIFT") {
+
+        swiftField?.classList.remove(
+          "hidden-field"
+        );
+
+        achField?.classList.add(
+          "hidden-field"
+        );
+
+      } else {
+
+        swiftField?.classList.add(
+          "hidden-field"
+        );
+
+        achField?.classList.remove(
+          "hidden-field"
+        );
+
+      }
+
+    }
+
+
+    methodInputs.forEach(input => {
+
+      input.addEventListener(
+        "change",
+        updateBankFields
+      );
+
+    });
+
+
+    updateBankFields();
+
+
+    /* =========================================================
+       BANK ACCOUNT
+       
+       Temporary frontend-only storage.
+       This should NOT be used for real banking details
+       in the production version.
+    ========================================================= */
+
+    const bankForm =
+      document.getElementById(
+        "bankForm"
+      );
+
+
+    const bankMessage =
+      document.getElementById(
+        "bankMessage"
+      );
+
+
+    let temporaryBankAccount =
+      null;
+
+
+    if (bankForm) {
+
+      bankForm.addEventListener(
+        "submit",
+        event => {
+
+          event.preventDefault();
+
+
+          const accountName =
+            document
+              .getElementById("accountName")
+              .value.trim();
+
+
+          const bankName =
+            document
+              .getElementById("bankName")
+              .value.trim();
+
+
+          const accountNumber =
+            document
+              .getElementById("accountNumber")
+              .value.trim();
+
+
+          const swiftCode =
+            document
+              .getElementById("swiftCode")
+              .value.trim();
+
+
+          const routingNumber =
+            document
+              .getElementById("routingNumber")
+              .value.trim();
+
+
+          const bankCountry =
+            document
+              .getElementById("bankCountry")
+              .value.trim();
+
+
+          const selectedMethod =
+            document.querySelector(
+              'input[name="withdrawMethod"]:checked'
+            )?.value || "SWIFT";
+
+
+          if (
+            !accountName ||
+            !bankName ||
+            !accountNumber ||
+            !bankCountry
+          ) {
+
+            bankMessage.textContent =
+              "Please complete all required bank details.";
+
+            bankMessage.style.color =
+              "#ff6b9f";
+
+            return;
+
+          }
+
+
+          if (
+            selectedMethod === "SWIFT" &&
+            !swiftCode
+          ) {
+
+            bankMessage.textContent =
+              "Please enter your SWIFT / BIC code.";
+
+            bankMessage.style.color =
+              "#ff6b9f";
+
+            return;
+
+          }
+
+
+          if (
+            selectedMethod === "ACH" &&
+            !routingNumber
+          ) {
+
+            bankMessage.textContent =
+              "Please enter your routing number.";
+
+            bankMessage.style.color =
+              "#ff6b9f";
+
+            return;
+
+          }
+
+
+          temporaryBankAccount = {
+
+            accountName,
+
+            bankName,
+
+            accountNumber,
+
+            swiftCode,
+
+            routingNumber,
+
+            bankCountry,
+
+            method: selectedMethod
+
+          };
+
+
+          bankMessage.textContent =
+            "Payout account details entered successfully.";
+
+          bankMessage.style.color =
+            "#65d89a";
+
+        }
+      );
+
+    }
+
+
+    /* =========================================================
+       WITHDRAW MONEY
+       
+       IMPORTANT:
+       There is currently no withdrawal table/backend
+       payout system, so this does NOT actually transfer money.
+    ========================================================= */
+
+    const withdrawForm =
+      document.getElementById(
+        "withdrawForm"
+      );
+
+
+    const withdrawMessage =
+      document.getElementById(
+        "withdrawMessage"
+      );
+
+
+    if (withdrawForm) {
+
+      withdrawForm.addEventListener(
+        "submit",
+        event => {
+
+          event.preventDefault();
+
+
+          withdrawMessage.textContent =
+            "Withdrawals are not connected yet. The payout system will be enabled after the withdrawal table and payment provider are added.";
+
+          withdrawMessage.style.color =
+            "#e5b94e";
+
+        }
+      );
+
+    }
+
+
+    /* =========================================================
+       WITHDRAWAL HISTORY
+    ========================================================= */
+
+    function renderWithdrawals() {
+
+      const container =
+        document.getElementById(
+          "withdrawalHistory"
+        );
+
+
+      if (!container) {
+        return;
+      }
+
+
+      container.innerHTML = `
+
+        <tr>
+
+          <td colspan="5">
+
+            <div class="table-empty">
+              No withdrawals yet.
             </div>
 
-            <div class="book-earning-author">
-              ${book.author || "Novelora Author"}
-            </div>
+          </td>
 
-          </div>
+        </tr>
 
-          <div class="book-earning-value">
-            ${money(book.earnings)}
-          </div>
+      `;
 
-        </div>
+    }
 
-      `).join("");
+
+    /* =========================================================
+       LOADING STATE
+    ========================================================= */
+
+    setText(
+      "totalEarnings",
+      "Loading..."
+    );
+
+    setText(
+      "monthlyEarnings",
+      "Loading..."
+    );
+
+    setText(
+      "availableBalance",
+      "Loading..."
+    );
+
+    setText(
+      "pendingBalance",
+      "Loading..."
+    );
+
+    setText(
+      "withdrawBalance",
+      "Loading..."
+    );
+
+    setText(
+      "chartTotal",
+      "Loading..."
+    );
+
+
+    /* =========================================================
+       LOAD REAL DATA
+    ========================================================= */
+
+    try {
+
+      allPurchases =
+        await getPurchases();
+
+
+      const finance =
+        calculateFinance(
+          allPurchases
+        );
+
+
+      updateDashboard(
+        finance
+      );
+
+
+      updateChart();
+
+      renderBookEarnings();
+
+      renderWithdrawals();
+
+
+    } catch (error) {
+
+      console.error(
+        "Novelora Money Error:",
+        error
+      );
+
+
+      setText(
+        "totalEarnings",
+        "$0.00"
+      );
+
+      setText(
+        "monthlyEarnings",
+        "$0.00"
+      );
+
+      setText(
+        "availableBalance",
+        "$0.00"
+      );
+
+      setText(
+        "pendingBalance",
+        "$0.00"
+      );
+
+      setText(
+        "withdrawBalance",
+        "$0.00"
+      );
+
+      setText(
+        "chartTotal",
+        "$0.00"
+      );
+
+
+      const chart =
+        document.querySelector(
+          ".chart-placeholder span"
+        );
+
+
+      if (chart) {
+
+        chart.textContent =
+          "Unable to load earnings from Supabase.";
+
+      }
+
+    }
+
+
+    /* =========================================================
+       PERIOD SELECTOR
+    ========================================================= */
+
+    const earningsPeriod =
+      document.getElementById(
+        "earningsPeriod"
+      );
+
+
+    if (earningsPeriod) {
+
+      earningsPeriod.addEventListener(
+        "change",
+        updateChart
+      );
+
+    }
 
   }
-
-
-  /* =========================
-     INITIAL LOAD
-  ========================= */
-
-  updateDashboard();
-
-  renderWithdrawals();
-
-  renderBookEarnings();
 
 });
