@@ -1,1850 +1,1852 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Analytics | Novelora Admin</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    /* =========================================================
-       ANALYTICS PAGE
-       Original Novelora dark/glass admin design
-       ========================================================= */
-
-    .analytics-page {
-      width: 100%;
-    }
-
-    .analytics-header {
-      margin-bottom: 28px;
-    }
-
-    .analytics-kicker {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      opacity: 0.6;
-      margin-bottom: 7px;
-    }
-
-    .analytics-header h1 {
-      margin: 0;
-      font-size: 28px;
-      font-weight: 700;
-    }
-
-    .analytics-header p {
-      margin: 7px 0 0;
-      opacity: 0.65;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-
-    /* =========================================================
-       TOP STAT CARDS
-       ========================================================= */
-
-    .analytics-stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .analytics-stat-card {
-      padding: 20px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-      backdrop-filter: blur(14px);
-    }
-
-    .analytics-stat-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 1.2px;
-      opacity: 0.55;
-      text-transform: uppercase;
-      margin-bottom: 9px;
-    }
-
-    .analytics-stat-value {
-      font-size: 27px;
-      font-weight: 700;
-      line-height: 1.2;
-    }
-
-    .analytics-stat-description {
-      margin-top: 6px;
-      font-size: 12px;
-      opacity: 0.5;
-    }
-
-    /* =========================================================
-       MAIN TWO-COLUMN SECTION
-       ========================================================= */
-
-    .analytics-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
-      gap: 18px;
-      margin-bottom: 22px;
-    }
-
-    .analytics-panel {
-      padding: 22px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-      backdrop-filter: blur(14px);
-      min-width: 0;
-    }
-
-    .analytics-panel-header {
-      margin-bottom: 20px;
-    }
-
-    .analytics-panel-header h2 {
-      margin: 0;
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .analytics-panel-header p {
-      margin: 5px 0 0;
-      font-size: 12px;
-      opacity: 0.52;
-      line-height: 1.5;
-    }
-
-    /* =========================================================
-       OVERVIEW METRICS
-       ========================================================= */
-
-    .overview-metrics {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .overview-metric {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 13px 14px;
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.045);
-    }
-
-    .overview-metric span:first-child {
-      font-size: 13px;
-      opacity: 0.7;
-    }
-
-    .overview-metric strong {
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    /* =========================================================
-       READER ACTIVITY
-       ========================================================= */
-
-    .activity-empty {
-      min-height: 230px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      flex-direction: column;
-      padding: 25px;
-    }
-
-    .activity-icon {
-      font-size: 34px;
-      line-height: 1;
-      margin-bottom: 14px;
-      opacity: 0.55;
-    }
-
-    .activity-empty h3 {
-      margin: 0 0 7px;
-      font-size: 15px;
-    }
-
-    .activity-empty p {
-      max-width: 300px;
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.6;
-      opacity: 0.5;
-    }
-
-    .activity-summary {
-      width: 100%;
-      display: none;
-      gap: 10px;
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .activity-summary-card {
-      padding: 14px;
-      border-radius: 11px;
-      background: rgba(255, 255, 255, 0.035);
-      text-align: center;
-    }
-
-    .activity-summary-card strong {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 5px;
-    }
-
-    .activity-summary-card span {
-      font-size: 10px;
-      opacity: 0.5;
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-    }
-
-    /* =========================================================
-       BOOK PERFORMANCE
-       ========================================================= */
-
-    .performance-panel {
-      padding: 22px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.045);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-      backdrop-filter: blur(14px);
-    }
-
-    .performance-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 18px;
-    }
-
-    .performance-title h2 {
-      margin: 0;
-      font-size: 17px;
-    }
-
-    .performance-title p {
-      margin: 5px 0 0;
-      font-size: 12px;
-      opacity: 0.52;
-      line-height: 1.5;
-    }
-
-    /* Time filters */
-
-    .analytics-filters {
-      display: flex;
-      gap: 5px;
-      padding: 4px;
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.055);
-      flex-shrink: 0;
-    }
-
-    .analytics-filter {
-      border: 0;
-      background: transparent;
-      color: inherit;
-      opacity: 0.5;
-      padding: 7px 10px;
-      border-radius: 7px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .analytics-filter:hover {
-      opacity: 0.8;
-      background: rgba(255, 255, 255, 0.04);
-    }
-
-    .analytics-filter.active {
-      opacity: 1;
-      background: rgba(255, 255, 255, 0.09);
-    }
-
-    /* Refresh */
-
-    .analytics-actions {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
-
-    .refresh-btn {
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      background: rgba(255, 255, 255, 0.045);
-      color: inherit;
-      border-radius: 9px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 12px;
-      transition: 0.2s ease;
-    }
-
-    .refresh-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .refresh-btn.loading {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    /* Performance table */
-
-    .performance-table {
-      width: 100%;
-    }
-
-    .performance-table-head {
-      display: grid;
-      grid-template-columns: minmax(190px, 1.8fr) repeat(5, minmax(70px, 0.7fr));
-      gap: 12px;
-      padding: 0 15px 10px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.7px;
-      text-transform: uppercase;
-      opacity: 0.42;
-    }
-
-    .performance-table-head > div:not(:first-child),
-    .book-analytics-row > div:not(:first-child) {
-      text-align: right;
-    }
-
-    .book-analytics-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .book-analytics-row {
-      display: grid;
-      grid-template-columns: minmax(190px, 1.8fr) repeat(5, minmax(70px, 0.7fr));
-      gap: 12px;
-      align-items: center;
-      padding: 15px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.035);
-      border: 1px solid rgba(255, 255, 255, 0.045);
-      min-width: 0;
-    }
-
-    .book-performance-title {
-      min-width: 0;
-    }
-
-    .book-performance-title strong {
-      display: block;
-      font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .book-performance-title span {
-      display: block;
-      margin-top: 4px;
-      font-size: 10px;
-      opacity: 0.45;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .book-performance-number {
-      font-size: 12px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .performance-empty {
-      min-height: 230px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 25px;
-    }
-
-    .performance-empty-icon {
-      font-size: 32px;
-      margin-bottom: 13px;
-      opacity: 0.55;
-    }
-
-    .performance-empty h3 {
-      margin: 0 0 7px;
-      font-size: 15px;
-    }
-
-    .performance-empty p {
-      max-width: 340px;
-      margin: 0;
-      font-size: 12px;
-      line-height: 1.6;
-      opacity: 0.5;
-    }
-
-    /* =========================================================
-       ERROR
-       ========================================================= */
-
-    .analytics-error {
-      display: none;
-      margin-bottom: 18px;
-      padding: 13px 15px;
-      border-radius: 11px;
-      background: rgba(255, 70, 100, 0.08);
-      border: 1px solid rgba(255, 70, 100, 0.18);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .analytics-error strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
-
-    @media (max-width: 1100px) {
-      .analytics-stats {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .analytics-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 850px) {
-      .performance-header {
-        flex-direction: column;
-      }
-
-      .analytics-filters {
-        width: 100%;
-      }
-
-      .analytics-filter {
-        flex: 1;
-      }
-
-      .performance-table {
-        overflow-x: auto;
-      }
-
-      .performance-table-head,
-      .book-analytics-row {
-        min-width: 760px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .analytics-stats {
-        grid-template-columns: 1fr;
-      }
-
-      .analytics-panel,
-      .performance-panel {
-        padding: 18px;
-      }
-
-      .overview-metrics {
-        grid-template-columns: 1fr;
-      }
-
-      .activity-summary {
-        grid-template-columns: 1fr;
-      }
-
-      .performance-table-head,
-      .book-analytics-row {
-        grid-template-columns: minmax(180px, 1.5fr) repeat(5, 70px);
-      }
-
-      .analytics-header h1 {
-        font-size: 24px;
-      }
-    }
-  </style>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Analytics — Novelora Admin</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+.analytics-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 18px;
+margin-bottom: 24px;
+}
+
+.analytics-card {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 18px;
+padding: 22px;
+}
+
+.analytics-card span {
+display: block;
+color: #aaa;
+font-size: 12px;
+letter-spacing: 1px;
+margin-bottom: 10px;
+}
+
+.analytics-card strong {
+display: block;
+font-size: 30px;
+color: #fff;
+}
+
+.analytics-card p {
+color: #888;
+margin: 8px 0 0;
+font-size: 13px;
+}
+
+.analytics-layout {
+display: grid;
+grid-template-columns: 1.5fr 1fr;
+gap: 20px;
+margin-bottom: 24px;
+}
+
+.analytics-panel {
+background: rgba(255,255,255,0.04);
+border: 1px solid rgba(255,255,255,0.08);
+border-radius: 20px;
+padding: 24px;
+}
+
+.analytics-panel h2 {
+margin: 0 0 5px;
+color: #fff;
+}
+
+.analytics-panel > p {
+color: #888;
+font-size: 13px;
+margin-bottom: 22px;
+}
+
+.metric-list {
+display: flex;
+flex-direction: column;
+gap: 14px;
+}
+
+.metric-row {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 14px 0;
+border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.metric-row:last-child {
+border-bottom: none;
+}
+
+.metric-row span {
+color: #bbb;
+}
+
+.metric-row strong {
+color: #fff;
+font-size: 16px;
+}
+
+.empty-analytics {
+text-align: center;
+padding: 55px 20px;
+color: #888;
+}
+
+.empty-analytics .symbol {
+font-size: 42px;
+color: #e88aaa;
+margin-bottom: 12px;
+}
+
+.empty-analytics h3 {
+color: #fff;
+margin: 0 0 8px;
+}
+
+.book-analytics {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+
+/* BOOK PERFORMANCE */
+
+.book-analytics-header,
+.book-analytics-row {
+display: grid;
+grid-template-columns: minmax(160px, 1fr) repeat(5, auto);
+gap: 18px;
+align-items: center;
+}
+
+.book-analytics-header {
+padding: 0 15px 8px;
+color: #777;
+font-size: 11px;
+letter-spacing: .7px;
+text-transform: uppercase;
+}
+
+.book-analytics-header span:not(:first-child),
+.book-analytics-row span:not(:first-child) {
+text-align: right;
+}
+
+.book-analytics-row {
+padding: 15px;
+border-radius: 12px;
+background: rgba(255,255,255,0.03);
+}
+
+.book-analytics-row strong {
+color: #fff;
+min-width: 0;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+
+.book-analytics-row span {
+color: #999;
+font-size: 13px;
+white-space: nowrap;
+}
+
+.analytics-filter-bar {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 15px;
+margin-bottom: 20px;
+}
+
+.analytics-filters {
+display: flex;
+gap: 6px;
+}
+
+.analytics-filter {
+border: 1px solid rgba(255,255,255,0.08);
+background: rgba(255,255,255,0.03);
+color: #999;
+border-radius: 9px;
+padding: 7px 11px;
+font-size: 11px;
+cursor: pointer;
+}
+
+.analytics-filter:hover {
+background: rgba(255,255,255,0.06);
+color: #fff;
+}
+
+.analytics-filter.active {
+background: rgba(232,138,170,0.12);
+border-color: rgba(232,138,170,0.25);
+color: #e88aaa;
+}
+
+.analytics-refresh {
+border: 1px solid rgba(255,255,255,0.08);
+background: rgba(255,255,255,0.03);
+color: #aaa;
+border-radius: 9px;
+padding: 7px 11px;
+font-size: 11px;
+cursor: pointer;
+}
+
+.analytics-refresh:hover {
+background: rgba(255,255,255,0.06);
+color: #fff;
+}
+
+.analytics-error {
+display: none;
+background: rgba(255,70,100,0.08);
+border: 1px solid rgba(255,70,100,0.18);
+border-radius: 12px;
+padding: 13px;
+color: #ff9aaa;
+font-size: 13px;
+margin-bottom: 20px;
+}
+
+@media (max-width: 1000px) {
+
+.analytics-grid {
+grid-template-columns: repeat(2, 1fr);
+}
+
+.analytics-layout {
+grid-template-columns: 1fr;
+}
+
+}
+
+@media (max-width: 750px) {
+
+.analytics-filter-bar {
+flex-direction: column;
+align-items: flex-start;
+}
+
+.book-analytics {
+overflow-x: auto;
+}
+
+.book-analytics-header,
+.book-analytics-row {
+min-width: 720px;
+}
+
+}
+
+@media (max-width: 600px) {
+
+.analytics-grid {
+grid-template-columns: 1fr;
+}
+
+.analytics-panel {
+padding: 18px;
+}
+
+}
+
+</style>
+
 </head>
 
 <body>
 
-  <!-- =========================================================
-       SIDEBAR
-       ========================================================= -->
+<div class="admin-app">
 
-  <aside class="sidebar">
+<!-- SIDEBAR -->
 
-    <div class="sidebar-brand">
-      <div class="brand-name">NOVELORA</div>
-      <div class="brand-subtitle">ADMIN PANEL</div>
-    </div>
+<aside class="admin-sidebar">
 
-    <nav class="sidebar-nav">
+<div class="admin-brand">
 
-      <a href="admin.html">Dashboard</a>
-      <a href="admin-books.html">Books</a>
-      <a href="admin-chapters.html">Chapters</a>
-      <a href="admin-readers.html">Readers</a>
-      <a href="admin-authors.html">Authors</a>
-      <a href="admin-community.html">Community</a>
+<div class="brand-name">
+NOVEL<span>ORA</span>
+</div>
 
-      <div class="sidebar-divider"></div>
+<div class="brand-label">
+ADMIN PANEL
+</div>
 
-      <a href="admin-notifications.html">Notifications</a>
-      <a href="admin-money.html">Money</a>
-      <a href="analytics.html" class="active">Analytics</a>
-      <a href="admin-rewards.html">Rewards</a>
-      <a href="admin-promotions.html">Promotions</a>
+</div>
 
-      <div class="sidebar-divider"></div>
+<nav class="admin-navigation">
 
-      <a href="admin-settings.html">Settings</a>
-      <a href="admin-security.html">Security</a>
+<a href="index.html" class="nav-item">
+<span>⌂</span>
+<span>Dashboard</span>
+</a>
 
-    </nav>
+<a href="books.html" class="nav-item">
+<span>▣</span>
+<span>Books</span>
+</a>
 
-    <div class="sidebar-footer">
-      <strong>Novelora Admin</strong>
-      <span>Administrator</span>
-    </div>
+<a href="chapters.html" class="nav-item">
+<span>▤</span>
+<span>Chapters</span>
+</a>
 
-  </aside>
+<a href="readers.html" class="nav-item">
+<span>♙</span>
+<span>Readers</span>
+</a>
 
+<a href="authors.html" class="nav-item">
+<span>✎</span>
+<span>Authors</span>
+</a>
 
-  <!-- =========================================================
-       MAIN
-       ========================================================= -->
+<a href="community.html" class="nav-item">
+<span>♡</span>
+<span>Community</span>
+</a>
 
-  <main class="main-content">
+<div class="nav-divider"></div>
 
-    <!-- TOPBAR -->
+<a href="notifications.html" class="nav-item">
+<span>♢</span>
+<span>Notifications</span>
+</a>
 
-    <header class="topbar">
+<a href="money.html" class="nav-item">
+<span>₵</span>
+<span>Money</span>
+</a>
 
-      <div></div>
+<a href="analytics.html" class="nav-item active">
+<span>↗</span>
+<span>Analytics</span>
+</a>
 
-      <div class="topbar-right">
+<a href="rewards.html" class="nav-item">
+<span>✦</span>
+<span>Rewards</span>
+</a>
 
-        <button class="notification-button" type="button">
-          🔔
-        </button>
+<a href="promotions.html" class="nav-item">
+<span>♢</span>
+<span>Promotions</span>
+</a>
 
-        <div class="admin-profile">
-          <div class="admin-avatar">A</div>
-          <div>
-            <strong>Admin</strong>
-            <span>Administrator</span>
-          </div>
-        </div>
+<div class="nav-divider"></div>
 
-      </div>
+<a href="settings.html" class="nav-item">
+<span>⚙</span>
+<span>Settings</span>
+</a>
 
-    </header>
+<a href="security.html" class="nav-item">
+<span>♙</span>
+<span>Security</span>
+</a>
 
+</nav>
 
-    <div class="analytics-page">
+<div class="sidebar-footer">
 
-      <!-- =====================================================
-           PAGE HEADER
-           ===================================================== -->
+<div class="admin-avatar">
+N
+</div>
 
-      <div class="analytics-header">
+<div>
 
-        <div class="analytics-kicker">
-          NOVELORA INSIGHTS
-        </div>
+<strong>Novelora Admin</strong>
 
-        <h1>Analytics 📊</h1>
+<small>Administrator</small>
 
-        <p>
-          Understand how readers and books are performing across Novelora.
-        </p>
+</div>
 
-      </div>
+</div>
 
+</aside>
 
-      <!-- ERROR -->
 
-      <div id="analyticsError" class="analytics-error">
-        <strong>Analytics couldn't load</strong>
-        <span id="analyticsErrorMessage"></span>
-      </div>
+<!-- MAIN -->
 
+<main class="admin-main">
 
-      <!-- =====================================================
-           TOP STAT CARDS
-           ===================================================== -->
+<header class="admin-topbar">
 
-      <section class="analytics-stats">
+<div>
 
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-label">Books</div>
-          <div id="totalBooks" class="analytics-stat-value">—</div>
-          <div class="analytics-stat-description">
-            Total books added
-          </div>
-        </div>
+<div class="page-kicker">
+NOVELORA INSIGHTS
+</div>
 
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-label">Chapters</div>
-          <div id="totalChapters" class="analytics-stat-value">—</div>
-          <div class="analytics-stat-description">
-            Total chapters created
-          </div>
-        </div>
+<h1>
+Analytics 📊
+</h1>
 
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-label">Readers</div>
-          <div id="totalReaders" class="analytics-stat-value">—</div>
-          <div class="analytics-stat-description">
-            Registered readers
-          </div>
-        </div>
+<p>
+Understand how readers and books are performing across Novelora.
+</p>
 
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-label">Revenue</div>
-          <div id="totalRevenue" class="analytics-stat-value">—</div>
-          <div class="analytics-stat-description">
-            Recorded platform revenue
-          </div>
-        </div>
+</div>
 
-      </section>
+<div class="topbar-actions">
 
+<button
+class="icon-button"
+title="Notifications"
+onclick="location.href='notifications.html'"
+>
+♢
+</button>
 
-      <!-- =====================================================
-           PLATFORM OVERVIEW + READER ACTIVITY
-           ===================================================== -->
+<div class="admin-user">
 
-      <section class="analytics-layout">
+<div class="admin-user-avatar">
+N
+</div>
 
-        <!-- PLATFORM OVERVIEW -->
+<div>
 
-        <div class="analytics-panel">
+<strong>Admin</strong>
 
-          <div class="analytics-panel-header">
+<small>Administrator</small>
 
-            <h2>Platform Overview</h2>
+</div>
 
-            <p>
-              Current activity recorded by Novelora.
-            </p>
+</div>
 
-          </div>
+</div>
 
-          <div class="overview-metrics">
+</header>
 
-            <div class="overview-metric">
-              <span>Published Books</span>
-              <strong id="publishedBooks">—</strong>
-            </div>
 
-            <div class="overview-metric">
-              <span>Published Chapters</span>
-              <strong id="publishedChapters">—</strong>
-            </div>
+<!-- ERROR -->
 
-            <div class="overview-metric">
-              <span>Free Books</span>
-              <strong id="freeBooks">—</strong>
-            </div>
+<div id="analyticsError" class="analytics-error"></div>
 
-            <div class="overview-metric">
-              <span>Featured Books</span>
-              <strong id="featuredBooks">—</strong>
-            </div>
 
-            <div class="overview-metric">
-              <span>Active Authors</span>
-              <strong id="activeAuthors">—</strong>
-            </div>
+<!-- MAIN STATISTICS -->
 
-            <div class="overview-metric">
-              <span>Coins Spent</span>
-              <strong id="coinsSpent">—</strong>
-            </div>
+<section class="analytics-grid">
 
-            <div class="overview-metric">
-              <span>Chapter Unlocks</span>
-              <strong id="chapterUnlocks">—</strong>
-            </div>
+<div class="analytics-card">
 
-          </div>
+<span>BOOKS</span>
 
-        </div>
+<strong id="analyticsBooks">
+0
+</strong>
 
+<p>
+Total books added
+</p>
 
-        <!-- READER ACTIVITY -->
+</div>
 
-        <div class="analytics-panel">
 
-          <div class="analytics-panel-header">
+<div class="analytics-card">
 
-            <h2>Reader Activity</h2>
+<span>CHAPTERS</span>
 
-            <p>
-              Reader activity will appear here as Novelora receives real usage data.
-            </p>
+<strong id="analyticsChapters">
+0
+</strong>
 
-          </div>
+<p>
+Total chapters created
+</p>
 
-          <div id="readerActivityEmpty" class="activity-empty">
+</div>
 
-            <div class="activity-icon">♡</div>
 
-            <h3>No reader activity yet</h3>
+<div class="analytics-card">
 
-            <p>
-              Reads, chapter unlocks and engagement will appear here once readers begin using Novelora.
-            </p>
+<span>READERS</span>
 
-          </div>
+<strong id="analyticsReaders">
+0
+</strong>
 
-          <div id="readerActivitySummary" class="activity-summary">
+<p>
+Registered readers
+</p>
 
-            <div class="activity-summary-card">
-              <strong id="activeReaders">0</strong>
-              <span>Active Readers</span>
-            </div>
+</div>
 
-            <div class="activity-summary-card">
-              <strong id="activityReads">0</strong>
-              <span>Reads</span>
-            </div>
 
-            <div class="activity-summary-card">
-              <strong id="activityUnlocks">0</strong>
-              <span>Unlocks</span>
-            </div>
+<div class="analytics-card">
 
-          </div>
+<span>REVENUE</span>
 
-        </div>
+<strong id="analyticsRevenue">
+$0.00
+</strong>
 
-      </section>
+<p>
+Recorded platform revenue
+</p>
 
+</div>
 
-      <!-- =====================================================
-           BOOK PERFORMANCE
-           ===================================================== -->
+</section>
 
-      <section class="performance-panel">
 
-        <div class="performance-header">
+<!-- SECONDARY METRICS -->
 
-          <div class="performance-title">
+<section class="analytics-layout">
 
-            <h2>Book Performance</h2>
 
-            <p>
-              Overview of books currently stored in the admin system.
-            </p>
+<div class="analytics-panel">
 
-          </div>
+<h2>
+Platform Overview
+</h2>
 
+<p>
+Current activity recorded by Novelora.
+</p>
 
-          <div class="analytics-actions">
+<div class="metric-list">
 
-            <div class="analytics-filters">
 
-              <button
-                type="button"
-                class="analytics-filter"
-                data-range="today">
-                Today
-              </button>
+<div class="metric-row">
 
-              <button
-                type="button"
-                class="analytics-filter"
-                data-range="7">
-                7 Days
-              </button>
+<span>
+Published Books
+</span>
 
-              <button
-                type="button"
-                class="analytics-filter"
-                data-range="30">
-                30 Days
-              </button>
+<strong id="publishedBooks">
+0
+</strong>
 
-              <button
-                type="button"
-                class="analytics-filter active"
-                data-range="all">
-                All Time
-              </button>
+</div>
 
-            </div>
 
-            <button
-              type="button"
-              id="refreshAnalytics"
-              class="refresh-btn">
-              ↻ Refresh
-            </button>
+<div class="metric-row">
 
-          </div>
+<span>
+Published Chapters
+</span>
 
-        </div>
+<strong id="publishedChapters">
+0
+</strong>
 
+</div>
 
-        <div id="performanceEmpty" class="performance-empty">
 
-          <div class="performance-empty-icon">📚</div>
+<div class="metric-row">
 
-          <h3>No books yet</h3>
+<span>
+Free Books
+</span>
 
-          <p>
-            Book performance will appear here once books are added to the Novelora admin system.
-          </p>
+<strong id="freeBooks">
+0
+</strong>
 
-        </div>
+</div>
 
 
-        <div id="performanceTable" class="performance-table" style="display:none;">
+<div class="metric-row">
 
-          <div class="performance-table-head">
+<span>
+Featured Books
+</span>
 
-            <div>Book</div>
-            <div>Views</div>
-            <div>Reads</div>
-            <div>Library</div>
-            <div>Unlocks</div>
-            <div>Revenue</div>
+<strong id="featuredBooks">
+0
+</strong>
 
-          </div>
+</div>
 
-          <div
-            id="bookAnalyticsList"
-            class="book-analytics-list">
-          </div>
 
-        </div>
+<div class="metric-row">
 
-      </section>
+<span>
+Active Authors
+</span>
 
-    </div>
+<strong id="activeAuthors">
+0
+</strong>
 
-  </main>
+</div>
 
 
-  <!-- =========================================================
-       ANALYTICS JAVASCRIPT
-       Working Supabase analytics logic
-       ========================================================= -->
+<div class="metric-row">
 
-  <script>
+<span>
+Coins Spent
+</span>
 
-    /* =========================================================
-       SUPABASE
-       ========================================================= */
+<strong id="coinsSpent">
+0
+</strong>
 
-    const SUPABASE_URL =
-      "https://fydjmfdtvdtkyjmsdubd.supabase.co";
+</div>
 
-    const SUPABASE_KEY =
-      "sb_publishable_VwkLSv5ixhNHtAUhNdDnqA_tJWSF9S8";
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+<div class="metric-row">
 
+<span>
+Chapter Unlocks
+</span>
 
-    /* =========================================================
-       DATA
-       ========================================================= */
+<strong id="chapterUnlocks">
+0
+</strong>
 
-    let books = [];
-    let chapters = [];
-    let profiles = [];
-    let authors = [];
+</div>
 
-    let bookViews = [];
-    let readingEvents = [];
-    let libraryItems = [];
-    let chapterUnlocks = [];
-    let coinTransactions = [];
-    let purchases = [];
 
-    let currentRange = "all";
+</div>
 
+</div>
 
-    /* =========================================================
-       HELPERS
-       ========================================================= */
 
-    function escapeHtml(value) {
+<div class="analytics-panel">
 
-      if (value === null || value === undefined) {
-        return "";
-      }
+<h2>
+Reader Activity
+</h2>
 
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
+<p>
+Reader activity will appear here as Novelora receives real usage data.
+</p>
 
+<div id="readerActivity">
 
-    function formatNumber(value) {
+<div class="empty-analytics">
 
-      const number = Number(value || 0);
+<div class="symbol">
+♡
+</div>
 
-      return number.toLocaleString();
-    }
+<h3 id="activityTitle">
+No reader activity yet
+</h3>
 
+<p>
+Reads, unlocks and engagement data will appear once real readers begin using Novelora.
+</p>
 
-    function formatMoney(value) {
+</div>
 
-      const number = Number(value || 0);
+</div>
 
-      return "$" + number.toLocaleString(
-        undefined,
-        {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        }
-      );
-    }
+</div>
 
+</section>
 
-    function isPublished(item) {
 
-      const status =
-        String(
-          item?.status ||
-          item?.story_status ||
-          ""
-        ).toLowerCase();
+<!-- BOOK PERFORMANCE -->
 
-      return status.includes("publish");
-    }
+<section class="analytics-panel">
 
+<h2>
+Book Performance
+</h2>
 
-    function getDateLimit(range) {
+<p>
+Overview of books currently stored in the admin system.
+</p>
 
-      if (range === "all") {
-        return null;
-      }
 
-      const now = new Date();
+<div class="analytics-filter-bar">
 
-      if (range === "today") {
+<div class="analytics-filters">
 
-        const start = new Date();
+<button
+class="analytics-filter"
+data-range="today"
+>
+Today
+</button>
 
-        start.setHours(0, 0, 0, 0);
+<button
+class="analytics-filter"
+data-range="7"
+>
+7 Days
+</button>
 
-        return start;
-      }
+<button
+class="analytics-filter"
+data-range="30"
+>
+30 Days
+</button>
 
-      if (range === "7") {
+<button
+class="analytics-filter active"
+data-range="all"
+>
+All Time
+</button>
 
-        return new Date(
-          now.getTime() -
-          7 * 24 * 60 * 60 * 1000
-        );
-      }
+</div>
 
-      if (range === "30") {
 
-        return new Date(
-          now.getTime() -
-          30 * 24 * 60 * 60 * 1000
-        );
-      }
+<button
+id="refreshAnalytics"
+class="analytics-refresh"
+>
+↻ Refresh
+</button>
 
-      return null;
-    }
+</div>
 
 
-    function withinRange(dateValue, range = currentRange) {
+<div id="bookAnalytics" class="book-analytics">
 
-      if (range === "all") {
-        return true;
-      }
+<div class="empty-analytics">
 
-      if (!dateValue) {
-        return false;
-      }
+<div class="symbol">
+📚
+</div>
 
-      const limit = getDateLimit(range);
+<h3>
+No books yet
+</h3>
 
-      if (!limit) {
-        return true;
-      }
+<p>
+Book performance data will appear here after books are added.
+</p>
 
-      return new Date(dateValue) >= limit;
-    }
+</div>
 
+</div>
 
-    function showError(message) {
 
-      const box =
-        document.getElementById("analyticsError");
+</section>
 
-      const text =
-        document.getElementById("analyticsErrorMessage");
 
-      text.textContent = message || "Unknown error.";
+</main>
 
-      box.style.display = "block";
-    }
+</div>
 
 
-    function hideError() {
+<script>
 
-      document.getElementById(
-        "analyticsError"
-      ).style.display = "none";
-    }
+/* =========================================================
+   SUPABASE
+   ========================================================= */
 
+const SUPABASE_URL =
+"https://fydjmfdtvdtkyjmsdubd.supabase.co";
 
-    /* =========================================================
-       LOAD ALL DATA
-       ========================================================= */
+const SUPABASE_KEY =
+"sb_publishable_VwkLSv5ixhNHtAUhNdDnqA_tJWSF9S8";
 
-    async function loadAllData() {
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
-      hideError();
 
-      const results = await Promise.all([
+/* =========================================================
+   DATA
+   ========================================================= */
 
-        supabaseClient
-          .from("books")
-          .select("*"),
+let books = [];
+let chapters = [];
+let profiles = [];
+let authors = [];
 
-        supabaseClient
-          .from("chapters")
-          .select("*"),
+let bookViews = [];
+let readingEvents = [];
+let libraryItems = [];
+let chapterUnlocks = [];
+let coinTransactions = [];
+let purchases = [];
 
-        supabaseClient
-          .from("profiles")
-          .select("*"),
+let currentRange = "all";
 
-        supabaseClient
-          .from("authors")
-          .select("*"),
 
-        supabaseClient
-          .from("book_views")
-          .select("*"),
+/* =========================================================
+   HELPERS
+   ========================================================= */
 
-        supabaseClient
-          .from("reading_events")
-          .select("*"),
+function escapeHTML(value) {
 
-        supabaseClient
-          .from("library")
-          .select("*"),
+const div =
+document.createElement("div");
 
-        supabaseClient
-          .from("chapter_unlocks")
-          .select("*"),
+div.textContent =
+value ?? "";
 
-        supabaseClient
-          .from("coin_transactions")
-          .select("*"),
+return div.innerHTML;
 
-        supabaseClient
-          .from("purchases")
-          .select("*")
+}
 
-      ]);
 
+function formatNumber(value) {
 
-      const errors =
-        results.filter(
-          result => result.error
-        );
+return Number(value || 0)
+.toLocaleString();
 
+}
 
-      if (errors.length) {
 
-        throw new Error(
-          errors
-            .map(
-              result =>
-                result.error?.message
-            )
-            .filter(Boolean)
-            .join(" | ")
-        );
+function money(value) {
 
-      }
+return "$" +
+Number(value || 0)
+.toFixed(2);
 
+}
 
-      books = results[0].data || [];
-      chapters = results[1].data || [];
-      profiles = results[2].data || [];
-      authors = results[3].data || [];
 
-      bookViews = results[4].data || [];
-      readingEvents = results[5].data || [];
-      libraryItems = results[6].data || [];
-      chapterUnlocks = results[7].data || [];
-      coinTransactions = results[8].data || [];
-      purchases = results[9].data || [];
+function isPublished(item) {
 
+const status =
+String(
+item?.status ||
+item?.story_status ||
+""
+).toLowerCase();
 
-      renderTopStats();
-      renderOverview();
-      renderReaderActivity();
-      renderBookPerformance();
+return status.includes("publish");
 
-    }
+}
 
 
-    /* =========================================================
-       TOP STATS
-       ========================================================= */
+function getDateLimit(range) {
 
-    function renderTopStats() {
+if (range === "all") {
+return null;
+}
 
-      document.getElementById(
-        "totalBooks"
-      ).textContent =
-        formatNumber(books.length);
+const now = new Date();
 
+if (range === "today") {
 
-      document.getElementById(
-        "totalChapters"
-      ).textContent =
-        formatNumber(chapters.length);
+const start = new Date();
 
+start.setHours(0,0,0,0);
 
-      document.getElementById(
-        "totalReaders"
-      ).textContent =
-        formatNumber(profiles.length);
+return start;
 
+}
 
-      const successfulStatuses = [
-        "successful",
-        "success",
-        "completed",
-        "complete",
-        "paid"
-      ];
+if (range === "7") {
 
+return new Date(
+now.getTime() -
+7 * 24 * 60 * 60 * 1000
+);
 
-      const totalRevenue =
-        purchases
-          .filter(purchase =>
-            successfulStatuses.includes(
-              String(
-                purchase.status || ""
-              ).toLowerCase()
-            )
-          )
-          .reduce(
-            (sum, purchase) =>
-              sum + Number(
-                purchase.amount || 0
-              ),
-            0
-          );
+}
 
+if (range === "30") {
 
-      document.getElementById(
-        "totalRevenue"
-      ).textContent =
-        formatMoney(totalRevenue);
+return new Date(
+now.getTime() -
+30 * 24 * 60 * 60 * 1000
+);
 
-    }
+}
 
+return null;
 
-    /* =========================================================
-       PLATFORM OVERVIEW
-       ========================================================= */
+}
 
-    function renderOverview() {
 
-      const publishedBooks =
-        books.filter(
-          book => isPublished(book)
-        ).length;
+function withinRange(dateValue) {
 
+if (currentRange === "all") {
+return true;
+}
 
-      const publishedChapters =
-        chapters.filter(
-          chapter =>
-            String(
-              chapter.status || ""
-            ).toLowerCase()
-            .includes("publish")
-        ).length;
+if (!dateValue) {
+return false;
+}
 
+const limit =
+getDateLimit(currentRange);
 
-      const freeBooks =
-        books.filter(book => {
+return new Date(dateValue) >= limit;
 
-          return (
-            book.free === true ||
-            String(
-              book.access_type || ""
-            ).toLowerCase() === "free"
-          );
+}
 
-        }).length;
 
+/* =========================================================
+   ERROR
+   ========================================================= */
 
-      const featuredBooks =
-        books.filter(
-          book =>
-            book.featured === true
-        ).length;
+function showError(message) {
 
+const box =
+document.querySelector(
+"#analyticsError"
+);
 
-      const activeAuthors =
-        authors.filter(author => {
+box.textContent =
+"Analytics error: " +
+(message || "Unable to load analytics.");
 
-          const status =
-            String(
-              author.status || ""
-            ).toLowerCase();
+box.style.display = "block";
 
-          return (
-            !status ||
-            status === "active" ||
-            status === "approved" ||
-            status === "published"
-          );
+}
 
-        }).length;
 
+function hideError() {
 
-      const rangeUnlocks =
-        chapterUnlocks.filter(
-          unlock =>
-            withinRange(
-              unlock.created_at
-            )
-        );
+document.querySelector(
+"#analyticsError"
+).style.display = "none";
 
+}
 
-      let coinsSpent =
-        rangeUnlocks.reduce(
-          (sum, unlock) =>
-            sum +
-            Number(
-              unlock.coins_spent || 0
-            ),
-          0
-        );
 
+/* =========================================================
+   LOAD DATA
+   ========================================================= */
 
-      /*
-       * Fallback to coin_transactions
-       * if unlock records contain no
-       * usable coin amount.
-       */
+async function loadAnalytics() {
 
-      if (coinsSpent === 0) {
+hideError();
 
-        coinsSpent =
-          coinTransactions
-            .filter(transaction => {
 
-              if (
-                !withinRange(
-                  transaction.created_at
-                )
-              ) {
-                return false;
-              }
+const results =
+await Promise.all([
 
-              const type =
-                String(
-                  transaction.transaction_type ||
-                  ""
-                ).toLowerCase();
+supabaseClient
+.from("books")
+.select("*"),
 
-              return (
-                type.includes("spend") ||
-                type.includes("unlock") ||
-                type.includes("purchase_chapter")
-              );
+supabaseClient
+.from("chapters")
+.select("*"),
 
-            })
-            .reduce(
-              (sum, transaction) =>
-                sum +
-                Math.abs(
-                  Number(
-                    transaction.amount || 0
-                  )
-                ),
-              0
-            );
+supabaseClient
+.from("profiles")
+.select("*"),
 
-      }
+supabaseClient
+.from("authors")
+.select("*"),
 
+supabaseClient
+.from("book_views")
+.select("*"),
 
-      document.getElementById(
-        "publishedBooks"
-      ).textContent =
-        formatNumber(publishedBooks);
+supabaseClient
+.from("reading_events")
+.select("*"),
 
+supabaseClient
+.from("library")
+.select("*"),
 
-      document.getElementById(
-        "publishedChapters"
-      ).textContent =
-        formatNumber(publishedChapters);
+supabaseClient
+.from("chapter_unlocks")
+.select("*"),
 
+supabaseClient
+.from("coin_transactions")
+.select("*"),
 
-      document.getElementById(
-        "freeBooks"
-      ).textContent =
-        formatNumber(freeBooks);
+supabaseClient
+.from("purchases")
+.select("*")
 
+]);
 
-      document.getElementById(
-        "featuredBooks"
-      ).textContent =
-        formatNumber(featuredBooks);
 
+const error =
+results.find(
+result => result.error
+);
 
-      document.getElementById(
-        "activeAuthors"
-      ).textContent =
-        formatNumber(activeAuthors);
 
+if (error) {
 
-      document.getElementById(
-        "coinsSpent"
-      ).textContent =
-        formatNumber(coinsSpent);
+throw new Error(
+error.error.message
+);
 
+}
 
-      document.getElementById(
-        "chapterUnlocks"
-      ).textContent =
-        formatNumber(rangeUnlocks.length);
 
-    }
+books =
+results[0].data || [];
 
+chapters =
+results[1].data || [];
 
-    /* =========================================================
-       READER ACTIVITY
-       ========================================================= */
+profiles =
+results[2].data || [];
 
-    function renderReaderActivity() {
+authors =
+results[3].data || [];
 
-      const reads =
-        readingEvents.filter(event => {
+bookViews =
+results[4].data || [];
 
-          if (
-            !withinRange(
-              event.created_at
-            )
-          ) {
-            return false;
-          }
+readingEvents =
+results[5].data || [];
 
-          return (
-            String(
-              event.event_type || ""
-            ).toLowerCase() ===
-            "chapter_read"
-          );
+libraryItems =
+results[6].data || [];
 
-        });
+chapterUnlocks =
+results[7].data || [];
 
+coinTransactions =
+results[8].data || [];
 
-      const unlocks =
-        chapterUnlocks.filter(
-          unlock =>
-            withinRange(
-              unlock.created_at
-            )
-        );
+purchases =
+results[9].data || [];
 
 
-      const library =
-        libraryItems.filter(
-          item =>
-            withinRange(
-              item.added_at ||
-              item.created_at
-            )
-        );
+updateAnalytics();
 
+}
 
-      const activeUserIds =
-        new Set();
 
+/* =========================================================
+   TOP + OVERVIEW
+   ========================================================= */
 
-      reads.forEach(item => {
+function updateAnalytics() {
 
-        if (item.user_id) {
-          activeUserIds.add(
-            item.user_id
-          );
-        }
 
-      });
+/* TOTAL BOOKS */
 
+document.querySelector(
+"#analyticsBooks"
+).textContent =
+formatNumber(
+books.length
+);
 
-      unlocks.forEach(item => {
 
-        if (item.user_id) {
-          activeUserIds.add(
-            item.user_id
-          );
-        }
+/* TOTAL CHAPTERS */
 
-      });
+document.querySelector(
+"#analyticsChapters"
+).textContent =
+formatNumber(
+chapters.length
+);
 
 
-      library.forEach(item => {
+/* TOTAL READERS */
 
-        if (item.user_id) {
-          activeUserIds.add(
-            item.user_id
-          );
-        }
+document.querySelector(
+"#analyticsReaders"
+).textContent =
+formatNumber(
+profiles.length
+);
 
-      });
 
+/* REVENUE */
 
-      const activeCount =
-        activeUserIds.size;
+const successfulStatuses = [
+"successful",
+"success",
+"completed",
+"complete",
+"paid"
+];
 
 
-      const empty =
-        document.getElementById(
-          "readerActivityEmpty"
-        );
+const revenue =
+purchases
+.filter(purchase =>
+successfulStatuses.includes(
+String(
+purchase.status || ""
+).toLowerCase()
+)
+)
+.reduce(
+(total, purchase) =>
+total +
+Number(
+purchase.amount || 0
+),
+0
+);
 
-      const summary =
-        document.getElementById(
-          "readerActivitySummary"
-        );
 
+document.querySelector(
+"#analyticsRevenue"
+).textContent =
+money(revenue);
 
-      if (
-        reads.length === 0 &&
-        unlocks.length === 0 &&
-        library.length === 0
-      ) {
 
-        empty.style.display = "flex";
-        summary.style.display = "none";
+/* PUBLISHED BOOKS */
 
-        return;
-      }
+document.querySelector(
+"#publishedBooks"
+).textContent =
+formatNumber(
+books.filter(
+book => isPublished(book)
+).length
+);
 
 
-      empty.style.display = "none";
-      summary.style.display = "grid";
+/* PUBLISHED CHAPTERS */
 
+document.querySelector(
+"#publishedChapters"
+).textContent =
+formatNumber(
+chapters.filter(
+chapter =>
+String(
+chapter.status || ""
+).toLowerCase()
+.includes("publish")
+).length
+);
 
-      document.getElementById(
-        "activeReaders"
-      ).textContent =
-        formatNumber(activeCount);
 
+/* FREE BOOKS */
 
-      document.getElementById(
-        "activityReads"
-      ).textContent =
-        formatNumber(reads.length);
+document.querySelector(
+"#freeBooks"
+).textContent =
+formatNumber(
+books.filter(book =>
+book.free === true ||
+String(
+book.access_type || ""
+).toLowerCase() === "free"
+).length
+);
 
 
-      document.getElementById(
-        "activityUnlocks"
-      ).textContent =
-        formatNumber(unlocks.length);
+/* FEATURED BOOKS */
 
-    }
+document.querySelector(
+"#featuredBooks"
+).textContent =
+formatNumber(
+books.filter(
+book => book.featured === true
+).length
+);
 
 
-    /* =========================================================
-       BOOK PERFORMANCE
-       ========================================================= */
+/* ACTIVE AUTHORS */
 
-    function renderBookPerformance() {
+document.querySelector(
+"#activeAuthors"
+).textContent =
+formatNumber(
+authors.filter(author => {
 
-      const empty =
-        document.getElementById(
-          "performanceEmpty"
-        );
+const status =
+String(
+author.status || ""
+).toLowerCase();
 
-      const table =
-        document.getElementById(
-          "performanceTable"
-        );
+return (
+!status ||
+status === "active" ||
+status === "approved" ||
+status === "published"
+);
 
-      const list =
-        document.getElementById(
-          "bookAnalyticsList"
-        );
+}).length
+);
 
 
-      if (!books.length) {
+/* COINS SPENT */
 
-        empty.style.display = "flex";
-        table.style.display = "none";
+const selectedUnlocks =
+chapterUnlocks.filter(
+unlock =>
+withinRange(
+unlock.created_at
+)
+);
 
-        return;
-      }
 
+let coinsSpent =
+selectedUnlocks.reduce(
+(total, unlock) =>
+total +
+Number(
+unlock.coins_spent || 0
+),
+0
+);
 
-      empty.style.display = "none";
-      table.style.display = "block";
 
+/*
+Fallback to coin_transactions
+if unlock records have no
+coin amount.
+*/
 
-      /*
-       * Map chapter IDs to their books.
-       */
+if (coinsSpent === 0) {
 
-      const chapterToBook =
-        new Map();
+coinsSpent =
+coinTransactions
+.filter(transaction => {
 
+if (
+!withinRange(
+transaction.created_at
+)
+) {
+return false;
+}
 
-      chapters.forEach(chapter => {
+const type =
+String(
+transaction.transaction_type ||
+""
+).toLowerCase();
 
-        if (chapter.id && chapter.book_id) {
+return (
+type.includes("spend") ||
+type.includes("unlock") ||
+type.includes("purchase_chapter")
+);
 
-          chapterToBook.set(
-            chapter.id,
-            chapter.book_id
-          );
+})
+.reduce(
+(total, transaction) =>
+total +
+Math.abs(
+Number(
+transaction.amount || 0
+)
+),
+0
+);
 
-        }
+}
 
-      });
 
+document.querySelector(
+"#coinsSpent"
+).textContent =
+formatNumber(
+coinsSpent
+);
 
-      const performance =
-        books.map(book => {
 
-          const views =
-            bookViews.filter(view => {
+/* CHAPTER UNLOCKS */
 
-              return (
-                view.book_id === book.id &&
-                withinRange(
-                  view.viewed_at ||
-                  view.created_at
-                )
-              );
+document.querySelector(
+"#chapterUnlocks"
+).textContent =
+formatNumber(
+selectedUnlocks.length
+);
 
-            }).length;
 
+renderReaderActivity();
 
-          const reads =
-            readingEvents.filter(event => {
+renderBooks();
 
-              return (
-                event.book_id === book.id &&
-                String(
-                  event.event_type || ""
-                ).toLowerCase() ===
-                "chapter_read" &&
-                withinRange(
-                  event.created_at
-                )
-              );
+}
 
-            }).length;
 
+/* =========================================================
+   READER ACTIVITY
+   ========================================================= */
 
-          const library =
-            libraryItems.filter(item => {
+function renderReaderActivity() {
 
-              return (
-                item.book_id === book.id &&
-                withinRange(
-                  item.added_at ||
-                  item.created_at
-                )
-              );
+const reads =
+readingEvents.filter(event => {
 
-            }).length;
+return (
+String(
+event.event_type || ""
+).toLowerCase() ===
+"chapter_read" &&
+withinRange(
+event.created_at
+)
+);
 
+});
 
-          const unlocks =
-            chapterUnlocks.filter(unlock => {
 
-              const unlockBookId =
-                chapterToBook.get(
-                  unlock.chapter_id
-                );
+const unlocks =
+chapterUnlocks.filter(
+unlock =>
+withinRange(
+unlock.created_at
+)
+);
 
-              return (
-                unlockBookId === book.id &&
-                withinRange(
-                  unlock.created_at
-                )
-              );
 
-            }).length;
+const library =
+libraryItems.filter(
+item =>
+withinRange(
+item.added_at ||
+item.created_at
+)
+);
 
 
-          /*
-           * Purchases currently do not contain
-           * book_id, so revenue cannot safely
-           * be attributed to individual books.
-           */
+const activeUsers =
+new Set();
 
-          const revenue = "—";
 
+reads.forEach(item => {
 
-          return {
-            book,
-            views,
-            reads,
-            library,
-            unlocks,
-            revenue
-          };
+if (item.user_id) {
+activeUsers.add(
+item.user_id
+);
+}
 
-        });
+});
 
 
-      performance.sort((a, b) => {
+unlocks.forEach(item => {
 
-        const scoreA =
-          a.views +
-          a.reads +
-          a.library +
-          a.unlocks;
+if (item.user_id) {
+activeUsers.add(
+item.user_id
+);
+}
 
+});
 
-        const scoreB =
-          b.views +
-          b.reads +
-          b.library +
-          b.unlocks;
 
+library.forEach(item => {
 
-        return scoreB - scoreA;
+if (item.user_id) {
+activeUsers.add(
+item.user_id
+);
+}
 
-      });
+});
 
 
-      list.innerHTML =
-        performance.map(item => {
+const activity =
+document.querySelector(
+"#readerActivity"
+);
 
-          const book =
-            item.book;
 
+if (
+reads.length === 0 &&
+unlocks.length === 0 &&
+library.length === 0
+) {
 
-          const subtitle =
-            book.author_name ||
-            book.pen_name ||
-            book.author ||
-            book.genre ||
-            "Novelora book";
+activity.innerHTML = `
 
+<div class="empty-analytics">
 
-          return `
+<div class="symbol">
+♡
+</div>
 
-            <div class="book-analytics-row">
+<h3>
+No reader activity yet
+</h3>
 
-              <div class="book-performance-title">
+<p>
+Reads, unlocks and engagement data will appear once real readers begin using Novelora.
+</p>
 
-                <strong>
-                  ${escapeHtml(
-                    book.title ||
-                    "Untitled Book"
-                  )}
-                </strong>
+</div>
 
-                <span>
-                  ${escapeHtml(
-                    subtitle
-                  )}
-                </span>
+`;
 
-              </div>
+return;
 
-              <div class="book-performance-number">
-                ${formatNumber(item.views)}
-              </div>
+}
 
-              <div class="book-performance-number">
-                ${formatNumber(item.reads)}
-              </div>
 
-              <div class="book-performance-number">
-                ${formatNumber(item.library)}
-              </div>
+/*
+Keep the original panel design,
+but show actual activity when
+there is data.
+*/
 
-              <div class="book-performance-number">
-                ${formatNumber(item.unlocks)}
-              </div>
+activity.innerHTML = `
 
-              <div class="book-performance-number">
-                ${item.revenue}
-              </div>
+<div class="metric-list">
 
-            </div>
+<div class="metric-row">
 
-          `;
+<span>
+Active Readers
+</span>
 
-        }).join("");
+<strong>
+${formatNumber(
+activeUsers.size
+)}
+</strong>
 
-    }
+</div>
 
+<div class="metric-row">
 
-    /* =========================================================
-       FILTERS
-       ========================================================= */
+<span>
+Reads
+</span>
 
-    document
-      .querySelectorAll(".analytics-filter")
-      .forEach(button => {
+<strong>
+${formatNumber(
+reads.length
+)}
+</strong>
 
-        button.addEventListener(
-          "click",
-          () => {
+</div>
 
-            document
-              .querySelectorAll(
-                ".analytics-filter"
-              )
-              .forEach(item => {
+<div class="metric-row">
 
-                item.classList.remove(
-                  "active"
-                );
+<span>
+Chapter Unlocks
+</span>
 
-              });
+<strong>
+${formatNumber(
+unlocks.length
+)}
+</strong>
 
+</div>
 
-            button.classList.add(
-              "active"
-            );
+<div class="metric-row">
 
+<span>
+Library Additions
+</span>
 
-            currentRange =
-              button.dataset.range;
+<strong>
+${formatNumber(
+library.length
+)}
+</strong>
 
+</div>
 
-            renderOverview();
-            renderReaderActivity();
-            renderBookPerformance();
+</div>
 
-          }
-        );
+`;
 
-      });
+}
 
 
-    /* =========================================================
-       REFRESH
-       ========================================================= */
+/* =========================================================
+   BOOK PERFORMANCE
+   ========================================================= */
 
-    document
-      .getElementById(
-        "refreshAnalytics"
-      )
-      .addEventListener(
-        "click",
-        async function () {
+function renderBooks() {
 
-          const button = this;
+const container =
+document.querySelector(
+"#bookAnalytics"
+);
 
-          button.classList.add(
-            "loading"
-          );
 
-          button.textContent =
-            "↻ Loading...";
+if (!books.length) {
 
+container.innerHTML = `
 
-          try {
+<div class="empty-analytics">
 
-            await loadAllData();
+<div class="symbol">
+📚
+</div>
 
-          } catch (error) {
+<h3>
+No books yet
+</h3>
 
-            console.error(
-              "Analytics error:",
-              error
-            );
+<p>
+Book performance data will appear here after books are added.
+</p>
 
-            showError(
-              error.message ||
-              "Unable to load analytics."
-            );
+</div>
 
-          } finally {
+`;
 
-            button.classList.remove(
-              "loading"
-            );
+return;
 
-            button.textContent =
-              "↻ Refresh";
+}
 
-          }
 
-        }
-      );
+/*
+Map chapter ID → book ID
+*/
 
+const chapterToBook =
+new Map();
 
-    /* =========================================================
-       INITIAL LOAD
-       ========================================================= */
 
-    loadAllData()
-      .catch(error => {
+chapters.forEach(
+chapter => {
 
-        console.error(
-          "Analytics error:",
-          error
-        );
+if (
+chapter.id &&
+chapter.book_id
+) {
 
-        showError(
-          error.message ||
-          "Unable to load analytics."
-        );
+chapterToBook.set(
+chapter.id,
+chapter.book_id
+);
 
-      });
+}
 
-  </script>
+});
+
+
+/*
+Build performance data
+*/
+
+const performance =
+books.map(book => {
+
+
+const views =
+bookViews.filter(view => {
+
+return (
+view.book_id === book.id &&
+withinRange(
+view.viewed_at ||
+view.created_at
+)
+);
+
+}).length;
+
+
+const reads =
+readingEvents.filter(event => {
+
+return (
+event.book_id === book.id &&
+String(
+event.event_type || ""
+).toLowerCase() ===
+"chapter_read" &&
+withinRange(
+event.created_at
+)
+);
+
+}).length;
+
+
+const library =
+libraryItems.filter(item => {
+
+return (
+item.book_id === book.id &&
+withinRange(
+item.added_at ||
+item.created_at
+)
+);
+
+}).length;
+
+
+const unlocks =
+chapterUnlocks.filter(
+unlock => {
+
+const bookId =
+chapterToBook.get(
+unlock.chapter_id
+);
+
+return (
+bookId === book.id &&
+withinRange(
+unlock.created_at
+)
+);
+
+}).length;
+
+
+/*
+Purchases currently don't have
+book_id, so don't invent
+per-book revenue.
+*/
+
+const revenue = "—";
+
+
+return {
+book,
+views,
+reads,
+library,
+unlocks,
+revenue
+};
+
+});
+
+
+/*
+Highest activity first.
+*/
+
+performance.sort(
+(a,b) => {
+
+const scoreA =
+a.views +
+a.reads +
+a.library +
+a.unlocks;
+
+const scoreB =
+b.views +
+b.reads +
+b.library +
+b.unlocks;
+
+return scoreB - scoreA;
+
+});
+
+
+container.innerHTML = `
+
+<div class="book-analytics-header">
+
+<span>
+Book
+</span>
+
+<span>
+Views
+</span>
+
+<span>
+Reads
+</span>
+
+<span>
+Library
+</span>
+
+<span>
+Unlocks
+</span>
+
+<span>
+Revenue
+</span>
+
+</div>
+
+${performance.map(item => {
+
+const book =
+item.book;
+
+const author =
+book.author_name ||
+book.pen_name ||
+book.author ||
+book.genre ||
+"Novelora book";
+
+
+return `
+
+<div class="book-analytics-row">
+
+<strong title="${escapeHTML(
+book.title || "Untitled"
+)}">
+
+${escapeHTML(
+book.title || "Untitled"
+)}
+
+</strong>
+
+<span>
+${formatNumber(
+item.views
+)}
+</span>
+
+<span>
+${formatNumber(
+item.reads
+)}
+</span>
+
+<span>
+${formatNumber(
+item.library
+)}
+</span>
+
+<span>
+${formatNumber(
+item.unlocks
+)}
+</span>
+
+<span>
+${item.revenue}
+</span>
+
+</div>
+
+`;
+
+}).join("")}
+
+`;
+
+}
+
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+document
+.querySelectorAll(
+".analytics-filter"
+)
+.forEach(button => {
+
+button.addEventListener(
+"click",
+() => {
+
+document
+.querySelectorAll(
+".analytics-filter"
+)
+.forEach(
+item =>
+item.classList.remove(
+"active"
+)
+);
+
+
+button.classList.add(
+"active"
+);
+
+
+currentRange =
+button.dataset.range;
+
+
+updateAnalytics();
+
+}
+);
+
+});
+
+
+/* =========================================================
+   REFRESH
+   ========================================================= */
+
+document
+.querySelector(
+"#refreshAnalytics"
+)
+.addEventListener(
+"click",
+async () => {
+
+const button =
+document.querySelector(
+"#refreshAnalytics"
+);
+
+button.textContent =
+"↻ Loading...";
+
+button.disabled = true;
+
+
+try {
+
+await loadAnalytics();
+
+} catch(error) {
+
+console.error(
+error
+);
+
+showError(
+error.message
+);
+
+} finally {
+
+button.textContent =
+"↻ Refresh";
+
+button.disabled = false;
+
+}
+
+});
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+loadAnalytics()
+.catch(error => {
+
+console.error(
+"Analytics error:",
+error
+);
+
+showError(
+error.message
+);
+
+});
+
+</script>
 
 </body>
 </html>
